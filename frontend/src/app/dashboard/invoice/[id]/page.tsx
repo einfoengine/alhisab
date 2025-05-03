@@ -1,29 +1,31 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
   Paper,
   Grid,
   Button,
-  Divider,
+  Chip,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
+  Divider,
 } from "@mui/material";
 import {
   Print as PrintIcon,
   Download as DownloadIcon,
   Send as SendIcon,
+  Edit as EditIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
 
 interface InvoiceItem {
+  id: string;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -35,9 +37,9 @@ interface Invoice {
   invoiceNumber: string;
   client: {
     name: string;
-    address: string;
     email: string;
     phone: string;
+    address: string;
   };
   date: string;
   dueDate: string;
@@ -49,39 +51,37 @@ interface Invoice {
   notes: string;
 }
 
-const InvoiceDetails = () => {
-  // Sample data - replace with actual API call
-  const invoice: Invoice = {
-    id: "1",
-    invoiceNumber: "INV-2024-001",
+const InvoiceDetails = ({ params }: { params: { id: string } }) => {
+  const [invoice, setInvoice] = useState<Invoice>({
+    id: params.id,
+    invoiceNumber: "INV-001",
     client: {
-      name: "Acme Corp",
-      address: "123 Business St, Suite 100\nNew York, NY 10001",
-      email: "contact@acmecorp.com",
-      phone: "(555) 123-4567",
+      name: "John Doe",
+      email: "john@example.com",
+      phone: "123-456-7890",
+      address: "123 Main St, City, Country",
     },
-    date: "2024-03-01",
-    dueDate: "2024-03-15",
+    date: "2024-01-01",
+    dueDate: "2024-01-31",
     items: [
       {
-        description: "Web Development Services",
-        quantity: 40,
-        unitPrice: 75.00,
-        total: 3000.00,
-      },
-      {
-        description: "UI/UX Design",
-        quantity: 20,
-        unitPrice: 100.00,
-        total: 2000.00,
+        id: "1",
+        description: "Web Development",
+        quantity: 1,
+        unitPrice: 1000,
+        total: 1000,
       },
     ],
-    subtotal: 5000.00,
-    tax: 500.00,
-    total: 5500.00,
-    status: "paid",
-    notes: "Thank you for your business!",
-  };
+    subtotal: 1000,
+    tax: 100,
+    total: 1100,
+    status: "pending",
+    notes: "Payment due within 30 days",
+  });
+
+  useEffect(() => {
+    // TODO: Fetch invoice data from API
+  }, [params.id]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -113,172 +113,124 @@ const InvoiceDetails = () => {
           <Button
             variant="outlined"
             startIcon={<DownloadIcon />}
+            onClick={() => {/* TODO: Implement download */}}
           >
             Download
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             startIcon={<SendIcon />}
+            onClick={() => {/* TODO: Implement send */}}
           >
             Send
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            component={Link}
+            href={`/dashboard/invoice/${params.id}/edit`}
+          >
+            Edit
           </Button>
         </Box>
       </Box>
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Grid container spacing={3}>
+          {/* Header */}
+          <Grid item xs={12}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Box>
+                <Typography variant="h6">Status</Typography>
+                <Chip
+                  label={invoice.status.toUpperCase()}
+                  color={getStatusColor(invoice.status)}
+                  sx={{ mt: 1 }}
+                />
+              </Box>
+              <Box sx={{ textAlign: "right" }}>
+                <Typography>Date: {invoice.date}</Typography>
+                <Typography>Due Date: {invoice.dueDate}</Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+
+          {/* Client Information */}
           <Grid item xs={12} md={6}>
             <Typography variant="h6" gutterBottom>
-              From
+              Bill To
             </Typography>
-            <Typography variant="body1">
-              Your Company Name
-              <br />
-              456 Business Ave
-              <br />
-              New York, NY 10001
-              <br />
-              contact@yourcompany.com
-              <br />
-              (555) 987-6543
-            </Typography>
+            <Typography>{invoice.client.name}</Typography>
+            <Typography>{invoice.client.email}</Typography>
+            <Typography>{invoice.client.phone}</Typography>
+            <Typography>{invoice.client.address}</Typography>
           </Grid>
-          <Grid item xs={12} md={6}>
+
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+
+          {/* Items */}
+          <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>
-              To
+              Items
             </Typography>
-            <Typography variant="body1" style={{ whiteSpace: "pre-line" }}>
-              {invoice.client.name}
-              <br />
-              {invoice.client.address}
-              <br />
-              {invoice.client.email}
-              <br />
-              {invoice.client.phone}
-            </Typography>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Description</TableCell>
+                    <TableCell align="right">Quantity</TableCell>
+                    <TableCell align="right">Unit Price</TableCell>
+                    <TableCell align="right">Total</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {invoice.items.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.description}</TableCell>
+                      <TableCell align="right">{item.quantity}</TableCell>
+                      <TableCell align="right">
+                        ${item.unitPrice.toFixed(2)}
+                      </TableCell>
+                      <TableCell align="right">${item.total.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Grid>
-        </Grid>
 
-        <Divider sx={{ my: 3 }} />
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Invoice Number
-            </Typography>
-            <Typography variant="body1">{invoice.invoiceNumber}</Typography>
+          {/* Summary */}
+          <Grid item xs={12}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: "flex-end", mt: 2 }}>
+              <Typography>
+                Subtotal: ${invoice.subtotal.toFixed(2)}
+              </Typography>
+              <Typography>
+                Tax (10%): ${invoice.tax.toFixed(2)}
+              </Typography>
+              <Typography variant="h6">
+                Total: ${invoice.total.toFixed(2)}
+              </Typography>
+            </Box>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Date
-            </Typography>
-            <Typography variant="body1">{invoice.date}</Typography>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Due Date
-            </Typography>
-            <Typography variant="body1">{invoice.dueDate}</Typography>
-          </Grid>
-        </Grid>
 
-        <TableContainer sx={{ mt: 3 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Description</TableCell>
-                <TableCell align="right">Quantity</TableCell>
-                <TableCell align="right">Unit Price</TableCell>
-                <TableCell align="right">Total</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {invoice.items.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell align="right">{item.quantity}</TableCell>
-                  <TableCell align="right">
-                    ${item.unitPrice.toFixed(2)}
-                  </TableCell>
-                  <TableCell align="right">
-                    ${item.total.toFixed(2)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-          <Box sx={{ width: 300 }}>
-            <Grid container spacing={1}>
-              <Grid item xs={6}>
-                <Typography variant="body1">Subtotal</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body1" align="right">
-                  ${invoice.subtotal.toFixed(2)}
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body1">Tax (10%)</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body1" align="right">
-                  ${invoice.tax.toFixed(2)}
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="h6">Total</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="h6" align="right">
-                  ${invoice.total.toFixed(2)}
-                </Typography>
-              </Grid>
+          {/* Notes */}
+          {invoice.notes && (
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                Notes
+              </Typography>
+              <Typography>{invoice.notes}</Typography>
             </Grid>
-          </Box>
-        </Box>
-
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            Status
-          </Typography>
-          <Chip
-            label={invoice.status}
-            color={getStatusColor(invoice.status)}
-            sx={{ mt: 1 }}
-          />
-        </Box>
-
-        {invoice.notes && (
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Notes
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 1 }}>
-              {invoice.notes}
-            </Typography>
-          </Box>
-        )}
+          )}
+        </Grid>
       </Paper>
-
-      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
-        <Button
-          variant="outlined"
-          component={Link}
-          href="/dashboard/invoice"
-        >
-          Back to List
-        </Button>
-        <Button
-          variant="contained"
-          component={Link}
-          href={`/dashboard/invoice/${invoice.id}/edit`}
-        >
-          Edit Invoice
-        </Button>
-      </Box>
     </Box>
   );
 };
