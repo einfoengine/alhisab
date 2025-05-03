@@ -2,164 +2,245 @@
 
 import React from "react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  Grid,
-  Typography,
-  Avatar,
-  LinearProgress,
   Box,
+  Grid,
+  Paper,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  Chip,
 } from "@mui/material";
 import {
+  Work as WorkIcon,
   People as PeopleIcon,
-  AttachMoney as MoneyIcon,
+  Description as DescriptionIcon,
+  Warning as WarningIcon,
   TrendingUp as TrendingUpIcon,
-  Timeline as ActivityIcon,
+  AccountBalance as AccountBalanceIcon,
+  Receipt as ReceiptIcon,
+  AccessTime as AccessTimeIcon,
 } from "@mui/icons-material";
 
-const DashboardPage = () => {
+interface MetricCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  color?: string;
+}
+
+const MetricCard = ({ title, value, icon, color = "primary" }: MetricCardProps) => (
+  <Paper sx={{ p: 3, height: "100%" }}>
+    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+      <Box
+        sx={{
+          backgroundColor: `${color}.light`,
+          color: `${color}.main`,
+          borderRadius: "50%",
+          p: 1,
+          mr: 2,
+        }}
+      >
+        {icon}
+      </Box>
+      <Typography variant="h6" color="text.secondary">
+        {title}
+      </Typography>
+    </Box>
+    <Typography variant="h4">{value}</Typography>
+  </Paper>
+);
+
+interface Activity {
+  id: string;
+  type: "project" | "lead" | "proposal" | "issue";
+  title: string;
+  description: string;
+  time: string;
+  status?: "completed" | "in-progress" | "pending";
+}
+
+const Dashboard = () => {
+  // Sample data - replace with actual API calls
+  const metrics = {
+    totalProjects: 12,
+    totalLeads: 24,
+    totalProposals: 18,
+    totalIssues: 5,
+    totalRevenue: "$45,678",
+    totalPayable: "$12,345",
+    totalReceivable: "$23,456",
+  };
+
+  const recentActivities: Activity[] = [
+    {
+      id: "1",
+      type: "project",
+      title: "E-commerce Website Development",
+      description: "Project completed and delivered to client",
+      time: "2 hours ago",
+      status: "completed",
+    },
+    {
+      id: "2",
+      type: "lead",
+      title: "New Lead: Tech Solutions Inc",
+      description: "Initial contact made, proposal sent",
+      time: "4 hours ago",
+      status: "in-progress",
+    },
+    {
+      id: "3",
+      type: "proposal",
+      title: "Proposal: Mobile App Development",
+      description: "New proposal created and sent to client",
+      time: "1 day ago",
+      status: "pending",
+    },
+    {
+      id: "4",
+      type: "issue",
+      title: "Bug in Payment Module",
+      description: "Critical issue reported by client",
+      time: "1 day ago",
+      status: "in-progress",
+    },
+  ];
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case "project":
+        return <WorkIcon />;
+      case "lead":
+        return <PeopleIcon />;
+      case "proposal":
+        return <DescriptionIcon />;
+      case "issue":
+        return <WarningIcon />;
+      default:
+        return <AccessTimeIcon />;
+    }
+  };
+
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case "completed":
+        return "success";
+      case "in-progress":
+        return "warning";
+      case "pending":
+        return "info";
+      default:
+        return "default";
+    }
+  };
+
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card>
-          <CardContent>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Avatar sx={{ bgcolor: "primary.main" }}>
-                <PeopleIcon />
-              </Avatar>
-              <Box>
-                <Typography color="text.secondary" variant="body2">
-                  Total Users
-                </Typography>
-                <Typography variant="h6">1,234</Typography>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card>
-          <CardContent>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Avatar sx={{ bgcolor: "success.main" }}>
-                <MoneyIcon />
-              </Avatar>
-              <Box>
-                <Typography color="text.secondary" variant="body2">
-                  Revenue
-                </Typography>
-                <Typography variant="h6">$45,231</Typography>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card>
-          <CardContent>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Avatar sx={{ bgcolor: "warning.main" }}>
-                <TrendingUpIcon />
-              </Avatar>
-              <Box>
-                <Typography color="text.secondary" variant="body2">
-                  Growth
-                </Typography>
-                <Typography variant="h6">+12.5%</Typography>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card>
-          <CardContent>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Avatar sx={{ bgcolor: "error.main" }}>
-                <ActivityIcon />
-              </Avatar>
-              <Box>
-                <Typography color="text.secondary" variant="body2">
-                  Active Now
-                </Typography>
-                <Typography variant="h6">573</Typography>
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Dashboard
+      </Typography>
+
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Total Projects"
+            value={metrics.totalProjects}
+            icon={<WorkIcon />}
+            color="primary"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Total Leads"
+            value={metrics.totalLeads}
+            icon={<PeopleIcon />}
+            color="secondary"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Total Proposals"
+            value={metrics.totalProposals}
+            icon={<DescriptionIcon />}
+            color="info"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Total Issues"
+            value={metrics.totalIssues}
+            icon={<WarningIcon />}
+            color="error"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Total Revenue"
+            value={metrics.totalRevenue}
+            icon={<TrendingUpIcon />}
+            color="success"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Total Payable"
+            value={metrics.totalPayable}
+            icon={<AccountBalanceIcon />}
+            color="warning"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            title="Total Receivable"
+            value={metrics.totalReceivable}
+            icon={<ReceiptIcon />}
+            color="info"
+          />
+        </Grid>
       </Grid>
 
-      <Grid item xs={12} md={6}>
-        <Card>
-          <CardHeader title="Recent Activity" subheader="Last 7 days" />
-          <Divider />
-          <CardContent>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              {[1, 2, 3].map((item) => (
-                <Box key={item} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Avatar
-                    src={`https://i.pravatar.cc/150?u=a042581f4e2902670${item}`}
-                    sx={{ width: 32, height: 32 }}
-                  />
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="body2" fontWeight="medium">
-                      User {item}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Completed a task
-                    </Typography>
-                  </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    2h ago
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <Grid item xs={12} md={6}>
-        <Card>
-          <CardHeader title="Progress Overview" subheader="Monthly targets" />
-          <Divider />
-          <CardContent>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <Box>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                  <Typography variant="body2">Sales Target</Typography>
-                  <Typography variant="body2" fontWeight="medium">
-                    75%
-                  </Typography>
-                </Box>
-                <LinearProgress variant="determinate" value={75} />
-              </Box>
-              <Box>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                  <Typography variant="body2">User Growth</Typography>
-                  <Typography variant="body2" fontWeight="medium">
-                    45%
-                  </Typography>
-                </Box>
-                <LinearProgress variant="determinate" value={45} />
-              </Box>
-              <Box>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                  <Typography variant="body2">Revenue</Typography>
-                  <Typography variant="body2" fontWeight="medium">
-                    90%
-                  </Typography>
-                </Box>
-                <LinearProgress variant="determinate" value={90} />
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Recent Activities
+        </Typography>
+        <List>
+          {recentActivities.map((activity, index) => (
+            <React.Fragment key={activity.id}>
+              <ListItem>
+                <ListItemIcon>
+                  {getActivityIcon(activity.type)}
+                </ListItemIcon>
+                <ListItemText
+                  primary={activity.title}
+                  secondary={
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {activity.description}
+                      </Typography>
+                      {activity.status && (
+                        <Chip
+                          label={activity.status}
+                          color={getStatusColor(activity.status)}
+                          size="small"
+                        />
+                      )}
+                    </Box>
+                  }
+                />
+                <Typography variant="caption" color="text.secondary">
+                  {activity.time}
+                </Typography>
+              </ListItem>
+              {index < recentActivities.length - 1 && <Divider />}
+            </React.Fragment>
+          ))}
+        </List>
+      </Paper>
+    </Box>
   );
 };
 
-export default DashboardPage;
+export default Dashboard;

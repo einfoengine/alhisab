@@ -1,197 +1,216 @@
-'use client'
-import { useState } from "react";
+"use client";
 
-const journalEntries = [
-  {
-    id: 1,
-    date: "2025-05-01",
-    title: "Office Supplies Purchase",
-    description: "Purchased office supplies from vendor.",
-    from: "Cash Account",
-    to: "Supplies Account",
-    debit: "$500",
-    credit: "$500",
-    method: "Cash",
-    purpose: "Office Supplies",
-    tags: "Office, Supplies",
-  },
-  {
-    id: 2,
-    date: "2025-05-02",
-    title: "Client Payment",
-    description: "Received payment from client.",
-    from: "Accounts Receivable",
-    to: "Cash Account",
-    debit: "$1000",
-    credit: "$1000",
-    method: "Bank",
-    purpose: "Payment",
-    tags: "Client, Payment",
-  },
-];
+import React, { useState } from "react";
+import {
+  Box,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Button,
+  IconButton,
+  Chip,
+  TextField,
+  InputAdornment,
+} from "@mui/material";
+import {
+  Search as SearchIcon,
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
+} from "@mui/icons-material";
+import Link from "next/link";
 
-export default function JournalPage() {
-  const [entries, setEntries] = useState(journalEntries);
-  const [formData, setFormData] = useState({
-    id: "",
-    date: "",
-    title: "",
-    description: "",
-    from: "",
-    to: "",
-    debit: "",
-    credit: "",
-    method: "",
-    purpose: "",
-    tags: "",
-  });
+interface JournalEntry {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  type: "debit" | "credit";
+  category: string;
+  status: "pending" | "approved" | "rejected";
+}
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+const JournalList = () => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Sample data - replace with actual API call
+  const entries: JournalEntry[] = [
+    {
+      id: "1",
+      date: "2024-03-15",
+      description: "Office Supplies Purchase",
+      amount: 150.00,
+      type: "debit",
+      category: "Expenses",
+      status: "approved",
+    },
+    {
+      id: "2",
+      date: "2024-03-14",
+      description: "Client Payment Received",
+      amount: 2500.00,
+      type: "credit",
+      category: "Revenue",
+      status: "approved",
+    },
+    {
+      id: "3",
+      date: "2024-03-13",
+      description: "Monthly Rent Payment",
+      amount: 1200.00,
+      type: "debit",
+      category: "Expenses",
+      status: "pending",
+    },
+  ];
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setEntries([...entries, { ...formData, id: entries.length + 1 }]);
-    setFormData({ id: "", date: "", title: "", description: "", from: "", to: "", debit: "", credit: "", method: "", purpose: "", tags: "" });
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "approved":
+        return "success";
+      case "pending":
+        return "warning";
+      case "rejected":
+        return "error";
+      default:
+        return "default";
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    return type === "debit" ? "error" : "success";
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Journal Entries</h1>
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+        <Typography variant="h4" component="h1">
+          Journal Entries
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          component={Link}
+          href="/dashboard/journal/new"
+        >
+          New Entry
+        </Button>
+      </Box>
 
-      <form onSubmit={handleSubmit} className="mb-6 space-y-4">
-        <div className="grid grid-cols-3 gap-4">
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            placeholder="Date"
-            className="p-2 border border-gray-300 rounded"
-            required
+      <Paper sx={{ mb: 3 }}>
+        <Box sx={{ p: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Search entries..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
           />
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Title"
-            className="p-2 border border-gray-300 rounded"
-            required
-          />
-          <input
-            type="text"
-            name="from"
-            value={formData.from}
-            onChange={handleChange}
-            placeholder="From"
-            className="p-2 border border-gray-300 rounded"
-            required
-          />
-          <input
-            type="text"
-            name="to"
-            value={formData.to}
-            onChange={handleChange}
-            placeholder="To"
-            className="p-2 border border-gray-300 rounded"
-            required
-          />
-          <select
-            name="debit"
-            value={formData.debit}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded"
-          >
-            <option value="0">Debit</option>
-            <option value="1">Credit</option>
-          </select>
-          <input
-            type="text"
-            name="to"
-            value={formData.to}
-            onChange={handleChange}
-            placeholder="Amount"
-            className="p-2 border border-gray-300 rounded"
-            required
-          />
-          <select
-            name="method"
-            value={formData.method}
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded"
-            required
-          >
-            <option value="">Select Method</option>
-            <option value="Cash">Cash</option>
-            <option value="Bank">Bank</option>
-            <option value="Bikash">Bikash</option>
-            <option value="Chaque">Chaque</option>
-          </select>
-          <input
-            type="text"
-            name="purpose"
-            value={formData.purpose}
-            onChange={handleChange}
-            placeholder="Purpose"
-            className="p-2 border border-gray-300 rounded"
-            required
-          />
-          <input
-            type="text"
-            name="tags"
-            value={formData.tags}
-            onChange={handleChange}
-            placeholder="Tags"
-            className="p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          placeholder="Description"
-          className="w-full p-2 border border-gray-300 rounded"
-          required
-        ></textarea>
-        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
-          Add Entry
-        </button>
-      </form>
+        </Box>
 
-      <div className="flex font-semibold text-gray-700 border-b pb-2">
-        <span className="w-1/11">ID</span>
-        <span className="w-1/11">Date</span>
-        <span className="w-1/11">Title</span>
-        <span className="w-1/6">Description</span>
-        <span className="w-1/11">From</span>
-        <span className="w-1/11">To</span>
-        <span className="w-1/11">Amount</span>
-        <span className="w-1/11">Type</span>
-        <span className="w-1/11">Method</span>
-        <span className="w-1/11">Purpose</span>
-        <span className="w-1/11">Tags</span>
-      </div>
-      <ul className="space-y-4">
-        {entries.map((entry) => (
-          <li key={entry.id} className="flex justify-between border-b pb-2">
-            <span className="w-1/11 text-gray-600">{entry.id}</span>
-            <span className="w-1/11 text-gray-600">{entry.date}</span>
-            <span className="w-1/11 text-gray-600">{entry.title}</span>
-            <span className="w-1/6 text-gray-600">{entry.description}</span>
-            <span className="w-1/11 text-gray-600">{entry.from}</span>
-            <span className="w-1/11 text-gray-600">{entry.to}</span>
-            <span className="w-1/11 text-gray-600">{entry.debit || entry.credit}</span>
-            <span className="w-1/11 text-gray-600">{entry.debit ? "Debit" : "Credit"}</span>
-            <span className="w-1/11 text-gray-600">{entry.method}</span>
-            <span className="w-1/11 text-gray-600">{entry.purpose}</span>
-            <span className="w-1/11 text-gray-600">{entry.tags}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Date</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Category</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>Amount</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {entries.map((entry) => (
+                <TableRow key={entry.id}>
+                  <TableCell>{entry.date}</TableCell>
+                  <TableCell>{entry.description}</TableCell>
+                  <TableCell>{entry.category}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={entry.type}
+                      color={getTypeColor(entry.type)}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>{formatCurrency(entry.amount)}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={entry.status}
+                      color={getStatusColor(entry.status)}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      size="small"
+                      component={Link}
+                      href={`/dashboard/journal/${entry.id}`}
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      component={Link}
+                      href={`/dashboard/journal/${entry.id}/edit`}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton size="small" color="error">
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={entries.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+    </Box>
   );
-}
+};
+
+export default JournalList;
