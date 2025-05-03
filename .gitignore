@@ -134,9 +134,14 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-
-# Uncomment the following line to include the public directory for Next.js
-# !frontend/public/
+.pnp.js
+.pnp.cjs
+# pnpm store
+.pnpm-store/
+# pnpm-lock.yaml
+# pnpm-lock.yaml
+# pnpm-lock.yaml
+# pnpm-lock.yaml
 
 # macOS system files
 .DS_Store
