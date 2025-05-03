@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 const invoices = [
   {
@@ -33,40 +34,30 @@ export default function InvoicesPage() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Invoices</h1>
-      <table className="w-full border-collapse border border-gray-300">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">Invoice ID</th>
-            <th className="border border-gray-300 px-4 py-2">Created Date</th>
-            <th className="border border-gray-300 px-4 py-2">Due Date</th>
-            <th className="border border-gray-300 px-4 py-2">Invoice Number</th>
-            <th className="border border-gray-300 px-4 py-2">Created By</th>
-            <th className="border border-gray-300 px-4 py-2">Invoice Type</th>
-            <th className="border border-gray-300 px-4 py-2">Invoice To</th>
-            <th className="border border-gray-300 px-4 py-2">Receiver's Email</th>
-            <th className="border border-gray-300 px-4 py-2">Receiver's Contact</th>
-            <th className="border border-gray-300 px-4 py-2">Due Amount</th>
-            <th className="border border-gray-300 px-4 py-2">Paid Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {invoices.map((invoice) => (
-            <tr key={invoice.id} className="hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2 text-center">{invoice.id}</td>
-              <td className="border border-gray-300 px-4 py-2">{invoice.createdDate}</td>
-              <td className="border border-gray-300 px-4 py-2">{invoice.dueDate}</td>
-              <td className="border border-gray-300 px-4 py-2">{invoice.invoiceNumber}</td>
-              <td className="border border-gray-300 px-4 py-2">{invoice.createdBy}</td>
-              <td className="border border-gray-300 px-4 py-2">{invoice.invoiceType}</td>
-              <td className="border border-gray-300 px-4 py-2">{invoice.invoiceTo}</td>
-              <td className="border border-gray-300 px-4 py-2">{invoice.receiversEmail}</td>
-              <td className="border border-gray-300 px-4 py-2">{invoice.receiversContact}</td>
-              <td className="border border-gray-300 px-4 py-2">{invoice.dueAmount}</td>
-              <td className="border border-gray-300 px-4 py-2">{invoice.paidAmount}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ul className="space-y-6">
+        {invoices.map((invoice) => (
+          <li key={invoice.id} className="w-full flex flex-col p-6 bg-white border border-gray-200 rounded-lg shadow-md">
+            <Link href={`/dashboard/invoices/${invoice.id}`} className="block hover:bg-gray-100 p-4 rounded">
+              <div className="flex justify-between">
+                <span className="font-semibold text-gray-700">Invoice ID:</span>
+                <span className="text-gray-600">{invoice.id}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-semibold text-gray-700">Created Date:</span>
+                <span className="text-gray-600">{invoice.createdDate}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-semibold text-gray-700">Due Date:</span>
+                <span className="text-gray-600">{invoice.dueDate}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-semibold text-gray-700">Invoice Number:</span>
+                <span className="text-gray-600">{invoice.invoiceNumber}</span>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
