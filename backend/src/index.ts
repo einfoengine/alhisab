@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import { config } from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import winston from 'winston';
+import app from './app.js';
 
 // Load environment variables
 config();
@@ -33,8 +34,7 @@ if (process.env.NODE_ENV !== 'production') {
 const prisma = new PrismaClient();
 
 // Initialize Express
-const app = express();
-const PORT = process.env.PORT || 3500;
+const PORT = process.env.PORT || 5000;
 
 // Rate limiting
 const limiter = rateLimit({
@@ -67,7 +67,7 @@ const startServer = async () => {
     logger.info('Successfully connected to database');
     
     app.listen(PORT, () => {
-      logger.info(`Server is running on http://localhost:${PORT}`);
+      logger.info(`Server is running on port ${PORT}`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

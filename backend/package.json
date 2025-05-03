@@ -2,7 +2,7 @@
   "name": "alhisab-backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc",
@@ -14,8 +14,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
+    "@prisma/client": "^5.8.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -23,9 +23,8 @@
     "helmet": "^7.1.0",
     "mongoose": "^8.1.0",
     "morgan": "^1.10.0",
-    "zod": "^3.22.4",
     "winston": "^3.11.0",
-    "@prisma/client": "^5.8.0"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -41,5 +40,6 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "vitest": "^1.2.0"
-  }
+  },
+  "description": ""
 }
