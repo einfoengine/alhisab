@@ -92,6 +92,19 @@ export default function DashboardLayout({
           </ListItem>
         ))}
       </List>
+      <Box 
+        sx={{ 
+          p: 2, 
+          mt: 'auto',
+          textAlign: "center",
+          borderTop: "1px solid",
+          borderColor: "divider"
+        }}
+      >
+        <Typography variant="body2" color="text.secondary">
+          Designed and developed by nodes theme, all rights reserved.
+        </Typography>
+      </Box>
     </div>
   );
 

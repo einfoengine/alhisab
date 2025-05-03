@@ -27,53 +27,73 @@ import {
 } from "@mui/icons-material";
 import Link from "next/link";
 
-interface Product {
+interface AdjustmentEntry {
   id: string;
-  name: string;
+  date: string;
+  account: string;
   description: string;
-  price: number;
-  stock: number;
-  status: "active" | "inactive";
-  category: string;
-  sku: string;
+  debit: number;
+  credit: number;
+  type: "accrual" | "deferral" | "depreciation" | "inventory" | "other";
+  status: "pending" | "approved" | "rejected";
 }
 
-const ProductsList = () => {
+const AdjustmentsList = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Sample data - replace with actual API call
-  const products: Product[] = [
+  const entries: AdjustmentEntry[] = [
     {
       id: "1",
-      name: "Premium Laptop",
-      description: "High-performance laptop with latest specifications",
-      price: 1299.99,
-      stock: 15,
-      status: "active",
-      category: "Electronics",
-      sku: "ELEC-LP-001",
+      date: "2024-03-15",
+      account: "Prepaid Rent",
+      description: "Monthly rent adjustment",
+      debit: 0,
+      credit: 1000.00,
+      type: "deferral",
+      status: "approved",
     },
     {
       id: "2",
-      name: "Wireless Mouse",
-      description: "Ergonomic wireless mouse with precision tracking",
-      price: 49.99,
-      stock: 50,
-      status: "active",
-      category: "Accessories",
-      sku: "ACC-MS-001",
+      date: "2024-03-14",
+      account: "Accrued Revenue",
+      description: "Unbilled services for March",
+      debit: 1500.00,
+      credit: 0,
+      type: "accrual",
+      status: "approved",
     },
     {
       id: "3",
-      name: "Mechanical Keyboard",
-      description: "RGB mechanical keyboard with custom switches",
-      price: 89.99,
-      stock: 25,
-      status: "active",
-      category: "Accessories",
-      sku: "ACC-KB-001",
+      date: "2024-03-13",
+      account: "Depreciation Expense",
+      description: "Monthly equipment depreciation",
+      debit: 200.00,
+      credit: 0,
+      type: "depreciation",
+      status: "pending",
+    },
+    {
+      id: "4",
+      date: "2024-03-12",
+      account: "Inventory",
+      description: "Year-end inventory adjustment",
+      debit: 0,
+      credit: 500.00,
+      type: "inventory",
+      status: "approved",
+    },
+    {
+      id: "5",
+      date: "2024-03-11",
+      account: "Bad Debt Expense",
+      description: "Allowance for doubtful accounts",
+      debit: 300.00,
+      credit: 0,
+      type: "other",
+      status: "approved",
     },
   ];
 
@@ -87,29 +107,53 @@ const ProductsList = () => {
   };
 
   const getStatusColor = (status: string) => {
-    return status === "active" ? "success" : "error";
+    switch (status) {
+      case "approved":
+        return "success";
+      case "pending":
+        return "warning";
+      case "rejected":
+        return "error";
+      default:
+        return "default";
+    }
   };
 
-  const formatPrice = (price: number) => {
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case "accrual":
+        return "primary";
+      case "deferral":
+        return "secondary";
+      case "depreciation":
+        return "info";
+      case "inventory":
+        return "warning";
+      default:
+        return "default";
+    }
+  };
+
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(price);
+    }).format(amount);
   };
 
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Typography variant="h4" component="h1">
-          Products
+          Adjustment Entries
         </Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           component={Link}
-          href="/dashboard/products/new"
+          href="/dashboard/adjustments/new"
         >
-          New Product
+          New Adjustment
         </Button>
       </Box>
 
@@ -118,7 +162,7 @@ const ProductsList = () => {
           <TextField
             fullWidth
             variant="outlined"
-            placeholder="Search products..."
+            placeholder="Search adjustments..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             InputProps={{
@@ -135,27 +179,35 @@ const ProductsList = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Product Name</TableCell>
-                <TableCell>SKU</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Price</TableCell>
-                <TableCell>Stock</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Account</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell align="right">Debit</TableCell>
+                <TableCell align="right">Credit</TableCell>
+                <TableCell>Type</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>{product.sku}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell>{formatPrice(product.price)}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
+              {entries.map((entry) => (
+                <TableRow key={entry.id}>
+                  <TableCell>{entry.date}</TableCell>
+                  <TableCell>{entry.account}</TableCell>
+                  <TableCell>{entry.description}</TableCell>
+                  <TableCell align="right">{formatCurrency(entry.debit)}</TableCell>
+                  <TableCell align="right">{formatCurrency(entry.credit)}</TableCell>
                   <TableCell>
                     <Chip
-                      label={product.status}
-                      color={getStatusColor(product.status)}
+                      label={entry.type}
+                      color={getTypeColor(entry.type)}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={entry.status}
+                      color={getStatusColor(entry.status)}
                       size="small"
                     />
                   </TableCell>
@@ -163,14 +215,14 @@ const ProductsList = () => {
                     <IconButton
                       size="small"
                       component={Link}
-                      href={`/dashboard/products/${product.id}`}
+                      href={`/dashboard/adjustments/${entry.id}`}
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
                       size="small"
                       component={Link}
-                      href={`/dashboard/products/${product.id}/edit`}
+                      href={`/dashboard/adjustments/${entry.id}/edit`}
                     >
                       <EditIcon />
                     </IconButton>
@@ -187,7 +239,7 @@ const ProductsList = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={products.length}
+          count={entries.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -198,4 +250,4 @@ const ProductsList = () => {
   );
 };
 
-export default ProductsList;
+export default AdjustmentsList; 
