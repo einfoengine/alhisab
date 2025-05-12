@@ -55,7 +55,7 @@ app.get('/health', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err, req, res, next) => {
   logger.error(err.stack);
   res.status(500).send('Something broke!');
 });
@@ -66,8 +66,19 @@ const startServer = async () => {
     await prisma.$connect();
     logger.info('Successfully connected to database');
     
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       logger.info(`Server is running on port ${PORT}`);
+    }).on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        const newPort = PORT + 1;
+        logger.warn(`Port ${PORT} is in use, trying port ${newPort}`);
+        app.listen(newPort, () => {
+          logger.info(`Server is running on port ${newPort}`);
+        });
+      } else {
+        logger.error('Failed to start server:', err);
+        process.exit(1);
+      }
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

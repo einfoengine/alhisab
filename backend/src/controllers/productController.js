@@ -1,13 +1,12 @@
-import { Request, Response } from 'express';
-import Product, { IProduct } from '../models/Product.js';
+import Product from '../models/Product.js';
 import mongoose from 'mongoose';
 
 // Get all products with pagination and search
-export const getProducts = async (req: Request, res: Response) => {
+export const getProducts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const search = req.query.search as string || '';
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || '';
     const skip = (page - 1) * limit;
 
     const query = search
@@ -43,7 +42,7 @@ export const getProducts = async (req: Request, res: Response) => {
 };
 
 // Get a single product by ID
-export const getProduct = async (req: Request, res: Response) => {
+export const getProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
@@ -60,9 +59,9 @@ export const getProduct = async (req: Request, res: Response) => {
 };
 
 // Create a new product
-export const createProduct = async (req: Request, res: Response) => {
+export const createProduct = async (req, res) => {
   try {
-    const productData: IProduct = req.body;
+    const productData = req.body;
     const product = new Product(productData);
     await product.save();
     res.status(201).json(product);
@@ -78,7 +77,7 @@ export const createProduct = async (req: Request, res: Response) => {
 };
 
 // Update a product
-export const updateProduct = async (req: Request, res: Response) => {
+export const updateProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(
       req.params.id,
@@ -101,7 +100,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 };
 
 // Delete a product
-export const deleteProduct = async (req: Request, res: Response) => {
+export const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) {

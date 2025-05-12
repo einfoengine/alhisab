@@ -2,14 +2,12 @@
   "name": "alhisab-backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "lint": "eslint . --ext .ts",
-    "format": "prettier --write .",
-    "test": "vitest"
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "lint": "eslint . --ext .js",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -27,19 +25,10 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/morgan": "^1.9.9",
-    "@types/node": "^20.11.0",
-    "@typescript-eslint/eslint-plugin": "^6.19.0",
-    "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.56.0",
     "nodemon": "^3.0.2",
     "prettier": "^3.2.0",
-    "prisma": "^5.8.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
-    "vitest": "^1.2.0"
+    "prisma": "^5.8.0"
   },
   "description": ""
 }
