@@ -1,5 +1,40 @@
+@import "./_variables.scss";
 @import "tailwindcss";
+@import "./elements.scss";
 
 *{
     
+}
+
+body {
+  background-color: $nt-bg-gray;
+  color: $nt-text-gray;
+  font-family: $nt-font-sans;
+  @apply antialiased;
+}
+
+.nt-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.nt-flex-center {
+  @apply flex items-center justify-center;
+}
+
+.nt-fullscreen {
+  @apply h-screen w-screen;
+}
+
+.nt-card {
+  background-color: $nt-bg-gray;
+  color: $nt-text-gray;
+  @apply w-full max-w-md p-8 space-y-6 rounded shadow-md;
+}
+
+.nt-space-y {
+  @apply space-y-4;
+}
+
+.nt-text-center {
+  @apply text-center;
 }

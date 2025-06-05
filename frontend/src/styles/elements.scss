@@ -1,0 +1,51 @@
+/* Typography */
+.nt-heading {
+  @apply text-2xl font-bold text-gray-800;
+}
+
+.nt-subheading {
+  @apply text-xl font-semibold text-gray-700;
+}
+
+.nt-paragraph {
+  @apply text-base text-gray-600;
+}
+
+/* Form */
+.nt-input {
+  @apply w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300;
+}
+
+.nt-label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+.nt-button {
+  @apply px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300;
+}
+
+/* Table */
+.nt-table {
+  @apply w-full border-collapse border border-gray-300;
+}
+
+.nt-table-header {
+  @apply bg-gray-100 text-left text-sm font-medium text-gray-700;
+}
+
+.nt-table-row {
+  @apply border-b border-gray-300;
+}
+
+.nt-table-cell {
+  @apply px-4 py-2 text-sm text-gray-600;
+}
+
+/* Buttons */
+.nt-primary-button {
+  @apply px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300;
+}
+
+.nt-secondary-button {
+  @apply px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-300;
+}
