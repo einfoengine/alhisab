@@ -2,10 +2,10 @@ import React from 'react';
 
 const Login = () => {
   return (
-    <div className="nt-flex-center nt-fullscreen bg-gray-100">
-      <div className="nt-card">
-        <h2 className="nt-heading nt-text-center">Login</h2>
-        <form className="nt-space-y">
+    <div className="nt-login-container">
+      <div className="nt-login-card">
+        <h2 className="nt-login-heading">Login</h2>
+        <form className="nt-login-form">
           <div>
             <label htmlFor="email" className="nt-label">
               Email
@@ -13,7 +13,7 @@ const Login = () => {
             <input
               type="email"
               id="email"
-              className="nt-input"
+              className="nt-login-input"
               placeholder="Enter your email"
             />
           </div>
@@ -24,13 +24,13 @@ const Login = () => {
             <input
               type="password"
               id="password"
-              className="nt-input"
+              className="nt-login-input"
               placeholder="Enter your password"
             />
           </div>
           <button
             type="submit"
-            className="nt-primary-button"
+            className="nt-login-button"
           >
             Login
           </button>
