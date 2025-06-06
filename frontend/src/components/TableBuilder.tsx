@@ -2,23 +2,35 @@
 
 import { useState } from 'react';
 import { ChevronUpIcon, ChevronDownIcon, FunnelIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Column {
   key: string;
   label: string;
   sortable?: boolean;
   filterable?: boolean;
-  render?: (value: any, item: any) => React.ReactNode;
+  render?: (value: unknown, item: TableRow) => React.ReactNode;
+}
+
+export interface TableRow {
+  id: number;
+  sender?: string;
+  subject?: string;
+  date?: string;
+  type?: string;
+  tags?: string;
+  actions?: string;
+  [key: string]: string | number | undefined; // Add index signature for dynamic access
 }
 
 interface TableBuilderProps {
   columns: Column[];
-  data: any[];
+  data: TableRow[];
   itemsPerPage?: number;
-  onRowClick?: (item: any) => void;
+  onRowClick?: (item: TableRow) => void;
   searchable?: boolean;
   selectable?: boolean;
-  onSelectionChange?: (selectedItems: any[]) => void;
+  onSelectionChange?: (selectedItems: TableRow[]) => void;
   onExport?: () => void;
 }
 
@@ -35,19 +47,19 @@ export default function TableBuilder({
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [selectedItems, setSelectedItems] = useState<TableRow[]>([]);
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [showFilters, setShowFilters] = useState(false);
 
   // Filter data based on search term and filters
   const filteredData = data.filter((item) => {
     const matchesSearch = Object.values(item).some((value) =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
+      String(value || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
-      return String(item[key]).toLowerCase().includes(value.toLowerCase());
+      return String(item[key] || '').toLowerCase().includes(value.toLowerCase());
     });
 
     return matchesSearch && matchesFilters;
@@ -58,8 +70,11 @@ export default function TableBuilder({
     if (!sortConfig) return 0;
 
     const { key, direction } = sortConfig;
-    if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
-    if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
+    const aValue = a[key] ?? '';
+    const bValue = b[key] ?? '';
+
+    if (aValue < bValue) return direction === 'asc' ? -1 : 1;
+    if (aValue > bValue) return direction === 'asc' ? 1 : -1;
     return 0;
   });
 
@@ -84,7 +99,7 @@ export default function TableBuilder({
     onSelectionChange?.(newSelection);
   };
 
-  const handleSelectItem = (item: any, checked: boolean) => {
+  const handleSelectItem = (item: TableRow, checked: boolean) => {
     const newSelection = checked
       ? [...selectedItems, item]
       : selectedItems.filter((i) => i.id !== item.id);
@@ -98,71 +113,99 @@ export default function TableBuilder({
     setCurrentPage(1);
   };
 
+  const renderTags = (tags: string) => {
+    return tags.split(', ').map((tag, index) => (
+      <span
+        key={index}
+        className="inline-block bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+      >
+        {tag}
+      </span>
+    ));
+  };
+
+  const renderActions = () => (
+    <div className="flex items-center space-x-2">
+      <button className="text-blue-500 hover:text-blue-700">
+        <EyeIcon className="w-5 h-5" />
+      </button>
+      <button className="text-red-500 hover:text-red-700">
+        <TrashIcon className="w-5 h-5" />
+      </button>
+    </div>
+  );
+
   return (
-    <div className="bg-white rounded-lg shadow">
-      {/* Table Header */}
-      <div className="p-4 border-b space-y-4">
-        <div className="flex items-center justify-between">
-          {searchable && (
-            <div className="flex-1 max-w-md">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          )}
-          <div className="flex items-center space-x-2">
+    <div className="table-builder">
+      <div className="table-controls flex items-center justify-between mb-4">
+        <div className="left-controls flex items-center gap-2">
+          {selectable && selectedItems.length > 0 && (
             <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+              className="trash-icon-button text-red-500 hover:text-red-700"
+              onClick={() => setSelectedItems([])}
             >
-              <FunnelIcon className="h-5 w-5" />
-            </button>
-            {onExport && (
-              <button
-                onClick={onExport}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6"
               >
-                <ArrowDownTrayIcon className="h-5 w-5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Filters */}
-        {showFilters && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {columns
-              .filter((col) => col.filterable)
-              .map((column) => (
-                <div key={column.key}>
-                  <input
-                    type="text"
-                    placeholder={`Filter ${column.label}...`}
-                    className="w-full px-3 py-2 border rounded-lg text-sm"
-                    value={filters[column.key] || ''}
-                    onChange={(e) => handleFilterChange(column.key, e.target.value)}
-                  />
-                </div>
-              ))}
-          </div>
-        )}
-
-        {/* Bulk Actions */}
-        {selectable && selectedItems.length > 0 && (
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">
-              {selectedItems.length} items selected
-            </span>
-            <button className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-md">
-              Delete Selected
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             </button>
-          </div>
-        )}
+          )}
+          {searchable && (
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          )}
+        </div>
+        <div className="right-controls flex items-center gap-2">
+          {onExport && (
+            <button
+              className="export-button"
+              onClick={onExport}
+            >
+              <ArrowDownTrayIcon className="w-5 h-5" />
+            </button>
+          )}
+          <button
+            className="filter-button"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <FunnelIcon className="w-5 h-5" />
+          </button>
+        </div>
       </div>
+
+      {/* Filters */}
+      {showFilters && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {columns
+            .filter((col) => col.filterable)
+            .map((column) => (
+              <div key={column.key}>
+                <input
+                  type="text"
+                  placeholder={`Filter ${column.label}...`}
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                  value={filters[column.key] || ''}
+                  onChange={(e) => handleFilterChange(column.key, e.target.value)}
+                />
+              </div>
+            ))}
+        </div>
+      )}
 
       {/* Table */}
       <div className="overflow-x-auto">
@@ -218,7 +261,11 @@ export default function TableBuilder({
                 )}
                 {columns.map((column) => (
                   <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {column.render
+                    {column.key === 'tags'
+                      ? renderTags(item[column.key] as string)
+                      : column.key === 'actions'
+                      ? renderActions()
+                      : column.render
                       ? column.render(item[column.key], item)
                       : item[column.key]}
                   </td>
@@ -258,4 +305,4 @@ export default function TableBuilder({
       )}
     </div>
   );
-} 
+}

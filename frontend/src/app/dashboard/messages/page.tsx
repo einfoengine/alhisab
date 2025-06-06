@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import TableBuilder from '@/components/TableBuilder';
+import TableBuilder, { TableRow } from '@/components/TableBuilder';
 import messages from '@/data/messages.json';
 
 const MessagesPage = () => {
@@ -11,26 +11,20 @@ const MessagesPage = () => {
     subject: message.subject,
     date: new Date(message.timestamp).toLocaleDateString(),
     type: message.type || 'undefined',
+    tags: message.tags.join(', '), // Add tags as a comma-separated string
     actions: 'View / Delete',
   }));
 
   const tableColumns = [
-    { key: 'sender', label: 'Sender' },
-    { key: 'subject', label: 'Subject' },
-    { key: 'date', label: 'Date' },
-    { key: 'type', label: 'Type' },
-    { key: 'actions', label: 'Actions' },
+    { key: 'sender', label: 'Sender', accessor: 'sender' },
+    { key: 'subject', label: 'Subject', accessor: 'subject' },
+    { key: 'date', label: 'Date', accessor: 'date' },
+    { key: 'type', label: 'Type', accessor: 'type' },
+    { key: 'tags', label: 'Tags', accessor: 'tags' }, // Add a column for tags
+    { key: 'actions', label: 'Actions', accessor: 'actions' },
   ];
 
-  interface MessageSelection {
-    sender: string;
-    subject: string;
-    date: string;
-    type: string;
-    actions: string;
-  }
-
-  const handleSelectionChange = (selectedItems: MessageSelection[]) => {
+  const handleSelectionChange = (selectedItems: TableRow[]) => {
     console.log('Selected Items:', selectedItems);
   };
 
