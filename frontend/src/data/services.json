@@ -1,0 +1,99 @@
+{
+  "services": [
+    {
+      "id": "seo",
+      "name": "Search Engine Optimization",
+      "shortDescription": "Improve your website's visibility in search engines",
+      "serviceMaster": "John Smith",
+      "description": "Our comprehensive SEO services help your website rank higher in search engine results, driving more organic traffic and increasing your online visibility. We use data-driven strategies and best practices to optimize your website for search engines.",
+      "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60",
+      "features": [
+        "Keyword Research & Analysis",
+        "On-page SEO Optimization",
+        "Technical SEO Audit",
+        "Content Strategy",
+        "Link Building",
+        "Local SEO"
+      ],
+      "pricing": {
+        "basic": 499,
+        "premium": 999,
+        "enterprise": 1999
+      }
+    },
+    {
+      "id": "sem",
+      "name": "Search Engine Marketing",
+      "shortDescription": "Paid advertising campaigns to reach your target audience",
+      "description": "Our SEM services help you create and manage effective paid advertising campaigns across search engines. We optimize your ad spend and maximize ROI through strategic campaign management and continuous optimization.",
+      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      "features": [
+        "Google Ads Management",
+        "Campaign Strategy",
+        "Ad Copy Creation",
+        "Budget Optimization",
+        "Performance Tracking",
+        "A/B Testing"
+      ],
+      "pricing": {
+        "basic": 599,
+        "premium": 1299,
+        "enterprise": 2499
+      }
+    },
+    {
+      "id": "social-media",
+      "name": "Social Media Marketing",
+      "shortDescription": "Engage with your audience on social platforms",
+      "serviceMaster": "Michael Brown",
+      "description": "We help you build and maintain a strong social media presence across all major platforms. Our social media marketing services include content creation, community management, and paid social advertising.",
+      "image": "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&auto=format&fit=crop&q=60",
+      "features": [
+        "Content Strategy",
+        "Community Management",
+        "Paid Social Advertising",
+        "Social Media Audit",
+        "Influencer Marketing",
+        "Analytics & Reporting"
+      ],
+      "pricing": {
+        "basic": 399,
+        "premium": 899,
+        "enterprise": 1799
+      }
+    },
+    {
+      "id": "content-marketing",
+      "name": "Content Marketing",
+      "shortDescription": "Create engaging content that converts",
+      "serviceMaster": "Emily Davis",
+      "description": "Our content marketing services help you create and distribute valuable, relevant content to attract and engage your target audience. We develop content strategies that drive traffic and generate leads.",
+      "image": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&auto=format&fit=crop&q=60",
+      "features": [
+        "Content Strategy",
+        "Blog Writing",
+        "Email Marketing",
+        "Newsletter Creation",
+        "Content Calendar",
+        "Performance Analytics"
+      ],
+      "pricing": {
+        "basic": 599,
+        "premium": 1299,
+        "enterprise": 2499
+      }
+    },
+    {
+      "id": "email",
+      "name": "Email Marketing",
+      "shortDescription": "Nurture leads and drive conversions",
+      "serviceMaster": "David Wilson",
+      "image": "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=800&auto=format&fit=crop&q=60",
+      "pricing": {
+        "basic": 199,
+        "premium": 499,
+        "enterprise": 999
+      }
+    }
+  ]
+} 
