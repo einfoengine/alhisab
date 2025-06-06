@@ -3,10 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { 
-  Squares2X2Icon, 
-  TableCellsIcon
-} from '@heroicons/react/24/outline';
+import { PlusIcon, Squares2X2Icon, TableCellsIcon } from '@heroicons/react/24/outline';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import TableBuilder from '@/components/TableBuilder';
@@ -24,66 +21,74 @@ interface Service {
   };
 }
 
-// Sample data for testing
+interface Column {
+  key: string;
+  label: string;
+  sortable?: boolean;
+  filterable?: boolean;
+  render: (value: any, item: Service) => React.ReactNode;
+}
+
+// Sample data - replace with actual API call
 const sampleServices: Service[] = [
   {
-    id: "seo",
-    name: "Search Engine Optimization",
-    shortDescription: "Improve your website's visibility in search engines",
-    serviceMaster: "John Smith",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60",
+    id: 'seo',
+    name: 'Search Engine Optimization',
+    shortDescription: 'Improve your website\'s visibility in search engine results and drive organic traffic.',
+    serviceMaster: 'John Smith',
+    image: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=800&auto=format&fit=crop&q=60',
     pricing: {
-      basic: 499,
-      premium: 999,
-      enterprise: 1999
+      basic: 999,
+      premium: 1999,
+      enterprise: 4999
     }
   },
   {
-    id: "ppc",
-    name: "Pay-Per-Click Advertising",
-    shortDescription: "Drive targeted traffic through paid advertising",
-    serviceMaster: "Sarah Johnson",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60",
+    id: 'ppc',
+    name: 'Pay-Per-Click Advertising',
+    shortDescription: 'Drive targeted traffic and leads through strategic PPC campaigns.',
+    serviceMaster: 'Sarah Johnson',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60',
     pricing: {
-      basic: 299,
-      premium: 799,
-      enterprise: 1499
+      basic: 799,
+      premium: 1499,
+      enterprise: 2999
     }
   },
   {
-    id: "social",
-    name: "Social Media Marketing",
-    shortDescription: "Build your brand presence on social platforms",
-    serviceMaster: "Michael Brown",
-    image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&auto=format&fit=crop&q=60",
+    id: 'social',
+    name: 'Social Media Marketing',
+    shortDescription: 'Build your brand presence and engage with your audience on social platforms.',
+    serviceMaster: 'Mike Wilson',
+    image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&auto=format&fit=crop&q=60',
     pricing: {
-      basic: 399,
-      premium: 899,
-      enterprise: 1799
-    }
-  },
-  {
-    id: "content",
-    name: "Content Marketing",
-    shortDescription: "Create engaging content that converts",
-    serviceMaster: "Emily Davis",
-    image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&auto=format&fit=crop&q=60",
-    pricing: {
-      basic: 599,
+      basic: 699,
       premium: 1299,
       enterprise: 2499
     }
   },
   {
-    id: "email",
-    name: "Email Marketing",
-    shortDescription: "Nurture leads and drive conversions",
-    serviceMaster: "David Wilson",
-    image: "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=800&auto=format&fit=crop&q=60",
+    id: 'content',
+    name: 'Content Marketing',
+    shortDescription: 'Create and distribute valuable content to attract and retain customers.',
+    serviceMaster: 'Emily Brown',
+    image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&auto=format&fit=crop&q=60',
     pricing: {
-      basic: 199,
-      premium: 499,
-      enterprise: 999
+      basic: 899,
+      premium: 1699,
+      enterprise: 3499
+    }
+  },
+  {
+    id: 'email',
+    name: 'Email Marketing',
+    shortDescription: 'Nurture leads and drive conversions through targeted email campaigns.',
+    serviceMaster: 'David Lee',
+    image: 'https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=800&auto=format&fit=crop&q=60',
+    pricing: {
+      basic: 599,
+      premium: 1199,
+      enterprise: 2299
     }
   }
 ];
@@ -93,23 +98,14 @@ export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
   useEffect(() => {
-    // For now, we'll use the sample data directly
-    // Once the JSON file is properly set up, we can switch back to fetching
-    setServices(sampleServices);
-    setLoading(false);
-
-    // Commented out the fetch for now
-    /*
+    // Simulate API call
     const fetchServices = async () => {
       try {
-        const response = await fetch('/data/services.json');
-        if (!response.ok) {
-          throw new Error('Failed to fetch services');
-        }
-        const data = await response.json();
-        setServices(data.services);
+        // In a real app, you would fetch from your API
+        setServices(sampleServices);
       } catch (error) {
         console.error('Error fetching services:', error);
       } finally {
@@ -118,17 +114,20 @@ export default function ServicesPage() {
     };
 
     fetchServices();
-    */
   }, []);
 
   const handleServiceClick = (serviceId: string) => {
     router.push(`/services/${serviceId}`);
   };
 
-  const columns = [
+  const handleCreateService = () => {
+    router.push('/services/create');
+  };
+
+  const columns: Column[] = [
     {
       key: 'name',
-      label: 'Service Name',
+      label: 'Service',
       sortable: true,
       filterable: true,
       render: (value: string, item: Service) => (
@@ -142,11 +141,27 @@ export default function ServicesPage() {
             />
           </div>
           <div>
-            <span className="font-medium text-gray-900">{value}</span>
+            <p className="font-medium text-gray-900">{value}</p>
             <p className="text-sm text-gray-500">{item.shortDescription}</p>
           </div>
         </div>
-      ),
+      )
+    },
+    {
+      key: 'serviceMaster',
+      label: 'Service Master',
+      sortable: true,
+      filterable: true,
+      render: (value: string) => (
+        <div className="flex items-center">
+          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+            <span className="text-sm font-medium text-gray-600">
+              {value.charAt(0)}
+            </span>
+          </div>
+          <span className="ml-2 text-gray-700">{value}</span>
+        </div>
+      )
     },
     {
       key: 'pricing',
@@ -155,37 +170,12 @@ export default function ServicesPage() {
       filterable: true,
       render: (value: Service['pricing']) => (
         <div className="space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Basic:</span>
-            <span className="font-medium text-gray-900">${value.basic}/month</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Premium:</span>
-            <span className="font-medium text-gray-900">${value.premium}/month</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Enterprise:</span>
-            <span className="font-medium text-gray-900">${value.enterprise}/month</span>
-          </div>
+          <p className="text-sm text-gray-900">Basic: ${value.basic}/mo</p>
+          <p className="text-sm text-gray-900">Premium: ${value.premium}/mo</p>
+          <p className="text-sm text-gray-900">Enterprise: ${value.enterprise}/mo</p>
         </div>
-      ),
-    },
-    {
-      key: 'serviceMaster',
-      label: 'Service Master',
-      sortable: true,
-      filterable: true,
-      render: (value: string) => (
-        <div className="flex items-center space-x-3">
-          <div className="relative h-10 w-10 rounded-full overflow-hidden bg-blue-100">
-            <div className="absolute inset-0 flex items-center justify-center text-blue-600 font-semibold">
-              {value.split(' ').map(name => name[0]).join('')}
-            </div>
-          </div>
-          <span className="font-medium text-gray-900">{value}</span>
-        </div>
-      ),
-    },
+      )
+    }
   ];
 
   if (loading) {
@@ -195,27 +185,8 @@ export default function ServicesPage() {
         <Header />
         <main className="pl-64 pt-16">
           <div className="p-6">
-            <div className="flex items-center justify-center h-64">
+            <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  if (services.length === 0) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Sidebar />
-        <Header />
-        <main className="pl-64 pt-16">
-          <div className="p-6">
-            <div className="flex items-center justify-center h-64">
-              <div className="text-center">
-                <h3 className="text-lg font-medium text-gray-900">No services found</h3>
-                <p className="mt-1 text-sm text-gray-500">Try refreshing the page or check your connection.</p>
-              </div>
             </div>
           </div>
         </main>
@@ -230,31 +201,37 @@ export default function ServicesPage() {
       
       <main className="pl-64 pt-16">
         <div className="p-6">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Services</h1>
-              <p className="mt-2 text-gray-600">Explore our digital marketing services</p>
-            </div>
-            <div className="flex space-x-2">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">Services</h1>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 bg-white rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-md ${
+                    viewMode === 'grid'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <Squares2X2Icon className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`p-2 rounded-md ${
+                    viewMode === 'table'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <TableCellsIcon className="h-5 w-5" />
+                </button>
+              </div>
               <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg ${
-                  viewMode === 'grid'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
+                onClick={handleCreateService}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
               >
-                <Squares2X2Icon className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => setViewMode('table')}
-                className={`p-2 rounded-lg ${
-                  viewMode === 'table'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <TableCellsIcon className="h-5 w-5" />
+                <PlusIcon className="h-5 w-5 mr-2" />
+                Add Service
               </button>
             </div>
           </div>
@@ -265,7 +242,7 @@ export default function ServicesPage() {
                 <div
                   key={service.id}
                   onClick={() => handleServiceClick(service.id)}
-                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer overflow-hidden"
+                  className="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200"
                 >
                   <div className="relative h-48 w-full">
                     <Image
@@ -276,34 +253,28 @@ export default function ServicesPage() {
                     />
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       {service.name}
                     </h3>
-                    <p className="text-gray-600 mb-2">
+                    <p className="text-gray-600 mb-4">
                       {service.shortDescription}
                     </p>
-                    <div className="flex items-center space-x-3 mb-4">
-                      <div className="relative h-8 w-8 rounded-full overflow-hidden bg-blue-100">
-                        <div className="absolute inset-0 flex items-center justify-center text-blue-600 font-semibold text-sm">
-                          {service.serviceMaster.split(' ').map(name => name[0]).join('')}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-sm font-medium text-gray-600">
+                            {service.serviceMaster.charAt(0)}
+                          </span>
                         </div>
+                        <span className="ml-2 text-sm text-gray-700">
+                          {service.serviceMaster}
+                        </span>
                       </div>
-                      <span className="text-sm text-gray-600">
-                        {service.serviceMaster}
-                      </span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">Basic:</span>
-                        <span className="font-medium text-gray-900">${service.pricing.basic}/month</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">Premium:</span>
-                        <span className="font-medium text-gray-900">${service.pricing.premium}/month</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">Enterprise:</span>
-                        <span className="font-medium text-gray-900">${service.pricing.enterprise}/month</span>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-gray-900">
+                          From ${service.pricing.basic}/mo
+                        </p>
+                        <p className="text-xs text-gray-500">Starting price</p>
                       </div>
                     </div>
                   </div>
@@ -311,14 +282,20 @@ export default function ServicesPage() {
               ))}
             </div>
           ) : (
-            <TableBuilder
-              columns={columns}
-              data={services}
-              itemsPerPage={5}
-              onRowClick={(service) => handleServiceClick(service.id)}
-              searchable={true}
-              selectable={true}
-            />
+            <div className="bg-white rounded-xl shadow-sm">
+              <TableBuilder
+                data={services}
+                columns={columns}
+                onRowClick={handleServiceClick}
+                selectable
+                onSelectionChange={setSelectedServices}
+                selectedRows={selectedServices}
+                searchable
+                sortable
+                pagination
+                itemsPerPage={5}
+              />
+            </div>
           )}
         </div>
       </main>
