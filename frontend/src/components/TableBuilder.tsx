@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import { EyeIcon, TrashIcon, FunnelIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, FunnelIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 interface Column {
   key: string;
@@ -128,15 +128,27 @@ export default function TableBuilder({
     ));
   };
 
-  const renderActions = () => (
-    <div className="flex items-center space-x-2">
-      <button className="text-blue-500 hover:text-blue-700">
-        <EyeIcon className="w-5 h-5" />
-      </button>
-      <button className="text-red-500 hover:text-red-700">
-        <TrashIcon className="w-5 h-5" />
-      </button>
-    </div>
+  // Update the renderActions function to only include the reply icon
+  const renderActions = (item: TableRow) => (
+    <button
+      className="text-blue-500 hover:text-blue-700"
+      onClick={() => console.log('Reply to:', item.sender)}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="currentColor"
+        className="w-5 h-5"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3 10.5v3m0 0l3-3m-3 3l3 3m13.5-3h-7.5m0 0a3 3 0 01-3-3v-3a3 3 0 013-3h7.5"
+        />
+      </svg>
+    </button>
   );
 
   // Update the renderFilterDropdown function to handle single tag selection and reset functionality
@@ -210,27 +222,6 @@ export default function TableBuilder({
     <div className="table-builder">
       <div className="table-controls flex items-center justify-between mb-4">
         <div className="left-controls flex items-center gap-2">
-          {selectable && selectedItems.length > 0 && (
-            <button
-              className="trash-icon-button text-red-500 hover:text-red-700"
-              onClick={() => setSelectedItems([])}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          )}
           {searchable && (
             <input
               type="text"
@@ -248,6 +239,14 @@ export default function TableBuilder({
               onClick={onExport}
             >
               <ArrowDownTrayIcon className="w-5 h-5" />
+            </button>
+          )}
+          {selectable && selectedItems.length > 0 && (
+            <button
+              className="trash-icon-button text-red-500 hover:text-red-700"
+              onClick={() => setSelectedItems([])}
+            >
+              <TrashIcon className="w-6 h-6" />
             </button>
           )}
           <button
@@ -336,7 +335,7 @@ export default function TableBuilder({
                     {column.key === 'tags'
                       ? renderTags(item[column.key] as string)
                       : column.key === 'actions'
-                      ? renderActions()
+                      ? renderActions(item)
                       : column.render
                       ? column.render(item[column.key], item)
                       : item[column.key]}
