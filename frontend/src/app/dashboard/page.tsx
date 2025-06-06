@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { 
@@ -57,7 +58,7 @@ const recentActivity = [
   },
 ];
 
-export default function Dashboard() {
+const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
@@ -122,4 +123,6 @@ export default function Dashboard() {
       </main>
     </div>
   );
-} 
+};
+
+export default DashboardPage;

@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
   HomeIcon, 
-  UserGroupIcon, 
   BriefcaseIcon, 
   DocumentTextIcon, 
   Cog6ToothIcon,
@@ -14,12 +13,11 @@ import {
 
 const menuItems = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Services', href: '/services', icon: BriefcaseIcon },
-  { name: 'Leads', href: '/leads', icon: UserGroupIcon },
-  { name: 'Clients', href: '/clients', icon: UserIcon },
-  { name: 'Projects', href: '/projects', icon: DocumentTextIcon },
-  { name: 'Invoices', href: '/invoices', icon: CurrencyDollarIcon },
-  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
+  { name: 'Projects', href: '/dashboard/projects', icon: DocumentTextIcon },
+  { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
+  { name: 'Clients', href: '/dashboard/clients', icon: UserIcon },
+  { name: 'Invoices', href: '/dashboard/invoices', icon: CurrencyDollarIcon },
+  { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
 ];
 
 export default function Sidebar() {
