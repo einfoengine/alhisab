@@ -1,0 +1,118 @@
+@import "./_variables.scss";
+
+/* Modernized Dashboard Layout */
+.nt-dashboard-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+  background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+  font-family: 'Inter', sans-serif;
+}
+
+.nt-dashboard-header {
+  grid-column: span 2;
+  background-color: #343a40;
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nt-header-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #f8f9fa;
+}
+
+.nt-dashboard-sidebar {
+  background-color: #495057;
+  color: white;
+  padding: 2rem 1rem;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.nt-dashboard-main {
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 1rem;
+  overflow-y: auto;
+}
+
+/* Sidebar Modernization */
+.nt-sidebar {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nt-sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.nt-sidebar-menu-item {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #dee2e6;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.nt-sidebar-menu-item:hover {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Dashboard Page Styles */
+.nt-dashboard-page {
+  padding: 2rem;
+  background: #f9fafb;
+  font-family: 'Inter', sans-serif;
+}
+
+.nt-dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.nt-dashboard-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.nt-dashboard-header p {
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.nt-dashboard-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.nt-dashboard-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.nt-dashboard-card h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.nt-dashboard-card p {
+  font-size: 1rem;
+  color: #6b7280;
+}
