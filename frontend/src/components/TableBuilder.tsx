@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronUpIcon, ChevronDownIcon, FunnelIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect } from 'react';
+import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, TrashIcon, FunnelIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 interface Column {
   key: string;
@@ -48,8 +48,11 @@ export default function TableBuilder({
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItems, setSelectedItems] = useState<TableRow[]>([]);
-  const [filters, setFilters] = useState<Record<string, string>>({});
+  const [filters, setFilters] = useState<Record<string, string | number>>({});
   const [showFilters, setShowFilters] = useState(false);
+
+  // Add state to track the currently open filter dropdown
+  const [openFilter, setOpenFilter] = useState<string | null>(null);
 
   // Filter data based on search term and filters
   const filteredData = data.filter((item) => {
@@ -59,7 +62,8 @@ export default function TableBuilder({
 
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
-      return String(item[key] || '').toLowerCase().includes(value.toLowerCase());
+      // Ensure value is converted to a string before calling toLowerCase
+      return String(item[key] || '').toLowerCase().includes(String(value).toLowerCase());
     });
 
     return matchesSearch && matchesFilters;
@@ -108,7 +112,7 @@ export default function TableBuilder({
   };
 
   // Handle filter change
-  const handleFilterChange = (key: string, value: string) => {
+  const handleFilterChange = (key: string, value: string | number) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1);
   };
@@ -134,6 +138,73 @@ export default function TableBuilder({
       </button>
     </div>
   );
+
+  // Update the renderFilterDropdown function to handle single tag selection and reset functionality
+  const renderFilterDropdown = (columnKey: string) => {
+    const uniqueValues = Array.from(new Set(data.flatMap((item) => {
+      if (columnKey === 'tags' && typeof item[columnKey] === 'string') {
+        return item[columnKey].split(', ').map((tag) => tag.trim());
+      }
+      return [item[columnKey] ?? 'None'];
+    })));
+
+    return (
+      <div className="relative">
+        <button
+          className="filter-icon-button text-gray-500 hover:text-gray-700"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent event from propagating to the document
+            setOpenFilter((prev) => (prev === columnKey ? null : columnKey));
+          }}
+        >
+          <FunnelIcon className="w-4 h-4" />
+        </button>
+        {openFilter === columnKey && (
+          <div
+            className="absolute z-10 bg-white border rounded shadow-md mt-2 w-48"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the dropdown
+          >
+            <button
+              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500"
+              onClick={() => {
+                handleFilterChange(columnKey, ''); // Reset the filter
+                setOpenFilter(null);
+              }}
+            >
+              Reset Filter
+            </button>
+            {uniqueValues.map((value, index) => (
+              <button
+                key={index}
+                className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                  filters[columnKey] === value ? 'bg-gray-200' : ''
+                }`}
+                onClick={() => {
+                  handleFilterChange(columnKey, value);
+                  setOpenFilter(null); // Close the dropdown after selecting a value
+                }}
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Ensure the useEffect properly handles outside clicks
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.relative')) {
+        setOpenFilter(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   return (
     <div className="table-builder">
@@ -237,6 +308,7 @@ export default function TableBuilder({
                         <ChevronDownIcon className="h-4 w-4" />
                       )
                     )}
+                    {column.filterable && renderFilterDropdown(column.key)}
                   </div>
                 </th>
               ))}

@@ -19,8 +19,8 @@ const MessagesPage = () => {
     { key: 'sender', label: 'Sender', accessor: 'sender' },
     { key: 'subject', label: 'Subject', accessor: 'subject' },
     { key: 'date', label: 'Date', accessor: 'date' },
-    { key: 'type', label: 'Type', accessor: 'type' },
-    { key: 'tags', label: 'Tags', accessor: 'tags' }, // Add a column for tags
+    { key: 'type', label: 'Type', accessor: 'type', filterable: true },
+    { key: 'tags', label: 'Tags', accessor: 'tags', filterable: true }, // Add a column for tags
     { key: 'actions', label: 'Actions', accessor: 'actions' },
   ];
 
