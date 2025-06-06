@@ -6,6 +6,7 @@ import messages from '@/data/messages.json';
 
 const MessagesPage = () => {
   const tableData = messages.map((message) => ({
+    id: message.id, // Include the id field for unique identification
     sender: message.sender,
     subject: message.subject,
     date: new Date(message.timestamp).toLocaleDateString(),
