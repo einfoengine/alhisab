@@ -8,15 +8,19 @@ import {
   DocumentTextIcon, 
   Cog6ToothIcon,
   CurrencyDollarIcon,
-  UserIcon
+  UserIcon,
+  UserGroupIcon
 } from '@heroicons/react/24/outline';
 
 const menuItems = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Projects', href: '/dashboard/projects', icon: DocumentTextIcon },
+  { name: 'Messages', href: '/dashboard/messages', icon: UserGroupIcon },
   { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
+  { name: 'Leads', href: '/dashboard/leads', icon: UserGroupIcon },
   { name: 'Clients', href: '/dashboard/clients', icon: UserIcon },
+  { name: 'Projects', href: '/dashboard/projects', icon: DocumentTextIcon },
   { name: 'Invoices', href: '/dashboard/invoices', icon: CurrencyDollarIcon },
+  { name: 'Accounting', href: '/dashboard/accounting', icon: Cog6ToothIcon },
   { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
 ];
 
@@ -24,7 +28,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="h-screen w-64 bg-white border-r border-gray-200 fixed left-0 top-0">
+    <div className="nt-component nt-sidebar h-screen w-64">
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-800">Alhisab</h1>
       </div>

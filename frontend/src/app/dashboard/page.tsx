@@ -1,14 +1,15 @@
 'use client';
 
 import React from 'react';
-import Sidebar from '@/components/Sidebar';
-import Header from '@/components/Header';
 import { 
   CurrencyDollarIcon, 
   UserGroupIcon, 
   DocumentTextIcon,
   ChartBarIcon 
 } from '@heroicons/react/24/outline';
+import RevenueOverview from '@/components/RevenueOverview';
+import RecentActivities from '@/components/RecentActivities';
+import StatsGrid from '@/components/StatsGrid';
 
 const stats = [
   {
@@ -60,67 +61,17 @@ const recentActivity = [
 
 const DashboardPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <Header />
-      
-      <main className="pl-64 pt-16">
-        <div className="p-6">
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            {stats.map((stat) => (
-              <div
-                key={stat.name}
-                className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.name}</p>
-                    <p className="text-2xl font-semibold text-gray-900 mt-1">{stat.value}</p>
-                    <p className="text-sm text-green-600 mt-1">{stat.change}</p>
-                  </div>
-                  <div className="p-3 bg-blue-50 rounded-full">
-                    <stat.icon className="h-6 w-6 text-blue-600" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="min-h-screen">
+      <div className="p-6">
+        {/* Stats Grid */}
+        <StatsGrid stats={stats} />
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Chart Section */}
-            <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Overview</h3>
-              <div className="h-80 bg-gray-50 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500">Chart will be displayed here</p>
-              </div>
-            </div>
-
-            {/* Recent Activity */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-              <div className="space-y-4">
-                {recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                        <span className="text-blue-600 text-sm font-medium">
-                          {activity.type.charAt(0)}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{activity.description}</p>
-                      <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <RevenueOverview />
+          <RecentActivities activities={recentActivity} />
         </div>
-      </main>
+      </div>
     </div>
   );
 };

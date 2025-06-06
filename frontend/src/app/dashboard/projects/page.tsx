@@ -10,8 +10,8 @@ import {
   CurrencyDollarIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';
-import Sidebar from '@/components/Sidebar';
-import Header from '@/components/Header';
+// import Sidebar from '@/components/Sidebar';
+// import Header from '@/components/Header';
 import TableBuilder from '@/components/TableBuilder';
 import PageHeader from '@/components/PageHeader';
 
@@ -214,8 +214,8 @@ export default function ProjectsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Sidebar />
-        <Header />
+        {/* <Sidebar /> */}
+        {/* <Header /> */}
         <main className="pl-64 pt-16">
           <div className="p-6">
             <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
@@ -229,8 +229,8 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <Header />
+      {/* <Sidebar /> */}
+      {/* <Header /> */}
       <main className="pl-64 pt-16">
         <div className="p-6">
           <PageHeader
