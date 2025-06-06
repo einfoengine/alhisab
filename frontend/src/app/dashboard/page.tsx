@@ -61,11 +61,10 @@ const recentActivity = [
 
 const DashboardPage = () => {
   return (
-    <div className="min-h-screen">
+    <div className="nt-page nt-dashboard min-h-screen">
       <div className="p-6">
         {/* Stats Grid */}
         <StatsGrid stats={stats} />
-
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <RevenueOverview />
