@@ -117,40 +117,6 @@ export default function TableBuilder({
     setCurrentPage(1);
   };
 
-  const renderTags = (tags: string) => {
-    return tags.split(', ').map((tag, index) => (
-      <span
-        key={index}
-        className="inline-block bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
-      >
-        {tag}
-      </span>
-    ));
-  };
-
-  // Update the renderActions function to only include the reply icon
-  const renderActions = (item: TableRow) => (
-    <button
-      className="text-blue-500 hover:text-blue-700"
-      onClick={() => console.log('Reply to:', item.sender)}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="currentColor"
-        className="w-5 h-5"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M3 10.5v3m0 0l3-3m-3 3l3 3m13.5-3h-7.5m0 0a3 3 0 01-3-3v-3a3 3 0 013-3h7.5"
-        />
-      </svg>
-    </button>
-  );
-
   // Update the renderFilterDropdown function to handle single tag selection and reset functionality
   const renderFilterDropdown = (columnKey: string) => {
     const uniqueValues = Array.from(new Set(data.flatMap((item) => {
@@ -279,33 +245,41 @@ export default function TableBuilder({
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full bg-white border border-gray-200">
+          <thead>
             <tr>
               {selectable && (
-                <th className="px-6 py-3">
+                <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <input
                     type="checkbox"
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     checked={selectedItems.length === paginatedData.length}
                     onChange={(e) => handleSelectAll(e.target.checked)}
+                    className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                   />
                 </th>
               )}
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                  onClick={() => column.sortable && handleSort(column.key)}
+                  className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   <div className="flex items-center space-x-1">
                     <span>{column.label}</span>
-                    {column.sortable && sortConfig?.key === column.key && (
-                      sortConfig.direction === 'asc' ? (
-                        <ChevronUpIcon className="h-4 w-4" />
-                      ) : (
-                        <ChevronDownIcon className="h-4 w-4" />
-                      )
+                    {column.sortable && (
+                      <button
+                        onClick={() => handleSort(column.key)}
+                        className="focus:outline-none"
+                      >
+                        {sortConfig?.key === column.key ? (
+                          sortConfig.direction === 'asc' ? (
+                            <ChevronUpIcon className="w-4 h-4" />
+                          ) : (
+                            <ChevronDownIcon className="w-4 h-4" />
+                          )
+                        ) : (
+                          <ChevronUpIcon className="w-4 h-4 text-gray-400" />
+                        )}
+                      </button>
                     )}
                     {column.filterable && renderFilterDropdown(column.key)}
                   </div>
@@ -313,32 +287,26 @@ export default function TableBuilder({
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedData.map((item, index) => (
+          <tbody>
+            {paginatedData.map((item) => (
               <tr
-                key={index}
-                className={`hover:bg-gray-50 ${onRowClick ? 'cursor-pointer' : ''}`}
-                onClick={() => !selectable && onRowClick?.(item)}
+                key={item.id}
+                onClick={() => onRowClick && onRowClick(item)}
+                className="cursor-pointer hover:bg-gray-100"
               >
                 {selectable && (
-                  <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
                     <input
                       type="checkbox"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       checked={selectedItems.some((i) => i.id === item.id)}
                       onChange={(e) => handleSelectItem(item, e.target.checked)}
+                      className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                     />
                   </td>
                 )}
                 {columns.map((column) => (
-                  <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {column.key === 'tags'
-                      ? renderTags(item[column.key] as string)
-                      : column.key === 'actions'
-                      ? renderActions(item)
-                      : column.render
-                      ? column.render(item[column.key], item)
-                      : item[column.key]}
+                  <td key={column.key} className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                    {column.render ? column.render(item[column.key], item) : item[column.key]}
                   </td>
                 ))}
               </tr>
