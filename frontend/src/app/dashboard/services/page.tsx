@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { PlusIcon, Squares2X2Icon, TableCellsIcon } from '@heroicons/react/24/outline';
-import Sidebar from '@/components/Sidebar';
-import Header from '@/components/Header';
 import TableBuilder from '@/components/TableBuilder';
+import ViewToggler from '@/components/elements/ViewToggler';
 
 interface Service {
   id: string;
@@ -181,8 +180,6 @@ export default function ServicesPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Sidebar />
-        <Header />
         <main className="pl-64 pt-16">
           <div className="p-6">
             <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
@@ -195,34 +192,13 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <main className="pl-64 pt-16">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
+    <div className="nt-page nt-services">
+      <>
+        <>
+          <>
             <h1 className="text-2xl font-bold text-gray-900">Services</h1>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 bg-white rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-md ${
-                    viewMode === 'grid'
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  <Squares2X2Icon className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => setViewMode('table')}
-                  className={`p-2 rounded-md ${
-                    viewMode === 'table'
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  <TableCellsIcon className="h-5 w-5" />
-                </button>
-              </div>
+            <div className="nt-page-container">
+              <ViewToggler viewMode={viewMode} setViewMode={setViewMode} />
               <button
                 onClick={handleCreateService}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
@@ -231,7 +207,7 @@ export default function ServicesPage() {
                 Add Service
               </button>
             </div>
-          </div>
+          </>
 
           {viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -294,8 +270,8 @@ export default function ServicesPage() {
               />
             </div>
           )}
-        </div>
-      </main>
+        </>
+      </>
     </div>
   );
-} 
+}

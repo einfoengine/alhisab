@@ -43,15 +43,17 @@ const MessagesPage = () => {
   };
 
   return (
-    <div className="nt-component nt-messages">
-      <h1 className="text-2xl font-bold mb-4">Messages</h1>
-      <TableBuilder 
-        columns={tableColumns} 
-        data={tableData} 
-        selectable={true} // Enable row selection
-        onSelectionChange={handleSelectionChange} // Handle selection changes
-        onRowClick={handleRowClick} // Make rows clickable
-      />
+    <div className="nt-page nt-messages">
+      <h1 className="nt-page-title">Messages</h1>
+      <div className="nt-page-container">
+        <TableBuilder 
+          columns={tableColumns} 
+          data={tableData} 
+          selectable={true} // Enable row selection
+          onSelectionChange={handleSelectionChange} // Handle selection changes
+          onRowClick={handleRowClick} // Make rows clickable
+        />
+      </div>
     </div>
   );
 };
