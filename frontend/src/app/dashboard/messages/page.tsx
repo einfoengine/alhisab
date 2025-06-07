@@ -23,7 +23,7 @@ const MessagesPage = () => {
     { key: 'subject', label: 'Subject', accessor: 'subject' },
     { key: 'date', label: 'Date', accessor: 'date' },
     { key: 'type', label: 'Type', accessor: 'type', filterable: true },
-    { key: 'tags', label: 'Tags', accessor: 'tags', filterable: true }, // Add a column for tags
+    { key: 'tags', label: 'Tags', accessor: 'tags', filterable: true },
     { key: 'actions', label: 'Actions', accessor: 'actions', render: (_value: unknown, item: TableRow) => (
         <button
           className="text-blue-500 hover:text-blue-700"

@@ -195,10 +195,7 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <Header />
-      
+    <div className="min-h-screen">
       <main className="pl-64 pt-16">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">

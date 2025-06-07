@@ -12,7 +12,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="nt-dashboard min-h-screen bg-gray-50 flex">
       <Sidebar />
-      <div className="nt-main-body">
+      <div className="nt-main-body grow">
         <Header />
         <main className="nt-contents">
           {children}
