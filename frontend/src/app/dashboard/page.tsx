@@ -10,6 +10,7 @@ import {
 import RevenueOverview from '@/components/RevenueOverview';
 import RecentActivities from '@/components/RecentActivities';
 import StatsGrid from '@/components/StatsGrid';
+import PageHeader from '@/components/elements/PageHeader';
 
 const stats = [
   {
@@ -62,6 +63,7 @@ const recentActivity = [
 const DashboardPage = () => {
   return (
     <div className="nt-page nt-dashboard min-h-screen">
+      <PageHeader title="Dashboard" />
       <div className="p-6">
         {/* Stats Grid */}
         <StatsGrid stats={stats} />

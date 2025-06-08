@@ -10,10 +10,8 @@ import {
   CurrencyDollarIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';
-// import Sidebar from '@/components/Sidebar';
-// import Header from '@/components/Header';
 import TableBuilder from '@/components/TableBuilder';
-import PageHeader from '@/components/PageHeader';
+import PageHeader from '@/components/elements/PageHeader';
 
 interface Project {
   id: string;
@@ -214,8 +212,6 @@ export default function ProjectsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* <Sidebar /> */}
-        {/* <Header /> */}
         <main className="pl-64 pt-16">
           <div className="p-6">
             <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
@@ -229,15 +225,12 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* <Sidebar /> */}
-      {/* <Header /> */}
       <main className="pl-64 pt-16">
         <div className="p-6">
           <PageHeader
             title="Projects"
-            showViewToggle={false}
-            actionLabel="New Project"
-            onAction={handleCreateProject}
+            viewMode="grid"
+            setViewMode={() => {}}
           />
           <TableBuilder
             data={projects}
@@ -272,4 +265,4 @@ export default function ProjectsPage() {
       )}
     </div>
   );
-} 
+}

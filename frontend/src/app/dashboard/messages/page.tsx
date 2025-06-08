@@ -5,6 +5,7 @@ import TableBuilder, { TableRow } from '@/components/TableBuilder';
 import messages from '@/data/messages.json';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+import PageHeader from '@/components/elements/PageHeader';
 
 const MessagesPage = () => {
   const router = useRouter();
@@ -19,7 +20,16 @@ const MessagesPage = () => {
   }));
 
   const tableColumns = [
-    { key: 'sender', label: 'Sender', accessor: 'sender', filterable: true },
+    { key: 'sender', label: 'Sender', accessor: 'sender', filterable: true, render: (_value: unknown, item: TableRow) => (
+        <div className="flex items-center space-x-3">
+          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+            <span className="text-sm font-medium text-gray-600">
+              {item.sender?.charAt(0) || '?'}
+            </span>
+          </div>
+          <span>{item.sender || 'Unknown'}</span>
+        </div>
+      ) },
     { key: 'subject', label: 'Subject', accessor: 'subject' },
     { key: 'date', label: 'Date', accessor: 'date' },
     { key: 'type', label: 'Type', accessor: 'type', filterable: true },
@@ -44,7 +54,7 @@ const MessagesPage = () => {
 
   return (
     <div className="nt-page nt-messages">
-      <h1 className="nt-page-title">Messages</h1>
+      <PageHeader title="Messages" />
       <div className="nt-page-container">
         <TableBuilder 
           columns={tableColumns} 

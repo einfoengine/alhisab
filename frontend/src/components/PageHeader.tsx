@@ -14,7 +14,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   viewMode = 'grid',
   onViewModeChange,
-  showViewToggle = false,
+  showViewToggle = !!onViewModeChange,
   actionLabel,
   onAction,
 }) => {
@@ -90,4 +90,4 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   );
 };
 
-export default PageHeader; 
+export default PageHeader;
