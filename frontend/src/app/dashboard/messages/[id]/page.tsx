@@ -3,8 +3,6 @@
 import React from 'react';
 import { useParams } from 'next/navigation';
 import messages from '@/data/messages.json';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
 import PageHeader from '@/components/elements/PageHeader';
 
 const MessageDetailsPage = () => {
@@ -22,26 +20,37 @@ const MessageDetailsPage = () => {
   };
 
   return (
-    <div className="nt-component nt-message-details">
-      <PageHeader title="Message Details" />
-      <Link href="/dashboard/messages" className="flex items-center text-blue-500 hover:text-blue-700 mb-4">
-        <ArrowLeftIcon className="w-5 h-5 mr-2" />
-        Back to Messages
-      </Link>
-      <h1 className="text-2xl font-bold mb-4">{message.subject}</h1>
-      <div className="mb-4">
-        <p><strong>Sender:</strong> {message.sender}</p>
-        <p><strong>Date:</strong> {new Date(message.timestamp).toLocaleDateString()}</p>
-        <p><strong>Type:</strong> {message.type || 'undefined'}</p>
-        <p><strong>Tags:</strong> {message.tags.join(', ')}</p>
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader />
+      <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-4">
+            <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
+              <span className="text-lg font-medium text-gray-600">{message.sender.charAt(0)}</span>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-900">{message.sender}</p>
+              <p className="text-sm text-gray-500">sender@example.com</p>
+            </div>
+          </div>
+          <div className="text-sm text-gray-500 text-right">
+            <p><strong>ID:</strong> {message.id}</p>
+            <p><strong>Date:</strong> {new Date(message.timestamp).toLocaleDateString()}</p>
+            <p><strong>Tags:</strong> {message.tags.join(', ')}</p>
+          </div>
+        </div>
+        <h2 className="text-sm font-bold text-gray-900 mb-4">Subject: {message.subject}</h2>
+        <div className="text-gray-700 leading-relaxed mb-6">
+          <p>{message.message}</p>
+        </div>
+        <div className="mt-6 flex justify-end">
+          <button onClick={handleReply} className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 113.182 3.182L7.5 19.213l-4.5 1.5 1.5-4.5L16.862 3.487z" />
+            </svg>
+          </button>
+        </div>
       </div>
-      <div className="mt-4">
-        <h2 className="text-xl font-semibold mb-2">Content</h2>
-        <p>{message.message}</p>
-      </div>
-      <button onClick={handleReply} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Reply
-      </button>
     </div>
   );
 };
