@@ -28,7 +28,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="nt-component nt-sidebar h-screen w-64">
+    <div className="nt-component nt-sidebar h-screen w-64 flex-shrink-0">
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-800">Alhisab</h1>
       </div>

@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { PlusIcon, Squares2X2Icon, TableCellsIcon } from '@heroicons/react/24/outline';
-import TableBuilder from '@/components/TableBuilder';
-import ViewToggler from '@/components/elements/ViewToggler';
+import { PlusIcon } from '@heroicons/react/24/outline';
+import TableBuilder, { TableRow as BaseTableRow } from '@/components/TableBuilder';
+import PageHeader from '@/components/elements/PageHeader';
 
 interface Service {
   id: string;
@@ -119,10 +119,6 @@ export default function ServicesPage() {
     router.push(`/services/${serviceId}`);
   };
 
-  const handleCreateService = () => {
-    router.push('/services/create');
-  };
-
   const columns: Column[] = [
     {
       key: 'name',
@@ -167,7 +163,7 @@ export default function ServicesPage() {
       label: 'Pricing',
       sortable: true,
       filterable: true,
-      render: (value: Service['pricing']) => (
+      render: (value: Service['pricing'] = { basic: 0, premium: 0, enterprise: 0 }) => (
         <div className="space-y-1">
           <p className="text-sm text-gray-900">Basic: ${value.basic}/mo</p>
           <p className="text-sm text-gray-900">Premium: ${value.premium}/mo</p>
@@ -176,6 +172,20 @@ export default function ServicesPage() {
       )
     }
   ];
+
+  // Updated id parsing logic to ensure unique keys for React components
+  const servicesWithFlattenedPricing = services.map(({ pricing = { basic: 0, premium: 0, enterprise: 0 }, ...service }, index) => ({
+    ...service,
+    id: isNaN(parseInt(service.id, 10)) ? index : parseInt(service.id, 10), // Ensure valid numeric ID or fallback to index
+    pricingBasic: pricing.basic,
+    pricingPremium: pricing.premium,
+    pricingEnterprise: pricing.enterprise,
+  }));
+
+  const adjustedColumns: Column[] = columns.map((column) => ({
+    ...column,
+    render: (value: unknown, item: Service) => column.render(value, item),
+  }));
 
   if (loading) {
     return (
@@ -193,85 +203,79 @@ export default function ServicesPage() {
 
   return (
     <div className="nt-page nt-services">
-      <>
-        <>
-          <>
-            <h1 className="text-2xl font-bold text-gray-900">Services</h1>
-            <div className="nt-page-container">
-              <ViewToggler viewMode={viewMode} setViewMode={setViewMode} />
-              <button
-                onClick={handleCreateService}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-              >
-                <PlusIcon className="h-5 w-5 mr-2" />
-                Add Service
-              </button>
-            </div>
-          </>
-
-          {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service) => (
-                <div
-                  key={service.id}
-                  onClick={() => handleServiceClick(service.id)}
-                  className="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200"
-                >
-                  <div className="relative h-48 w-full">
-                    <Image
-                      src={service.image}
-                      alt={service.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {service.name}
-                    </h3>
-                    <p className="text-gray-600 mb-4">
-                      {service.shortDescription}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-sm font-medium text-gray-600">
-                            {service.serviceMaster.charAt(0)}
-                          </span>
-                        </div>
-                        <span className="ml-2 text-sm text-gray-700">
-                          {service.serviceMaster}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-gray-900">
-                          From ${service.pricing.basic}/mo
-                        </p>
-                        <p className="text-xs text-gray-500">Starting price</p>
-                      </div>
+      <PageHeader
+        title="Services"
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        actions={[
+          {
+            name: 'add',
+            icon: PlusIcon,
+            onClick: () => router.push('/dashboard/services/new'),
+          },
+        ]}
+      />
+      {viewMode === 'grid' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {servicesWithFlattenedPricing.map((service) => (
+            <div
+              key={service.id}
+              onClick={() => handleServiceClick(service.id.toString())}
+              className="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200"
+            >
+              <div className="relative h-48 w-full">
+                <Image
+                  src={service.image}
+                  alt={service.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {service.name}
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  {service.shortDescription}
+                </p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-sm font-medium text-gray-600">
+                        {service.serviceMaster.charAt(0)}
+                      </span>
                     </div>
+                    <span className="ml-2 text-sm text-gray-700">
+                      {service.serviceMaster}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-gray-900">
+                      From ${service.pricingBasic}/mo
+                    </p>
+                    <p className="text-xs text-gray-500">Starting price</p>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
-          ) : (
-            <div className="bg-white rounded-xl shadow-sm">
-              <TableBuilder
-                data={services}
-                columns={columns}
-                onRowClick={handleServiceClick}
-                selectable
-                onSelectionChange={setSelectedServices}
-                selectedRows={selectedServices}
-                searchable
-                sortable
-                pagination
-                itemsPerPage={5}
-              />
-            </div>
-          )}
-        </>
-      </>
+          ))}
+        </div>
+      ) : (
+        <TableBuilder
+          data={servicesWithFlattenedPricing}
+          columns={adjustedColumns}
+          onRowClick={(item) => handleServiceClick(item.id.toString())}
+          selectable
+          onSelectionChange={(selectedItems) =>
+            setSelectedServices(selectedItems.map((item) => item.id.toString()))
+          }
+          selectedRows={selectedServices.map((id) => ({ id: parseInt(id, 10) }))}
+          searchable
+          sortable
+          pagination
+          itemsPerPage={5}
+        />
+      )}
     </div>
   );
 }

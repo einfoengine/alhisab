@@ -4,9 +4,14 @@ import { Squares2X2Icon, TableCellsIcon } from '@heroicons/react/24/outline';
 interface ViewTogglerProps {
   viewMode: 'grid' | 'table';
   setViewMode: (mode: 'grid' | 'table') => void;
+  actions?: Array<{
+    name: string;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    onClick: () => void;
+  }>;
 }
 
-const ViewToggler: React.FC<ViewTogglerProps> = ({ viewMode, setViewMode }) => {
+const ViewToggler: React.FC<ViewTogglerProps> = ({ viewMode, setViewMode, actions = [] }) => {
   return (
     <div className="flex items-center space-x-2 bg-white rounded-lg p-1">
       <button
@@ -29,6 +34,15 @@ const ViewToggler: React.FC<ViewTogglerProps> = ({ viewMode, setViewMode }) => {
       >
         <TableCellsIcon className="h-5 w-5" />
       </button>
+      {actions.map((action) => (
+        <button
+          key={action.name}
+          onClick={action.onClick}
+          className="p-2 rounded-md text-gray-500 hover:text-gray-700"
+        >
+          <action.icon className="h-5 w-5" />
+        </button>
+      ))}
     </div>
   );
 };
