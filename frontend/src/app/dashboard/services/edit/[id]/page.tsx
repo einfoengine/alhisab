@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { ArrowLeftIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
+import PageHeader from '@/components/elements/PageHeader';
 
 interface Service {
   id: string;
@@ -276,7 +277,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
 
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-sm p-6">
-              <h1 className="text-2xl font-bold text-gray-900 mb-6">Edit Service</h1>
+              <PageHeader title="Edit Service" />
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-6">
@@ -500,4 +501,4 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
       </main>
     </div>
   );
-} 
+}

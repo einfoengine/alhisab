@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import messages from '@/data/messages.json';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import PageHeader from '@/components/elements/PageHeader';
 
 const MessageDetailsPage = () => {
   const params = useParams();
@@ -22,6 +23,7 @@ const MessageDetailsPage = () => {
 
   return (
     <div className="nt-component nt-message-details">
+      <PageHeader title="Message Details" />
       <Link href="/dashboard/messages" className="flex items-center text-blue-500 hover:text-blue-700 mb-4">
         <ArrowLeftIcon className="w-5 h-5 mr-2" />
         Back to Messages
@@ -44,4 +46,4 @@ const MessageDetailsPage = () => {
   );
 };
 
-export default MessageDetailsPage; 
+export default MessageDetailsPage;

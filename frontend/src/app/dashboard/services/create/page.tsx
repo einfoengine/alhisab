@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
+import PageHeader from '@/components/elements/PageHeader';
 
 interface ServiceFormData {
   id: string;
@@ -81,6 +82,8 @@ export default function CreateServicePage() {
       
       <main className="pl-64 pt-16">
         <div className="p-6">
+          <PageHeader title="Create Service" />
+
           <div className="mb-8">
             <button
               onClick={() => router.push('/services')}
@@ -262,4 +265,4 @@ export default function CreateServicePage() {
       </main>
     </div>
   );
-} 
+}

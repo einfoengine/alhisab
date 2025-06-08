@@ -15,6 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
+import PageHeader from '@/components/elements/PageHeader';
 
 interface Project {
   id: string;
@@ -312,4 +313,4 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
       )}
     </div>
   );
-} 
+}

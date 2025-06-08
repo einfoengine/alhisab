@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { ArrowLeftIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
+import PageHeader from '@/components/elements/PageHeader';
 
 interface Service {
   id: string;
@@ -262,4 +263,4 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
       )}
     </div>
   );
-} 
+}
