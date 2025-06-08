@@ -1,56 +1,56 @@
 @import "./_variables.scss";
 
-/* Login Component Styles */
-.nt-login-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: $nt-bg-gray;
+/* Basic HTML Elements Styles */
+
+body {
+  @apply bg-gray-50 text-gray-800 font-sans;
 }
 
-.nt-login-card {
-  width: 100%;
-  max-width: 24rem; /* 384px */
-  padding: 2rem;
-  background-color: $nt-bg-gray;
-  color: $nt-text-gray;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+h1 {
+  @apply text-4xl font-bold mb-4;
 }
 
-.nt-login-heading {
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 1.5rem;
+h2 {
+  @apply text-3xl font-semibold mb-3;
 }
 
-.nt-login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+h3 {
+  @apply text-2xl font-medium mb-2;
 }
 
-.nt-login-input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid $nt-border-gray;
-  border-radius: 0.375rem;
-  font-size: 1rem;
+p {
+  @apply text-base leading-relaxed mb-4;
 }
 
-.nt-login-button {
-  padding: 0.5rem 1rem;
-  color: white;
-  background-color: $nt-primary;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  font-weight: bold;
-  text-align: center;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: $nt-primary-hover;
-  }
+a {
+  @apply text-blue-500 underline hover:text-blue-700;
 }
+
+ul {
+  @apply list-disc pl-5 mb-4;
+}
+
+ol {
+  @apply list-decimal pl-5 mb-4;
+}
+
+li {
+  @apply mb-2;
+}
+
+button {
+  @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700;
+}
+
+input, textarea {
+  @apply border border-gray-300 rounded px-3 py-2 w-full;
+}
+
+textarea {
+  @apply resize-vertical;
+}
+
+blockquote {
+  @apply border-l-4 border-gray-300 pl-4 italic text-gray-600;
+}
+
