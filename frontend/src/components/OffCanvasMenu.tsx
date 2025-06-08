@@ -1,7 +1,6 @@
 'use client';
 
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { useState } from 'react';
 
 interface OffCanvasMenuProps {
   isOpen: boolean;
@@ -58,4 +57,4 @@ export default function OffCanvasMenu({ isOpen, onClose }: OffCanvasMenuProps) {
       </div>
     </>
   );
-} 
+}

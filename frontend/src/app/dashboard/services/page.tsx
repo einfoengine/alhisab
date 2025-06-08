@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import TableBuilder, { TableRow as BaseTableRow } from '@/components/TableBuilder';
+import TableBuilder from '@/components/TableBuilder';
 import PageHeader from '@/components/elements/PageHeader';
 
 interface Service {
@@ -20,15 +20,39 @@ interface Service {
   };
 }
 
-interface Column {
-  key: string;
-  label: string;
-  sortable?: boolean;
-  filterable?: boolean;
-  render: (value: any, item: Service) => React.ReactNode;
+interface FlattenedServiceRow {
+  id: number;
+  name: string;
+  shortDescription: string;
+  serviceMaster: string;
+  image: string;
+  pricingBasic: number;
+  pricingPremium: number;
+  pricingEnterprise: number;
+  [key: string]: unknown;
 }
 
-// Sample data - replace with actual API call
+// Refactor Column type to be generic
+interface Column<T> {
+  key: string;
+  label: string;
+  render?: (value: unknown, item: T) => React.ReactNode;
+}
+
+// Define ServiceRow type
+interface ServiceRow {
+  id: string;
+  name: string;
+  shortDescription: string;
+  serviceMaster: string;
+  image: string;
+  pricing: {
+    basic: number;
+    premium: number;
+    enterprise: number;
+  };
+}
+
 const sampleServices: Service[] = [
   {
     id: 'seo',
@@ -97,7 +121,6 @@ export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
   useEffect(() => {
     // Simulate API call
@@ -119,72 +142,94 @@ export default function ServicesPage() {
     router.push(`/services/${serviceId}`);
   };
 
-  const columns: Column[] = [
+  // Align columns with ServiceRow
+  const columns: Column<ServiceRow>[] = [
     {
       key: 'name',
       label: 'Service',
-      sortable: true,
-      filterable: true,
-      render: (value: string, item: Service) => (
-        <div className="flex items-center space-x-3">
-          <div className="relative h-10 w-10 rounded-lg overflow-hidden">
-            <Image
-              src={item.image}
-              alt={item.name}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div>
-            <p className="font-medium text-gray-900">{value}</p>
-            <p className="text-sm text-gray-500">{item.shortDescription}</p>
-          </div>
-        </div>
-      )
+      render: (value: unknown, item: ServiceRow) => {
+        if (typeof value === 'string') {
+          return (
+            <div className="flex items-center space-x-3">
+              <div className="relative h-10 w-10 rounded-lg overflow-hidden">
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">{value}</p>
+                <p className="text-sm text-gray-500">{item.shortDescription}</p>
+              </div>
+            </div>
+          );
+        }
+        return null;
+      },
     },
     {
       key: 'serviceMaster',
       label: 'Service Master',
-      sortable: true,
-      filterable: true,
-      render: (value: string) => (
-        <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-            <span className="text-sm font-medium text-gray-600">
-              {value.charAt(0)}
-            </span>
+      render: (value: unknown, item: ServiceRow) => {
+        const serviceMaster = item.serviceMaster;
+        return (
+          <div className="flex items-center">
+            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+              <span className="text-sm font-medium text-gray-600">
+                {serviceMaster.charAt(0)}
+              </span>
+            </div>
+            <span className="ml-2 text-gray-700">{serviceMaster}</span>
           </div>
-          <span className="ml-2 text-gray-700">{value}</span>
-        </div>
-      )
+        );
+      }
     },
     {
       key: 'pricing',
       label: 'Pricing',
-      sortable: true,
-      filterable: true,
-      render: (value: Service['pricing'] = { basic: 0, premium: 0, enterprise: 0 }) => (
-        <div className="space-y-1">
-          <p className="text-sm text-gray-900">Basic: ${value.basic}/mo</p>
-          <p className="text-sm text-gray-900">Premium: ${value.premium}/mo</p>
-          <p className="text-sm text-gray-900">Enterprise: ${value.enterprise}/mo</p>
-        </div>
-      )
+      render: (value: unknown, item: ServiceRow) => {
+        const pricing = item.pricing;
+        return (
+          <div className="space-y-1">
+            <p className="text-sm text-gray-900">Basic: ${pricing.basic}/mo</p>
+            <p className="text-sm text-gray-900">Premium: ${pricing.premium}/mo</p>
+            <p className="text-sm text-gray-900">Enterprise: ${pricing.enterprise}/mo</p>
+          </div>
+        );
+      }
     }
   ];
 
   // Updated id parsing logic to ensure unique keys for React components
-  const servicesWithFlattenedPricing = services.map(({ pricing = { basic: 0, premium: 0, enterprise: 0 }, ...service }, index) => ({
+  const servicesWithFlattenedPricing: FlattenedServiceRow[] = services.map(({ pricing = { basic: 0, premium: 0, enterprise: 0 }, ...service }, index) => ({
     ...service,
-    id: isNaN(parseInt(service.id, 10)) ? index : parseInt(service.id, 10), // Ensure valid numeric ID or fallback to index
+    id: isNaN(parseInt(service.id, 10)) ? index : parseInt(service.id, 10),
     pricingBasic: pricing.basic,
     pricingPremium: pricing.premium,
     pricingEnterprise: pricing.enterprise,
   }));
 
-  const adjustedColumns: Column[] = columns.map((column) => ({
+  // Ensure adjustedColumns is compatible with Column<FlattenedServiceRow>[]
+  const adjustedColumns: Column<FlattenedServiceRow>[] = columns.map((column) => ({
     ...column,
-    render: (value: unknown, item: Service) => column.render(value, item),
+    key: column.key as string,
+    render: (value: unknown, item: FlattenedServiceRow) => {
+      if (column.key === 'pricing') {
+        return (
+          <div>
+            <p>Basic: ${item.pricingBasic}</p>
+            <p>Premium: ${item.pricingPremium}</p>
+            <p>Enterprise: ${item.pricingEnterprise}</p>
+          </div>
+        );
+      }
+      if (typeof value === 'string') {
+        return <span>{value}</span>;
+      }
+      return null;
+    },
   }));
 
   if (loading) {
@@ -266,13 +311,7 @@ export default function ServicesPage() {
           columns={adjustedColumns}
           onRowClick={(item) => handleServiceClick(item.id.toString())}
           selectable
-          onSelectionChange={(selectedItems) =>
-            setSelectedServices(selectedItems.map((item) => item.id.toString()))
-          }
-          selectedRows={selectedServices.map((id) => ({ id: parseInt(id, 10) }))}
           searchable
-          sortable
-          pagination
           itemsPerPage={5}
         />
       )}

@@ -3,6 +3,7 @@ import { Squares2X2Icon, TableCellsIcon, ChevronRightIcon, HomeIcon } from '@her
 import { usePathname } from 'next/navigation';
 
 interface PageHeaderProps {
+  title: string;
   viewMode?: 'grid' | 'table';
   setViewMode?: (mode: 'grid' | 'table') => void;
   actions?: Array<{
@@ -12,7 +13,7 @@ interface PageHeaderProps {
   }>;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ viewMode, setViewMode, actions = [] }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ title, viewMode, setViewMode, actions = [] }) => {
   const pathname = usePathname();
   const breadcrumb = (pathname || '')
     .split('/')
@@ -25,26 +26,29 @@ const PageHeader: React.FC<PageHeaderProps> = ({ viewMode, setViewMode, actions 
 
   return (
     <div className="flex items-center justify-between mb-6">
-      <nav className="flex items-center space-x-2 text-sm text-gray-500">
-        {breadcrumb.map((crumb, index) => (
-          <div key={crumb.name} className="flex items-center">
-            {index < breadcrumb.length - 1 ? (
-              <a href={crumb.href} className="flex items-center hover:text-gray-700">
-                {crumb.icon && <crumb.icon className="h-4 w-4" />}
-                {crumb.name}
-              </a>
-            ) : (
-              <span className="flex items-center text-blue-600">
-                {crumb.icon && <crumb.icon className="h-4 w-4 mr-1" />}
-                {crumb.name}
-              </span>
-            )}
-            {index < breadcrumb.length - 1 && (
-              <ChevronRightIcon className="h-4 w-4 mx-1" />
-            )}
-          </div>
-        ))}
-      </nav>
+      <div>
+        <h1 className="text-2xl font-bold">{title}</h1>
+        <nav className="flex items-center space-x-2 text-sm text-gray-500">
+          {breadcrumb.map((crumb, index) => (
+            <div key={crumb.name} className="flex items-center">
+              {index < breadcrumb.length - 1 ? (
+                <a href={crumb.href} className="flex items-center hover:text-gray-700">
+                  {crumb.icon && <crumb.icon className="h-4 w-4" />}
+                  {crumb.name}
+                </a>
+              ) : (
+                <span className="flex items-center text-blue-600">
+                  {crumb.icon && <crumb.icon className="h-4 w-4 mr-1" />}
+                  {crumb.name}
+                </span>
+              )}
+              {index < breadcrumb.length - 1 && (
+                <ChevronRightIcon className="h-4 w-4 mx-1" />
+              )}
+            </div>
+          ))}
+        </nav>
+      </div>
       <div className="flex items-center space-x-2 bg-white rounded-lg p-1">
         {setViewMode && viewMode && (
           <>

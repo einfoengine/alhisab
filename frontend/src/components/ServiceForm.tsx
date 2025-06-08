@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
-const ServiceForm = () => {
+interface ServiceFormProps {
+  onSubmit: (formData: Record<string, unknown>) => void;
+}
+
+const ServiceForm: React.FC<ServiceFormProps> = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
     name: '',
     shortDescription: '',
@@ -15,7 +19,7 @@ const ServiceForm = () => {
     }
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -23,7 +27,7 @@ const ServiceForm = () => {
     }));
   };
 
-  const handlePricingChange = (e) => {
+  const handlePricingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -34,9 +38,9 @@ const ServiceForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
+    onSubmit(formData);
   };
 
   return (

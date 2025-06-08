@@ -26,12 +26,29 @@ interface Project {
   dueInvoices: number;
   keyTasks: string[];
   description: string;
+  [key: string]: unknown;
 }
 
-interface Column {
+// Refactor Column type to be fully generic
+interface Column<T> {
   key: string;
   label: string;
-  render?: (item: Project) => React.ReactNode;
+  render?: (value: unknown, item: T) => React.ReactNode;
+}
+
+// Define ProjectRow type
+interface ProjectRow {
+  id: string;
+  name: string;
+  description: string;
+  projectMaster?: string;
+  projectType?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: string;
+  projectValue?: number;
+  dueInvoices?: number;
+  [key: string]: unknown;
 }
 
 export default function ProjectsPage() {
@@ -57,12 +74,8 @@ export default function ProjectsPage() {
     fetchProjects();
   }, []);
 
-  const handleProjectClick = (projectId: string) => {
-    router.push(`/projects/${projectId}`);
-  };
-
-  const handleCreateProject = () => {
-    router.push('/projects/create');
+  const handleProjectClick = (item: { id: string | number }) => {
+    router.push(`/projects/${item.id}`);
   };
 
   const handleEditProject = (e: React.MouseEvent, projectId: string) => {
@@ -70,9 +83,9 @@ export default function ProjectsPage() {
     router.push(`/projects/edit/${projectId}`);
   };
 
-  const handleDeleteProject = (e: React.MouseEvent, project: Project) => {
+  const handleDeleteProject = (e: React.MouseEvent, project: ProjectRow) => {
     e.stopPropagation();
-    setSelectedProject(project);
+    setSelectedProject(project as Project);
     setShowDeleteModal(true);
   };
 
@@ -118,23 +131,21 @@ export default function ProjectsPage() {
     }).format(amount);
   };
 
-  const columns: Column[] = [
+  // Refactor columns to align with ProjectRow
+  const projectColumns: Column<ProjectRow>[] = [
     {
       key: 'name',
       label: 'Project Name',
-      render: (project) => (
-        <div className="flex items-center cursor-pointer" onClick={() => handleProjectClick(project.id)}>
-          <div>
-            <div className="font-medium text-gray-900">{project.name}</div>
-            <div className="text-sm text-gray-500">{project.clientName}</div>
-          </div>
+      render: (value: unknown, item: ProjectRow) => (
+        <div className="flex items-center cursor-pointer" onClick={() => handleProjectClick(item)}>
+          {item.name}
         </div>
-      )
+      ),
     },
     {
       key: 'projectMaster',
       label: 'Project Master',
-      render: (project) => (
+      render: (value, project) => (
         <div className="flex items-center">
           <UserIcon className="h-5 w-5 text-gray-400 mr-2" />
           <span>{project.projectMaster}</span>
@@ -144,53 +155,57 @@ export default function ProjectsPage() {
     {
       key: 'projectType',
       label: 'Type',
-      render: (project) => (
+      render: (value, project) => (
         <span className="capitalize">{project.projectType}</span>
       )
     },
     {
       key: 'dates',
       label: 'Timeline',
-      render: (project) => (
+      render: (value, project) => (
         <div className="flex items-center">
           <CalendarIcon className="h-5 w-5 text-gray-400 mr-2" />
-          <span>{formatDate(project.startDate)} - {formatDate(project.endDate)}</span>
+          <span>{formatDate(project.startDate ?? '')} - {formatDate(project.endDate ?? '')}</span>
         </div>
       )
     },
     {
       key: 'status',
       label: 'Status',
-      render: (project) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
-          {project.status.replace('_', ' ').charAt(0).toUpperCase() + project.status.slice(1).replace('_', ' ')}
-        </span>
-      )
+      render: (value: unknown, item: ProjectRow) => {
+        const status = item.status ?? 'unknown';
+        const formattedStatus = status.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
+        return (
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
+            {formattedStatus}
+          </span>
+        );
+      }
     },
     {
       key: 'projectValue',
       label: 'Value',
-      render: (project) => (
+      render: (value, project) => (
         <div className="flex items-center">
           <CurrencyDollarIcon className="h-5 w-5 text-gray-400 mr-2" />
-          <span>{formatCurrency(project.projectValue)}</span>
+          <span>{formatCurrency(project.projectValue ?? 0)}</span>
         </div>
       )
     },
     {
       key: 'dueInvoices',
       label: 'Due Invoices',
-      render: (project) => (
+      render: (value, project) => (
         <div className="flex items-center">
           <ClockIcon className="h-5 w-5 text-gray-400 mr-2" />
-          <span>{formatCurrency(project.dueInvoices)}</span>
+          <span>{formatCurrency(project.dueInvoices ?? 0)}</span>
         </div>
       )
     },
     {
       key: 'actions',
       label: 'Actions',
-      render: (project) => (
+      render: (value, project) => (
         <div className="flex items-center space-x-2">
           <button
             onClick={e => handleEditProject(e, project.id)}
@@ -233,8 +248,8 @@ export default function ProjectsPage() {
             setViewMode={() => {}}
           />
           <TableBuilder
-            data={projects}
-            columns={columns}
+            data={projects as ProjectRow[]}
+            columns={projectColumns}
             onRowClick={handleProjectClick}
           />
         </div>

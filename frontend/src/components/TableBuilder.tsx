@@ -4,37 +4,27 @@ import { useState, useEffect } from 'react';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { TrashIcon, FunnelIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
-interface Column {
+interface Column<T> {
   key: string;
   label: string;
   sortable?: boolean;
   filterable?: boolean;
-  render?: (value: unknown, item: TableRow) => React.ReactNode;
+  render?: (value: unknown, item: T) => React.ReactNode;
 }
 
-export interface TableRow {
-  id: number;
-  sender?: string;
-  subject?: string;
-  date?: string;
-  type?: string;
-  tags?: string;
-  actions?: string;
-  [key: string]: string | number | undefined; // Add index signature for dynamic access
-}
-
-interface TableBuilderProps {
-  columns: Column[];
-  data: TableRow[];
+// Refactor dynamic access and ensure ReactNode compatibility
+interface TableBuilderProps<T extends { id: string | number; [key: string]: unknown }> {
+  columns: Column<T>[];
+  data: T[];
   itemsPerPage?: number;
-  onRowClick?: (item: TableRow) => void;
+  onRowClick?: (item: T) => void;
   searchable?: boolean;
   selectable?: boolean;
-  onSelectionChange?: (selectedItems: TableRow[]) => void;
+  onSelectionChange?: (selectedItems: T[]) => void;
   onExport?: () => void;
 }
 
-export default function TableBuilder({
+export default function TableBuilder<T extends { id: string | number; [key: string]: unknown }>({
   columns,
   data,
   itemsPerPage = 10,
@@ -43,11 +33,11 @@ export default function TableBuilder({
   selectable = false,
   onSelectionChange,
   onExport,
-}: TableBuilderProps) {
+}: TableBuilderProps<T>) {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedItems, setSelectedItems] = useState<TableRow[]>([]);
+  const [selectedItems, setSelectedItems] = useState<T[]>([]);
   const [filters, setFilters] = useState<Record<string, string | number>>({});
   const [showFilters, setShowFilters] = useState(false);
 
@@ -103,35 +93,45 @@ export default function TableBuilder({
     onSelectionChange?.(newSelection);
   };
 
-  const handleSelectItem = (item: TableRow, checked: boolean) => {
-    const newSelection = checked
-      ? [...selectedItems, item]
-      : selectedItems.filter((i) => i.id !== item.id);
-    setSelectedItems(newSelection);
-    onSelectionChange?.(newSelection);
+  const handleSelectItem = (item: T, checked: boolean) => {
+    setSelectedItems((prev) =>
+      checked ? [...prev, item] : prev.filter((i) => i.id !== item.id)
+    );
+    onSelectionChange?.(selectedItems);
   };
 
   // Handle filter change
-  const handleFilterChange = (key: string, value: string | number) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-    setCurrentPage(1);
+  const handleFilterChange = (key: keyof T, value: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [key]: value,
+    }));
+  };
+
+  // Ensure ReactNode compatibility in render logic
+  const renderCellContent = (value: unknown): React.ReactNode => {
+    if (typeof value === 'string' || typeof value === 'number') {
+      return value;
+    }
+    return null; // Fallback for unsupported types
   };
 
   // Update the renderFilterDropdown function to handle single tag selection and reset functionality
   const renderFilterDropdown = (columnKey: string) => {
-    const uniqueValues = Array.from(new Set(data.flatMap((item) => {
-      if (columnKey === 'tags' && typeof item[columnKey] === 'string') {
-        return item[columnKey].split(', ').map((tag) => tag.trim());
+    const uniqueValues = Array.from(new Set(data.map((item) => {
+      const value = item[columnKey];
+      if (typeof value === 'string' || typeof value === 'number') {
+        return String(value);
       }
-      return [item[columnKey] ?? 'None'];
-    })));
+      return '';
+    }))).filter(Boolean);
 
     return (
       <div className="relative">
         <button
           className="filter-icon-button text-gray-500 hover:text-gray-700"
           onClick={(e) => {
-            e.stopPropagation(); // Prevent event from propagating to the document
+            e.stopPropagation();
             setOpenFilter((prev) => (prev === columnKey ? null : columnKey));
           }}
         >
@@ -140,12 +140,12 @@ export default function TableBuilder({
         {openFilter === columnKey && (
           <div
             className="absolute z-10 bg-white border rounded shadow-md mt-2 w-48"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the dropdown
+            onClick={(e) => e.stopPropagation()}
           >
             <button
               className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500"
               onClick={() => {
-                handleFilterChange(columnKey, ''); // Reset the filter
+                handleFilterChange(columnKey as keyof T, '');
                 setOpenFilter(null);
               }}
             >
@@ -158,8 +158,8 @@ export default function TableBuilder({
                   filters[columnKey] === value ? 'bg-gray-200' : ''
                 }`}
                 onClick={() => {
-                  handleFilterChange(columnKey, value);
-                  setOpenFilter(null); // Close the dropdown after selecting a value
+                  handleFilterChange(columnKey as keyof T, value);
+                  setOpenFilter(null);
                 }}
               >
                 {value}
@@ -260,17 +260,17 @@ export default function TableBuilder({
               )}
               {columns.map((column) => (
                 <th
-                  key={column.key}
+                  key={String(column.key)}
                   className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   <div className="flex items-center space-x-1">
                     <span>{column.label}</span>
                     {column.sortable && (
                       <button
-                        onClick={() => handleSort(column.key)}
+                        onClick={() => handleSort(String(column.key))}
                         className="focus:outline-none"
                       >
-                        {sortConfig?.key === column.key ? (
+                        {sortConfig?.key === String(column.key) ? (
                           sortConfig.direction === 'asc' ? (
                             <ChevronUpIcon className="w-4 h-4" />
                           ) : (
@@ -281,7 +281,7 @@ export default function TableBuilder({
                         )}
                       </button>
                     )}
-                    {column.filterable && renderFilterDropdown(column.key)}
+                    {column.filterable && renderFilterDropdown(String(column.key))}
                   </div>
                 </th>
               ))}
@@ -305,8 +305,8 @@ export default function TableBuilder({
                   </td>
                 )}
                 {columns.map((column) => (
-                  <td key={column.key} className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                    {column.render ? column.render(item[column.key], item) : item[column.key]}
+                  <td key={column.key as string} className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                    {column.render ? column.render(item[column.key], item) : renderCellContent(item[column.key])}
                   </td>
                 ))}
               </tr>

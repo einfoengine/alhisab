@@ -21,7 +21,7 @@ const MessageDetailsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <PageHeader />
+      <PageHeader title="Message Details" />
       <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">

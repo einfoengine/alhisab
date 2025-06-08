@@ -8,6 +8,11 @@ interface PageHeaderProps {
   showViewToggle?: boolean;
   actionLabel?: string;
   onAction?: () => void;
+  actions?: {
+    name: string;
+    icon: React.FC<React.SVGProps<SVGSVGElement>>;
+    onClick: () => void;
+  }[];
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({
