@@ -254,7 +254,7 @@ export default function TableBuilder<T extends { id: string | number; [key: stri
                     type="checkbox"
                     checked={selectedItems.length === paginatedData.length}
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    className="rounded border-gray-300 text-blue-600  focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                   />
                 </th>
               )}
@@ -300,7 +300,7 @@ export default function TableBuilder<T extends { id: string | number; [key: stri
                       type="checkbox"
                       checked={selectedItems.some((i) => i.id === item.id)}
                       onChange={(e) => handleSelectItem(item, e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                      className="rounded border-gray-300 text-blue-600  focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                     />
                   </td>
                 )}

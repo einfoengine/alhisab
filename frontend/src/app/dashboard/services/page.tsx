@@ -266,7 +266,7 @@ export default function ServicesPage() {
             <div
               key={service.id}
               onClick={() => handleServiceClick(service.id.toString())}
-              className="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200"
+              className="bg-white rounded-xl  overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200"
             >
               <div className="relative h-48 w-full">
                 <Image

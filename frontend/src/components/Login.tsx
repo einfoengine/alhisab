@@ -13,7 +13,7 @@ export default function Login() {
             <input
               type="email"
               id="email"
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full border-gray-300 rounded-md  focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="Enter your email"
             />
           </div>
@@ -24,7 +24,7 @@ export default function Login() {
             <input
               type="password"
               id="password"
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full border-gray-300 rounded-md  focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="Enter your password"
             />
           </div>
