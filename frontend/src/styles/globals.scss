@@ -1,12 +1,11 @@
 @import "./_variables.scss";
 @import "tailwindcss";
-@import "./elements.scss";
+// @import "./elements.scss";
 
 /* Typography Styles */
-
 body {
-  color: $nt-text-gray;
   font-family: $nt-font-sans;
+  color: red;
 }
 
 .nt-heading {
@@ -131,3 +130,4 @@ body {
     background-position: 0% 50%;
   }
 }
+

@@ -2,7 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import '../../styles/dashboard.scss';
+// import '../../styles/dashboard.scss';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   if (!children) {
