@@ -1,7 +1,7 @@
 {
   "services": [
     {
-      "id": "seo",
+      "id": "ser_001",
       "name": "Search Engine Optimization",
       "shortDescription": "Improve your website's visibility in search engines",
       "serviceMaster": "John Smith",
@@ -16,17 +16,18 @@
         "Local SEO"
       ],
       "pricing": {
-        "basic": 499,
-        "premium": 999,
-        "enterprise": 1999
-      }
+        "unit_price": 999,
+        "max_discount": 150
+      },
+      "minimum_time_required": 21,
+      "minimum_order_unit": 1
     },
     {
-      "id": "sem",
+      "id": "ser_002",
       "name": "Search Engine Marketing",
       "shortDescription": "Paid advertising campaigns to reach your target audience",
       "description": "Our SEM services help you create and manage effective paid advertising campaigns across search engines. We optimize your ad spend and maximize ROI through strategic campaign management and continuous optimization.",
-      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       "features": [
         "Google Ads Management",
         "Campaign Strategy",
@@ -36,13 +37,14 @@
         "A/B Testing"
       ],
       "pricing": {
-        "basic": 599,
-        "premium": 1299,
-        "enterprise": 2499
-      }
+        "unit_price": 1299,
+        "max_discount": 200
+      },
+      "minimum_time_required": 14,
+      "minimum_order_unit": 1
     },
     {
-      "id": "social-media",
+      "id": "ser_003",
       "name": "Social Media Marketing",
       "shortDescription": "Engage with your audience on social platforms",
       "serviceMaster": "Michael Brown",
@@ -57,13 +59,14 @@
         "Analytics & Reporting"
       ],
       "pricing": {
-        "basic": 399,
-        "premium": 899,
-        "enterprise": 1799
-      }
+        "unit_price": 899,
+        "max_discount": 120
+      },
+      "minimum_time_required": 28,
+      "minimum_order_unit": 1
     },
     {
-      "id": "content-marketing",
+      "id": "ser_004",
       "name": "Content Marketing",
       "shortDescription": "Create engaging content that converts",
       "serviceMaster": "Emily Davis",
@@ -78,22 +81,24 @@
         "Performance Analytics"
       ],
       "pricing": {
-        "basic": 599,
-        "premium": 1299,
-        "enterprise": 2499
-      }
+        "unit_price": 1299,
+        "max_discount": 180
+      },
+      "minimum_time_required": 21,
+      "minimum_order_unit": 1
     },
     {
-      "id": "email",
+      "id": "ser_005",
       "name": "Email Marketing",
       "shortDescription": "Nurture leads and drive conversions",
       "serviceMaster": "David Wilson",
       "image": "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=800&auto=format&fit=crop&q=60",
       "pricing": {
-        "basic": 199,
-        "premium": 499,
-        "enterprise": 999
-      }
+        "unit_price": 499,
+        "max_discount": 100
+      },
+      "minimum_time_required": 7,
+      "minimum_order_unit": 1
     }
   ]
-} 
+}
