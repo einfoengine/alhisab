@@ -188,7 +188,6 @@ const ProjectsPage = () => {
           return total + calculatePackagePrice(pkg.id, pkg.discount);
         }, 0);
         
-        // Use the higher discount between services and packages
         const finalValue = Math.min(servicesTotal, packagesTotal);
         
         return (
@@ -204,11 +203,12 @@ const ProjectsPage = () => {
   ];
 
   return (
-    <div className="nt-page nt-projects">
-      <main>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <PageHeader title="Projects" />
-        <div className="nt-page-content">
-          <div className="nt-page-content-body">
+        
+        <div className="mt-6">
+          <div className="bg-white rounded-lg shadow-sm">
             <TableBuilder<Project>
               columns={columns}
               data={projects.projects}
@@ -216,7 +216,7 @@ const ProjectsPage = () => {
             />
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
