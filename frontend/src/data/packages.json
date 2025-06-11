@@ -6,43 +6,56 @@
       "description": "Essential services for small businesses",
       "services": ["web_design", "seo_basic"],
       "billing_cycle": "monthly",
+      "pricing": {
+        "unit_price": 1000,
+        "max_discount": 15
+      },
       "features": [
         "Basic website design",
         "Standard SEO optimization",
-        "Monthly performance reports",
-        "Email support"
+        "Monthly maintenance",
+        "Basic support"
       ]
     },
     {
       "id": "professional",
       "name": "Professional Package",
-      "description": "Comprehensive digital solutions for growing businesses",
+      "description": "Comprehensive solutions for growing businesses",
       "services": ["web_design", "seo_basic", "social_media", "content_creation"],
       "billing_cycle": "monthly",
+      "pricing": {
+        "unit_price": 2500,
+        "max_discount": 20
+      },
       "features": [
-        "Professional website design",
-        "Advanced SEO optimization",
+        "Advanced website design",
+        "Premium SEO optimization",
         "Social media management",
         "Content creation",
-        "Weekly performance reports",
-        "Priority support"
+        "Priority support",
+        "Monthly analytics report"
       ]
     },
     {
       "id": "enterprise",
       "name": "Enterprise Package",
-      "description": "Complete digital transformation for large organizations",
-      "services": ["web_design", "seo_basic", "social_media", "content_creation", "ppc", "email_marketing"],
+      "description": "Full-service solutions for large organizations",
+      "services": ["web_design", "seo_basic", "social_media", "content_creation", "mobile_app", "backend_development"],
       "billing_cycle": "yearly",
+      "pricing": {
+        "unit_price": 5000,
+        "max_discount": 25
+      },
       "features": [
         "Custom website design",
-        "Enterprise SEO optimization",
-        "Full social media management",
+        "Advanced SEO optimization",
+        "Complete social media management",
         "Premium content creation",
-        "PPC campaign management",
-        "Email marketing automation",
-        "Daily performance reports",
-        "24/7 dedicated support"
+        "Mobile app development",
+        "Backend development",
+        "24/7 priority support",
+        "Weekly analytics report",
+        "Dedicated account manager"
       ]
     }
   ]
