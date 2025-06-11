@@ -9,16 +9,24 @@ import {
   Cog6ToothIcon,
   CurrencyDollarIcon,
   UserIcon,
-  UserGroupIcon
+  UserGroupIcon,
+  CubeIcon,
+  CheckBadgeIcon,
+  ClipboardDocumentIcon
 } from '@heroicons/react/24/outline';
 
 const menuItems = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
   { name: 'Messages', href: '/dashboard/messages', icon: UserGroupIcon },
   { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
+  { name: 'Packages', href: '/dashboard/packages', icon: CubeIcon },
   { name: 'Leads', href: '/dashboard/leads', icon: UserGroupIcon },
+  { name: 'Tasks', href: '/dashboard/tasks', icon: CheckBadgeIcon },
+  { name: 'Users', href: '/dashboard/users', icon: UserIcon },
   { name: 'Clients', href: '/dashboard/clients', icon: UserIcon },
+  { name: 'Agreements', href: '/dashboard/agreements', icon: ClipboardDocumentIcon },
   { name: 'Projects', href: '/dashboard/projects', icon: DocumentTextIcon },
+  { name: 'Planning', href: '/dashboard/planning', icon: CheckBadgeIcon },
   { name: 'Invoices', href: '/dashboard/invoices', icon: CurrencyDollarIcon },
   { name: 'Accounting', href: '/dashboard/accounting', icon: Cog6ToothIcon },
   { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },

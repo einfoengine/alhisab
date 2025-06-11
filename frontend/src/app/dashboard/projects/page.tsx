@@ -5,7 +5,19 @@ import { useRouter } from 'next/navigation';
 import TableBuilder from '@/components/TableBuilder';
 import projects from '@/data/projects.json';
 import clients from '@/data/clients.json';
+import services from '@/data/services.json';
+import packages from '@/data/packages.json';
 import PageHeader from '@/components/elements/PageHeader';
+
+type ServiceWithDiscount = {
+  id: string;
+  discount: number;
+};
+
+type PackageWithDiscount = {
+  id: string;
+  discount: number;
+};
 
 type Project = {
   id: string;
@@ -18,7 +30,8 @@ type Project = {
   end_date: string;
   status: string;
   key_deliverables: string[];
-  services: string[];
+  services: ServiceWithDiscount[];
+  packages: PackageWithDiscount[];
   payment_methods: string[];
   payment_security: string;
   agreement_number: string;
@@ -32,53 +45,119 @@ type Project = {
 const ProjectsPage = () => {
   const router = useRouter();
 
-  const projectList = projects.projects.map(project => {
-    const client = clients.find(c => c.id === project.client_id);
-    return {
-      ...project,
-      client_name: client?.client_name || 'Unknown Client'
-    };
-  });
+  const calculateServicePrice = (serviceId: string, discount: number) => {
+    const service = services.services.find(s => s.id === serviceId);
+    if (!service) return 0;
+    const price = service.pricing.unit_price;
+    return price - (price * (discount / 100));
+  };
 
-  const handleRowClick = (project: Project) => {
-    router.push(`/dashboard/projects/${project.id}`);
+  const calculatePackagePrice = (packageId: string, discount: number) => {
+    const pkg = packages.packages.find(p => p.id === packageId);
+    if (!pkg) return 0;
+    const servicesPrice = pkg.services.reduce((total, serviceId) => {
+      const service = services.services.find(s => s.id === serviceId);
+      return total + (service?.pricing.unit_price || 0);
+    }, 0);
+    return servicesPrice - (servicesPrice * (discount / 100));
+  };
+
+  const handleRowClick = (projectId: string) => {
+    router.push(`/dashboard/projects/${projectId}`);
   };
 
   const columns = [
     {
       key: 'name',
       label: 'Project Name',
-      filterable: true,
-      render: (value: unknown) => (
-        <span className="cursor-pointer hover:text-blue-600">{value as string}</span>
+      sortable: true,
+      render: (_value: unknown, item: Project) => (
+        <div 
+          className="font-medium text-blue-600 cursor-pointer hover:text-blue-800"
+          onClick={() => handleRowClick(item.id)}
+        >
+          {item.name}
+        </div>
       ),
     },
     {
-      key: 'client_name',
+      key: 'client',
       label: 'Client',
-      filterable: true,
-      render: (value: unknown) => <span>{value as string}</span>,
+      sortable: true,
+      render: (_value: unknown, item: Project) => {
+        const client = clients.find(c => c.id === item.client_id);
+        return (
+          <div className="flex items-center gap-2">
+            {client?.avatar && (
+              <img 
+                src={client.avatar} 
+                alt={client.client_name}
+                className="w-8 h-8 rounded-full"
+              />
+            )}
+            <div>
+              <div className="font-medium">{client?.client_name || 'Unknown Client'}</div>
+              {client?.company_names?.[0] && (
+                <div className="text-sm text-gray-500">{client.company_names[0]}</div>
+              )}
+            </div>
+          </div>
+        );
+      },
     },
     {
-      key: 'project_master',
-      label: 'Project Master',
-      filterable: true,
-      render: (value: unknown) => <span>{value as string}</span>,
+      key: 'services',
+      label: 'Services',
+      render: (_value: unknown, item: Project) => (
+        <div>
+          <div className="mb-1">
+            <span className="text-sm font-medium text-gray-600">
+              Total Services: {item.services.length}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {item.services.map(service => {
+              const serviceInfo = services.services.find(s => s.id === service.id);
+              return serviceInfo ? (
+                <span 
+                  key={service.id}
+                  className="px-2 py-1 bg-gray-100 rounded-full text-sm"
+                  title={`${serviceInfo.name} (${service.discount}% off)`}
+                >
+                  {serviceInfo.name} (-{service.discount}%)
+                </span>
+              ) : null;
+            })}
+          </div>
+        </div>
+      ),
     },
     {
-      key: 'project_type',
-      label: 'Type',
-      filterable: true,
-      render: (value: unknown) => (
-        <span className="capitalize">{value as string}</span>
+      key: 'packages',
+      label: 'Packages',
+      render: (_value: unknown, item: Project) => (
+        <div className="flex flex-wrap gap-1">
+          {item.packages.map(pkg => {
+            const packageInfo = packages.packages.find(p => p.id === pkg.id);
+            return packageInfo ? (
+              <span 
+                key={pkg.id}
+                className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                title={`${packageInfo.name} (${pkg.discount}% off)`}
+              >
+                {packageInfo.name} (-{pkg.discount}%)
+              </span>
+            ) : null;
+          })}
+        </div>
       ),
     },
     {
       key: 'status',
       label: 'Status',
-      filterable: true,
+      sortable: true,
       render: (value: unknown) => (
-        <span className={`px-2 py-1 rounded-full text-sm ${
+        <span className={`inline-block px-2 py-1 rounded-full text-sm ${
           value === 'completed' ? 'bg-green-100 text-green-800' :
           value === 'active' ? 'bg-blue-100 text-blue-800' :
           value === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
@@ -89,32 +168,38 @@ const ProjectsPage = () => {
       ),
     },
     {
-      key: 'start_date',
-      label: 'Start Date',
-      filterable: false,
-      render: (value: unknown) => <span>{value as string}</span>,
-    },
-    {
-      key: 'end_date',
-      label: 'End Date',
-      filterable: false,
-      render: (value: unknown) => <span>{value as string}</span>,
-    },
-    {
       key: 'project_value',
-      label: 'Value',
-      filterable: false,
+      label: 'Original Value',
+      sortable: true,
       render: (value: unknown) => (
         <span>${(value as number).toLocaleString()}</span>
       ),
     },
     {
-      key: 'key_deliverables',
-      label: 'Deliverables',
-      filterable: false,
-      render: (value: unknown) => (
-        <span>{(value as string[]).length} items</span>
-      ),
+      key: 'final_value',
+      label: 'Final Value',
+      sortable: true,
+      render: (_value: unknown, item: Project) => {
+        const servicesTotal = item.services.reduce((total, service) => {
+          return total + calculateServicePrice(service.id, service.discount);
+        }, 0);
+        
+        const packagesTotal = item.packages.reduce((total, pkg) => {
+          return total + calculatePackagePrice(pkg.id, pkg.discount);
+        }, 0);
+        
+        // Use the higher discount between services and packages
+        const finalValue = Math.min(servicesTotal, packagesTotal);
+        
+        return (
+          <div className="font-semibold">
+            ${finalValue.toLocaleString()}
+            <span className="text-sm text-green-600 ml-1">
+              (Save ${(item.project_value - finalValue).toLocaleString()})
+            </span>
+          </div>
+        );
+      },
     },
   ];
 
@@ -125,9 +210,9 @@ const ProjectsPage = () => {
         <div className="nt-page-content">
           <div className="nt-page-content-body">
             <TableBuilder<Project>
-              data={projectList}
               columns={columns}
-              onRowClick={handleRowClick}
+              data={projects.projects}
+              onRowClick={(item) => handleRowClick(item.id)}
             />
           </div>
         </div>

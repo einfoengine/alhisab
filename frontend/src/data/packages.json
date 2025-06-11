@@ -1,0 +1,49 @@
+{
+  "packages": [
+    {
+      "id": "basic",
+      "name": "Basic Package",
+      "description": "Essential services for small businesses",
+      "services": ["web_design", "seo_basic"],
+      "billing_cycle": "monthly",
+      "features": [
+        "Basic website design",
+        "Standard SEO optimization",
+        "Monthly performance reports",
+        "Email support"
+      ]
+    },
+    {
+      "id": "professional",
+      "name": "Professional Package",
+      "description": "Comprehensive digital solutions for growing businesses",
+      "services": ["web_design", "seo_basic", "social_media", "content_creation"],
+      "billing_cycle": "monthly",
+      "features": [
+        "Professional website design",
+        "Advanced SEO optimization",
+        "Social media management",
+        "Content creation",
+        "Weekly performance reports",
+        "Priority support"
+      ]
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise Package",
+      "description": "Complete digital transformation for large organizations",
+      "services": ["web_design", "seo_basic", "social_media", "content_creation", "ppc", "email_marketing"],
+      "billing_cycle": "yearly",
+      "features": [
+        "Custom website design",
+        "Enterprise SEO optimization",
+        "Full social media management",
+        "Premium content creation",
+        "PPC campaign management",
+        "Email marketing automation",
+        "Daily performance reports",
+        "24/7 dedicated support"
+      ]
+    }
+  ]
+} 

@@ -1,228 +1,183 @@
 {
   "projects": [
     {
-      "id": "proj-001",
-      "name": "Sample Project 1",
-      "description": "Project 1 description goes here.",
+      "id": "proj_001",
+      "name": "E-commerce Website Development",
+      "description": "Complete e-commerce solution with payment integration",
       "client_id": "cli_001",
-      "project_master": "Project Manager 1",
-      "project_type": "recurring",
-      "start_date": "2024-01-11",
-      "end_date": "2024-05-15",
-      "status": "completed",
-      "key_deliverables": [
-        "Deliverable 1",
-        "Deliverable 2",
-        "Deliverable 3",
-        "Deliverable 4"
-      ],
-      "services": [
-        "ser_008",
-        "ser_007"
-      ],
-      "payment_methods": [
-        "bank_transfer",
-        "cash",
-        "cheque"
-      ],
-      "payment_security": "prepaid",
-      "agreement_number": "AG-001",
-      "project_value": 14331,
-      "milestones": [
-        {
-          "name": "Milestone 1",
-          "release_amount": 3582.75
-        },
-        {
-          "name": "Milestone 2",
-          "release_amount": 3582.75
-        },
-        {
-          "name": "Milestone 3",
-          "release_amount": 3582.75
-        },
-        {
-          "name": "Milestone 4",
-          "release_amount": 3582.75
-        }
-      ]
-    },
-    {
-      "id": "proj-002",
-      "name": "Sample Project 2",
-      "description": "Project 2 description goes here.",
-      "client_id": "cli_002",
-      "project_master": "Project Manager 2",
-      "project_type": "recurring",
-      "start_date": "2024-01-12",
-      "end_date": "ongoing",
-      "status": "completed",
-      "key_deliverables": [
-        "Deliverable 1",
-        "Deliverable 2",
-        "Deliverable 3",
-        "Deliverable 4"
-      ],
-      "services": [
-        "ser_008",
-        "ser_004",
-        "ser_009",
-        "ser_007"
-      ],
-      "payment_methods": [
-        "bank_transfer",
-        "cash",
-        "cheque"
-      ],
-      "payment_security": "prepaid",
-      "agreement_number": "AG-002",
-      "project_value": 3894,
-      "milestones": [
-        {
-          "name": "Milestone 1",
-          "release_amount": 1298.0
-        },
-        {
-          "name": "Milestone 2",
-          "release_amount": 1298.0
-        },
-        {
-          "name": "Milestone 3",
-          "release_amount": 1298.0
-        }
-      ]
-    },
-    {
-      "id": "proj-003",
-      "name": "Sample Project 3",
-      "description": "Project 3 description goes here.",
-      "client_id": "cli_003",
-      "project_master": "Project Manager 3",
-      "project_type": "recurring",
-      "start_date": "2024-01-13",
-      "end_date": "2024-06-15",
-      "status": "in_progress",
-      "key_deliverables": [
-        "Deliverable 1",
-        "Deliverable 2",
-        "Deliverable 3",
-        "Deliverable 4"
-      ],
-      "services": [
-        "ser_005",
-        "ser_007",
-        "ser_006",
-        "ser_002"
-      ],
-      "payment_methods": [
-        "bank_transfer",
-        "cash",
-        "cheque"
-      ],
-      "payment_security": "prepaid",
-      "agreement_number": "AG-003",
-      "project_value": 9571,
-      "milestones": [
-        {
-          "name": "Milestone 1",
-          "release_amount": 4785.5
-        },
-        {
-          "name": "Milestone 2",
-          "release_amount": 4785.5
-        }
-      ]
-    },
-    {
-      "id": "proj-004",
-      "name": "Sample Project 4",
-      "description": "Project 4 description goes here.",
-      "client_id": "cli_004",
-      "project_master": "Project Manager 4",
-      "project_type": "recurring",
-      "start_date": "2024-01-14",
-      "end_date": "ongoing",
-      "status": "in_progress",
-      "key_deliverables": [
-        "Deliverable 1",
-        "Deliverable 2",
-        "Deliverable 3",
-        "Deliverable 4"
-      ],
-      "services": [
-        "ser_008",
-        "ser_005",
-        "ser_003",
-        "ser_001",
-        "ser_010"
-      ],
-      "payment_methods": [
-        "bank_transfer",
-        "cash",
-        "cheque"
-      ],
-      "payment_security": "prepaid",
-      "agreement_number": "AG-004",
-      "project_value": 4311,
-      "milestones": [
-        {
-          "name": "Milestone 1",
-          "release_amount": 1077.75
-        },
-        {
-          "name": "Milestone 2",
-          "release_amount": 1077.75
-        },
-        {
-          "name": "Milestone 3",
-          "release_amount": 1077.75
-        },
-        {
-          "name": "Milestone 4",
-          "release_amount": 1077.75
-        }
-      ]
-    },
-    {
-      "id": "proj-005",
-      "name": "Sample Project 5",
-      "description": "Project 5 description goes here.",
-      "client_id": "cli_005",
-      "project_master": "Project Manager 5",
-      "project_type": "recurring",
+      "project_master": "John Smith",
+      "project_type": "web_development",
       "start_date": "2024-01-15",
       "end_date": "2024-06-15",
-      "status": "completed",
+      "status": "in_progress",
       "key_deliverables": [
-        "Deliverable 1",
-        "Deliverable 2",
-        "Deliverable 3",
-        "Deliverable 4"
+        "Responsive website design",
+        "Payment gateway integration",
+        "Inventory management system",
+        "Order tracking system"
       ],
       "services": [
-        "ser_008",
-        "ser_006"
+        {
+          "id": "web_design",
+          "discount": 15
+        },
+        {
+          "id": "seo_basic",
+          "discount": 10
+        }
       ],
-      "payment_methods": [
-        "bank_transfer",
-        "cash",
-        "cheque"
+      "packages": [
+        {
+          "id": "professional",
+          "discount": 20
+        },
+        {
+          "id": "enterprise",
+          "discount": 25
+        }
       ],
-      "payment_security": "prepaid",
-      "agreement_number": "AG-005",
-      "project_value": 5938,
+      "payment_methods": ["bank_transfer", "credit_card"],
+      "payment_security": "escrow",
+      "agreement_number": "AG-2024-001",
+      "project_value": 25000,
       "milestones": [
         {
-          "name": "Milestone 1",
-          "release_amount": 1979.33
+          "name": "Design Approval",
+          "release_amount": 5000
         },
         {
-          "name": "Milestone 2",
-          "release_amount": 1979.33
+          "name": "Development Completion",
+          "release_amount": 10000
         },
         {
-          "name": "Milestone 3",
-          "release_amount": 1979.34
+          "name": "Testing & QA",
+          "release_amount": 5000
+        },
+        {
+          "name": "Final Delivery",
+          "release_amount": 5000
+        }
+      ]
+    },
+    {
+      "id": "proj_002",
+      "name": "Mobile App Development",
+      "description": "Cross-platform mobile application for food delivery",
+      "client_id": "cli_002",
+      "project_master": "Sarah Johnson",
+      "project_type": "mobile_development",
+      "start_date": "2024-02-01",
+      "end_date": "2024-08-01",
+      "status": "active",
+      "key_deliverables": [
+        "iOS and Android apps",
+        "Real-time order tracking",
+        "Push notifications",
+        "Payment integration"
+      ],
+      "services": [
+        {
+          "id": "mobile_app",
+          "discount": 20
+        },
+        {
+          "id": "backend_development",
+          "discount": 15
+        }
+      ],
+      "packages": [
+        {
+          "id": "enterprise",
+          "discount": 25
+        },
+        {
+          "id": "professional",
+          "discount": 20
+        }
+      ],
+      "payment_methods": ["bank_transfer", "paypal"],
+      "payment_security": "escrow",
+      "agreement_number": "AG-2024-002",
+      "project_value": 50000,
+      "milestones": [
+        {
+          "name": "UI/UX Design",
+          "release_amount": 10000
+        },
+        {
+          "name": "Core Development",
+          "release_amount": 20000
+        },
+        {
+          "name": "Testing & Deployment",
+          "release_amount": 10000
+        },
+        {
+          "name": "Final Delivery",
+          "release_amount": 10000
+        }
+      ]
+    },
+    {
+      "id": "proj_003",
+      "name": "Digital Marketing Campaign",
+      "description": "Comprehensive digital marketing strategy and execution",
+      "client_id": "cli_003",
+      "project_master": "Michael Brown",
+      "project_type": "marketing",
+      "start_date": "2024-03-01",
+      "end_date": "2024-09-01",
+      "status": "active",
+      "key_deliverables": [
+        "SEO optimization",
+        "Social media management",
+        "Content creation",
+        "PPC campaigns"
+      ],
+      "services": [
+        {
+          "id": "seo_basic",
+          "discount": 10
+        },
+        {
+          "id": "social_media",
+          "discount": 15
+        },
+        {
+          "id": "content_creation",
+          "discount": 10
+        }
+      ],
+      "packages": [
+        {
+          "id": "professional",
+          "discount": 20
+        },
+        {
+          "id": "basic",
+          "discount": 15
+        }
+      ],
+      "payment_methods": ["bank_transfer"],
+      "payment_security": "escrow",
+      "agreement_number": "AG-2024-003",
+      "project_value": 30000,
+      "milestones": [
+        {
+          "name": "Strategy Development",
+          "release_amount": 6000
+        },
+        {
+          "name": "Initial Campaign",
+          "release_amount": 12000
+        },
+        {
+          "name": "Campaign Optimization",
+          "release_amount": 6000
+        },
+        {
+          "name": "Final Report",
+          "release_amount": 6000
         }
       ]
     }
