@@ -29,7 +29,7 @@ const MessagesPage = () => {
 
   const tableColumns = [
     { 
-      key: 'sender' as keyof MessageRow, 
+      key: 'sender', 
       label: 'Sender', 
       filterable: true, 
       render: (_value: unknown, item: MessageRow) => (
@@ -43,10 +43,10 @@ const MessagesPage = () => {
         </div>
       ) 
     },
-    { key: 'subject' as keyof MessageRow, label: 'Subject' },
-    { key: 'date' as keyof MessageRow, label: 'Date' },
-    { key: 'type' as keyof MessageRow, label: 'Type', filterable: true },
-    { key: 'tags' as keyof MessageRow, label: 'Tags', filterable: true }
+    { key: 'subject', label: 'Subject' },
+    { key: 'date', label: 'Date' },
+    { key: 'type', label: 'Type', filterable: true },
+    { key: 'tags', label: 'Tags', filterable: true }
   ];
 
   const handleSelectionChange = (selectedItems: MessageRow[]) => {

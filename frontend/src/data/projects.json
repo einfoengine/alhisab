@@ -3,7 +3,8 @@
     {
       "id": "proj-001",
       "name": "E-commerce Website Redesign",
-      "clientName": "Fashion Forward",
+      "clientName": "Asadullah Galib",
+      "clientId": "cli_001",
       "projectMaster": "Sarah Johnson",
       "projectType": "single",
       "startDate": "2024-01-15",
@@ -22,7 +23,8 @@
     {
       "id": "proj-002",
       "name": "Social Media Management",
-      "clientName": "Tech Innovators",
+      "clientName": "John Smith",
+      "clientId": "cli_002",
       "projectMaster": "Mike Chen",
       "projectType": "recurring",
       "startDate": "2024-02-01",
@@ -41,7 +43,8 @@
     {
       "id": "proj-003",
       "name": "Brand Video Production",
-      "clientName": "Green Life",
+      "clientName": "Emily Watson",
+      "clientId": "cli_003",
       "projectMaster": "Emma Davis",
       "projectType": "single",
       "startDate": "2024-03-01",
@@ -60,7 +63,8 @@
     {
       "id": "proj-004",
       "name": "SEO Optimization",
-      "clientName": "Local Restaurant Chain",
+      "clientName": "Rajesh Kumar",
+      "clientId": "cli_004",
       "projectMaster": "Alex Wong",
       "projectType": "recurring",
       "startDate": "2024-01-01",
@@ -79,7 +83,8 @@
     {
       "id": "proj-005",
       "name": "Mobile App Development",
-      "clientName": "Fitness First",
+      "clientName": "Sophia Lee",
+      "clientId": "cli_005",
       "projectMaster": "David Kim",
       "projectType": "single",
       "startDate": "2024-02-15",
@@ -96,4 +101,4 @@
       "description": "Development of a fitness tracking mobile application with social features."
     }
   ]
-} 
+}
