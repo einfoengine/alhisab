@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import PageHeader from '@/components/elements/PageHeader';
 import tasks from '@/data/tasks.json';
 import users from '@/data/users.json';
+import Link from 'next/link';
 import {
   DndContext,
   closestCenter,
@@ -78,14 +79,27 @@ function SortableTaskItem({
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow cursor-move"
+      className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-start gap-4">
+        <div
+          {...attributes}
+          {...listeners}
+          className="mt-1 cursor-move text-gray-400 hover:text-gray-600"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+          </svg>
+        </div>
+
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-medium text-gray-900">{task.title}</h3>
+            <Link 
+              href={`/dashboard/tasks/${task.id}`}
+              className="text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors"
+            >
+              {task.title}
+            </Link>
             <span className={`px-2 py-1 rounded-full text-sm ${getPriorityColor(task.priority)}`}>
               {task.priority.toUpperCase()}
             </span>
