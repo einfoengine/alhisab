@@ -110,6 +110,17 @@ const SERVICE_OPTIONS: Service[] = [
   ...(servicesData.services as Service[]).map((s: Service) => ({ id: s.id, name: s.name }))
 ];
 
+function SortIcon({ active, direction }: { active: boolean; direction: 'asc' | 'desc' | undefined }) {
+  if (!active) {
+    return <ChevronUpIcon className="w-4 h-4 text-gray-400" />;
+  }
+  return direction === 'asc' ? (
+    <ChevronUpIcon className="w-4 h-4" />
+  ) : (
+    <ChevronDownIcon className="w-4 h-4" />
+  );
+}
+
 const TasksPage = () => {
   const [taskList, setTaskList] = useState<Task[]>(tasks.tasks as unknown as Task[]);
   const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({});
@@ -152,7 +163,7 @@ const TasksPage = () => {
   const filteredAndSortedTasks = useMemo(() => {
     let filtered = [...taskList];
     if (filterStatus) filtered = filtered.filter(t => t.status === filterStatus);
-    if (filterCategory) filtered = filtered.filter(t => t.categories.includes(filterCategory));
+    if (filterCategory) filtered = filtered.filter(t => Array.isArray(t.categories) && t.categories.includes(filterCategory));
     if (filterServiceType) filtered = filtered.filter(t => t.content_type === filterServiceType);
     
     if (sortConfig) {
@@ -877,16 +888,4 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
   );
 }
 
-// Helper for rendering sort icons
-function SortIcon({ active, direction }: { active: boolean; direction: 'asc' | 'desc' | undefined }) {
-  if (!active) {
-    return <ChevronUpIcon className="w-4 h-4 text-gray-400" />;
-  }
-  return direction === 'asc' ? (
-    <ChevronUpIcon className="w-4 h-4" />
-  ) : (
-    <ChevronDownIcon className="w-4 h-4" />
-  );
-}
-
-export default TasksPage; 
+export default TasksPage;
