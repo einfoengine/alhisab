@@ -55,7 +55,7 @@ type Task = {
   category_id: string;
   categories: string[];
   frequency?: 'daily' | 'weekly' | 'monthly';
-  status: 'active' | 'pending' | 'in_progress' | 'completed';
+  status: 'planning' | 'doing' | 'qc' | 'redo' | 'done' | 'delivered' | 'archived';
   assigned_to: string[];
   priority: 'low' | 'medium' | 'high';
   order: number;
@@ -66,11 +66,14 @@ type Task = {
   next_due?: string;
   progress?: number;
   tags: string[];
-  content_type?: string;
+  content_type: string;
   mother_task?: string | null;
   project_id: string;
   platforms: string[];
+  [key: string]: string | string[] | number | boolean | null | undefined;
 };
+
+type FilterableColumn = 'status' | 'content_type' | 'categories';
 
 const COLUMN_WIDTHS = {
   drag: '40px',
@@ -91,7 +94,20 @@ const PLATFORM_OPTIONS = [
   { value: 'Website', label: 'Website', color: 'bg-gray-700' },
 ];
 
-const SERVICE_OPTIONS: Service[] = (servicesData.services as Service[]).map((s: Service) => ({ id: s.id, name: s.name }));
+const STATUS_OPTIONS = [
+  { value: 'planning', label: 'Planning' },
+  { value: 'doing', label: 'Doing' },
+  { value: 'qc', label: 'QC' },
+  { value: 'redo', label: 'Redo' },
+  { value: 'done', label: 'Done' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'archived', label: 'Archived' },
+];
+
+const SERVICE_OPTIONS: Service[] = [
+  { id: 'others', name: 'Others' },
+  ...(servicesData.services as Service[]).map((s: Service) => ({ id: s.id, name: s.name }))
+];
 
 const TasksPage = () => {
   const [taskList, setTaskList] = useState<Task[]>(tasks.tasks as unknown as Task[]);
@@ -100,6 +116,7 @@ const TasksPage = () => {
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [filterServiceType, setFilterServiceType] = useState<string>('');
+  const [openFilter, setOpenFilter] = useState<FilterableColumn | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -172,26 +189,35 @@ const TasksPage = () => {
     setSortConfig({ key, direction });
   };
 
-  // State for open filter dropdown
-  const [openFilter, setOpenFilter] = useState<string | null>(null);
-
   // Helper to get unique values for a column
-  function getUniqueValues(key: string) {
+  function getUniqueValues(key: FilterableColumn): string[] {
     if (key === 'categories') {
       return Array.from(new Set(taskList.flatMap((t: Task) => t.categories)));
     }
     if (key === 'content_type') {
       return Array.from(new Set(taskList.map((t: Task) => t.content_type).filter(Boolean)));
     }
-    return Array.from(new Set(taskList.map((t: Task) => t[key]).filter(Boolean)));
+    if (key === 'status') {
+      return Array.from(new Set(taskList.map((t: Task) => t.status)));
+    }
+    return [];
   }
 
   // Filter dropdown UI (TableBuilder style)
-  function renderFilterDropdown(columnKey: string, filterValue: string, setFilterValue: (v: string) => void, labelMap?: Record<string, string>) {
+  function renderFilterDropdown(
+    columnKey: FilterableColumn,
+    filterValue: string,
+    setFilterValue: (v: string) => void,
+    labelMap?: Record<string, string>
+  ) {
     let uniqueValues = getUniqueValues(columnKey);
     if (columnKey === 'content_type') {
       uniqueValues = SERVICE_OPTIONS.map(s => s.id);
       labelMap = Object.fromEntries(SERVICE_OPTIONS.map(s => [s.id, s.name]));
+    }
+    if (columnKey === 'status') {
+      uniqueValues = STATUS_OPTIONS.map(s => s.value);
+      labelMap = Object.fromEntries(STATUS_OPTIONS.map(s => [s.value, s.label]));
     }
     return (
       <div className="relative inline-block">
@@ -216,9 +242,9 @@ const TasksPage = () => {
             >
               Reset Filter
             </button>
-            {uniqueValues.map((value, idx) => (
+            {uniqueValues.map((value) => (
               <button
-                key={value || idx}
+                key={value}
                 className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${filterValue === value ? 'bg-gray-200' : ''}`}
                 onClick={() => {
                   setFilterValue(value);
@@ -331,7 +357,7 @@ const TasksPage = () => {
                         >
                           <SortIcon active={sortConfig?.key === 'status'} direction={sortConfig?.direction} />
                         </button>
-                        {renderFilterDropdown('status', filterStatus, setFilterStatus)}
+                        {renderFilterDropdown('status', filterStatus, setFilterStatus, Object.fromEntries(STATUS_OPTIONS.map(s => [s.value, s.label])))}
                       </div>
                     </th>
                     <th style={{ width: COLUMN_WIDTHS.contentType }} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -343,7 +369,7 @@ const TasksPage = () => {
                         >
                           <SortIcon active={sortConfig?.key === 'content_type'} direction={sortConfig?.direction} />
                         </button>
-                        {renderFilterDropdown('content_type', filterServiceType, setFilterServiceType)}
+                        {renderFilterDropdown('content_type', filterServiceType, setFilterServiceType, Object.fromEntries(SERVICE_OPTIONS.map(s => [s.id, s.name])))}
                       </div>
                     </th>
                   </tr>
@@ -503,8 +529,6 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
   };
 
   // --- Category Dropdown (unchanged) ---
-  const [catOpen, setCatOpen] = useState(false);
-  const toggleCat = () => setCatOpen((v) => !v);
   const handleCategoryToggle = (catId: string) => {
     const currentCategories = task.categories;
     const newCategories = currentCategories.includes(catId)
@@ -517,6 +541,11 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onUpdateTask(task.id, { status: e.target.value as Task['status'] });
   };
+
+  // Service type change handler
+  // const handleServiceTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   onUpdateTask(task.id, { content_type: e.target.value });
+  // };
 
   // In SortableTaskRow, add state for dropdowns
   const [projectOpen, setProjectOpen] = useState(false);
@@ -710,7 +739,7 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
           </span>
           {projectOpen && (
             <div className="absolute z-10 mt-2 w-56 bg-white border border-gray-200 rounded shadow-lg p-2">
-              {projectsData.projects.map((proj: any) => (
+              {projectsData.projects.map((proj: Project) => (
                 <div key={proj.id} className="px-3 py-2 cursor-pointer hover:bg-gray-100 rounded" onClick={() => handleProjectChange(proj.id)}>
                   {proj.name}
                 </div>
@@ -806,12 +835,13 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
         <select
           value={task.status}
           onChange={handleStatusChange}
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
         >
-          <option value="pending">Pending</option>
-          <option value="active">Active</option>
-          <option value="in_progress">In Progress</option>
-          <option value="completed">Completed</option>
+          {STATUS_OPTIONS.map((status) => (
+            <option key={status.value} value={status.value}>
+              {status.label}
+            </option>
+          ))}
         </select>
       </td>
       <td style={{ width: COLUMN_WIDTHS.contentType }}>
