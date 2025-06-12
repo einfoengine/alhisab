@@ -326,6 +326,12 @@ const TasksPage = () => {
                         </button>
                       </div>
                     </th>
+                    <th style={{ width: '160px' }} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <span>Project</span>
+                    </th>
+                    <th style={{ width: '180px' }} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <span>Platforms</span>
+                    </th>
                     <th style={{ width: COLUMN_WIDTHS.categories }} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       <div className="flex items-center space-x-1">
                         <span>Categories</span>
