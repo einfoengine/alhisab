@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 import projects from '@/data/projects.json';
 import clients from '@/data/clients.json';
@@ -8,6 +8,7 @@ import services from '@/data/services.json';
 import packages from '@/data/packages.json';
 import invoices from '@/data/invoices.json';
 import PageHeader from '@/components/elements/PageHeader';
+import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 // type ServiceWithDiscount = {
 //   id: string;
@@ -59,12 +60,47 @@ const calculatePackagePrice = (packageId: string, discount: number) => {
   return servicesPrice - (servicesPrice * (discount / 100));
 };
 
+function AccordionBox({ title, children, isOpen, onClick }: { title: string; children: React.ReactNode; isOpen: boolean; onClick: () => void }) {
+  return (
+    <div className="bg-white rounded-lg shadow-sm">
+      <button
+        className="w-full flex items-center justify-between p-6 focus:outline-none"
+        onClick={onClick}
+        aria-expanded={isOpen}
+      >
+        <span className="text-xl font-semibold">{title}</span>
+        {isOpen ? (
+          <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+        ) : (
+          <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+        )}
+      </button>
+      <div
+        className={`transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-[2000px] p-6 pt-0' : 'max-h-0 p-0'}`}
+        style={{ willChange: 'max-height' }}
+      >
+        {isOpen && children}
+      </div>
+    </div>
+  );
+}
+
 const ProjectDetailsPage = () => {
   const params = useParams();
   const projectId = params?.id as string;
   const project = projects.projects.find(p => p.id === projectId);
   const client = project ? clients.find(c => c.id === project.client_id) : null;
   const projectInvoices = invoices.filter(inv => inv.project_id === projectId);
+
+  // Allow multiple boxes to be open
+  const [openStates, setOpenStates] = useState([true, false, false, false, false, false, false]);
+  const handleAccordion = (idx: number) => {
+    setOpenStates(prev => {
+      const newStates = [...prev];
+      newStates[idx] = !newStates[idx];
+      return newStates;
+    });
+  };
 
   if (!project) {
     return <div>Project not found</div>;
@@ -88,10 +124,9 @@ const ProjectDetailsPage = () => {
         
         <div className="mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Project Overview */}
+            {/* Project Overview, Services & Packages, Key Deliverables */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-4">Project Overview</h2>
+              <AccordionBox title="Project Overview" isOpen={openStates[0]} onClick={() => handleAccordion(0)}>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Client</p>
@@ -126,11 +161,8 @@ const ProjectDetailsPage = () => {
                     <p className="font-medium capitalize">{project.project_type.replace('_', ' ')}</p>
                   </div>
                 </div>
-              </div>
-
-              {/* Services & Packages */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-4">Services & Packages</h2>
+              </AccordionBox>
+              <AccordionBox title="Services & Packages" isOpen={openStates[1]} onClick={() => handleAccordion(1)}>
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-lg font-medium mb-3">Services ({project.services.length})</h3>
@@ -155,7 +187,6 @@ const ProjectDetailsPage = () => {
                       })}
                     </div>
                   </div>
-
                   <div>
                     <h3 className="text-lg font-medium mb-3">Packages ({project.packages.length})</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -180,24 +211,19 @@ const ProjectDetailsPage = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Key Deliverables */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-4">Key Deliverables</h2>
+              </AccordionBox>
+              <AccordionBox title="Key Deliverables" isOpen={openStates[2]} onClick={() => handleAccordion(2)}>
                 <ul className="list-disc list-inside space-y-2">
                   {project.key_deliverables.map((deliverable, index) => (
                     <li key={index} className="text-gray-700">{deliverable}</li>
                   ))}
                 </ul>
-              </div>
+              </AccordionBox>
             </div>
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Financial Summary */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-4">Financial Summary</h2>
+              <AccordionBox title="Financial Summary" isOpen={openStates[3]} onClick={() => handleAccordion(3)}>
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm text-gray-600">Original Value</p>
@@ -212,11 +238,8 @@ const ProjectDetailsPage = () => {
                     <p className="text-xl font-semibold text-green-600">${totalSaved.toLocaleString()}</p>
                   </div>
                 </div>
-              </div>
-
-              {/* Milestones */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-4">Milestones</h2>
+              </AccordionBox>
+              <AccordionBox title="Milestones" isOpen={openStates[4]} onClick={() => handleAccordion(4)}>
                 <div className="space-y-4">
                   {project.milestones.map((milestone, index) => (
                     <div key={index} className="border-l-4 border-blue-500 pl-4">
@@ -225,11 +248,8 @@ const ProjectDetailsPage = () => {
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Invoices */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-4">Invoices</h2>
+              </AccordionBox>
+              <AccordionBox title="Invoices" isOpen={openStates[5]} onClick={() => handleAccordion(5)}>
                 <div className="space-y-4">
                   {projectInvoices.map(invoice => (
                     <div key={invoice.invoice_id} className="border rounded-lg p-4">
@@ -259,11 +279,8 @@ const ProjectDetailsPage = () => {
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Agreement */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold mb-4">Agreement</h2>
+              </AccordionBox>
+              <AccordionBox title="Agreement" isOpen={openStates[6]} onClick={() => handleAccordion(6)}>
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm text-gray-600">Agreement Number</p>
@@ -284,7 +301,7 @@ const ProjectDetailsPage = () => {
                     <p className="font-medium capitalize">{project.payment_security}</p>
                   </div>
                 </div>
-              </div>
+              </AccordionBox>
             </div>
           </div>
         </div>
