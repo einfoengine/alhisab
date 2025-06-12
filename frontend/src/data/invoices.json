@@ -1,129 +1,73 @@
 [
   {
-    "invoice_id": "inv_001",
+    "invoice_id": "INV-20240701-001",
     "client_id": "cli_001",
     "project_id": "proj_001",
-    "issue_date": "2025-06-01",
-    "due_date": "2025-06-10",
-    "currency": "BDT",
-    "total_amount": 1800.00,
-    "advance_payment": 200.00,
-    "amount_paid": 1000.00,
-    "due_amount": 800.00,
-    "status": "partial",
-    "services": [
+    "items": [
       {
-        "description": "Facebook Ads Campaign Management",
-        "quantity": 1,
-        "unit_price": 1000.00,
-        "total": 1000.00
+        "type": "service",
+        "id": "web_design",
+        "name": "Web Design",
+        "price": 1000,
+        "quantity": 1
       },
       {
-        "description": "SEO Optimization for Website",
-        "quantity": 1,
-        "unit_price": 500.00,
-        "total": 500.00
-      },
-      {
-        "description": "Graphic Design for Social Media Posts",
-        "quantity": 2,
-        "unit_price": 150.00,
-        "total": 300.00
+        "type": "package",
+        "id": "professional",
+        "name": "Professional Package",
+        "price": 2500,
+        "quantity": 1
       }
     ],
-    "payment_ids": ["pay_004", "pay_007"],
-    "notes": "Paid partially. Remaining BDT 800 due."
+    "total": 3500,
+    "status": "unpaid",
+    "issue_date": "2024-07-01",
+    "due_date": "2024-07-15",
+    "generated_by": "usr_001"
   },
   {
-    "invoice_id": "inv_002",
+    "invoice_id": "INV-20240702-002",
     "client_id": "cli_002",
-    "project_id": "proj_003",
-    "issue_date": "2025-05-20",
-    "due_date": "2025-05-30",
-    "currency": "USD",
-    "total_amount": 3000.00,
-    "advance_payment": 500.00,
-    "amount_paid": 3000.00,
-    "due_amount": 0.00,
-    "status": "paid",
-    "services": [
+    "project_id": "proj_002",
+    "items": [
       {
-        "description": "Quarterly Subscription for Cloud Hosting",
-        "quantity": 1,
-        "unit_price": 3000.00,
-        "total": 3000.00
+        "type": "service",
+        "id": "mobile_app",
+        "name": "Mobile App Development",
+        "price": 2000,
+        "quantity": 1
       }
     ],
-    "payment_ids": ["pay_002"],
-    "notes": "Full payment received."
+    "total": 2000,
+    "status": "paid",
+    "issue_date": "2024-07-02",
+    "due_date": "2024-07-16",
+    "generated_by": "auto"
   },
   {
-    "invoice_id": "inv_003",
+    "invoice_id": "INV-20240703-003",
     "client_id": "cli_003",
-    "project_id": "proj_006",
-    "issue_date": "2025-05-25",
-    "due_date": "2025-06-05",
-    "currency": "GBP",
-    "total_amount": 2000.00,
-    "advance_payment": 300.00,
-    "amount_paid": 2000.00,
-    "due_amount": 0.00,
-    "status": "paid",
-    "services": [
+    "project_id": "proj_003",
+    "items": [
       {
-        "description": "Monthly IT Support Services",
-        "quantity": 1,
-        "unit_price": 2000.00,
-        "total": 2000.00
+        "type": "service",
+        "id": "seo_basic",
+        "name": "SEO Basic",
+        "price": 500,
+        "quantity": 1
+      },
+      {
+        "type": "package",
+        "id": "basic",
+        "name": "Basic Package",
+        "price": 1000,
+        "quantity": 1
       }
     ],
-    "payment_ids": ["pay_003"],
-    "notes": "Full payment received."
-  },
-  {
-    "invoice_id": "inv_004",
-    "client_id": "cli_004",
-    "project_id": "proj_008",
-    "issue_date": "2025-06-05",
-    "due_date": "2025-06-15",
-    "currency": "INR",
-    "total_amount": 1500.00,
-    "advance_payment": 100.00,
-    "amount_paid": 1500.00,
-    "due_amount": 0.00,
-    "status": "paid",
-    "services": [
-      {
-        "description": "One-time Solar Panel Installation",
-        "quantity": 1,
-        "unit_price": 1500.00,
-        "total": 1500.00
-      }
-    ],
-    "payment_ids": ["pay_005"],
-    "notes": "Full payment received."
-  },
-  {
-    "invoice_id": "inv_005",
-    "client_id": "cli_005",
-    "project_id": "proj_010",
-    "issue_date": "2025-06-07",
-    "due_date": "2025-06-17",
-    "currency": "AUD",
-    "total_amount": 12000.00,
-    "advance_payment": 2000.00,
-    "amount_paid": 12000.00,
-    "due_amount": 0.00,
-    "status": "paid",
-    "services": [
-      {
-        "description": "Annual Subscription for EcoBuild Software",
-        "quantity": 1,
-        "unit_price": 12000.00,
-        "total": 12000.00
-      }
-    ],
-    "payment_ids": ["pay_006"],
-    "notes": "Full payment received."
+    "total": 1500,
+    "status": "partial",
+    "issue_date": "2024-07-03",
+    "due_date": "2024-07-17",
+    "generated_by": "usr_002"
   }
 ]

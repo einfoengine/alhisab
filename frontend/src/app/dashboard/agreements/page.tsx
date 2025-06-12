@@ -6,6 +6,8 @@ import projects from "@/data/projects.json";
 import clients from "@/data/clients.json";
 import { Column } from "@/types/table";
 import { ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 // Helper to get project info by title
 const getProjectByTitle = (title: string) =>
@@ -33,11 +35,18 @@ const agreementsData = agreements.map((a, idx) => {
     signed_by: a.parties.map((p) => p.name).join(", "),
     project_id: project?.id || "",
     client_id: client?.id || "",
+    agreement_referance: a.agreement_referance,
   };
 });
 
 const projectOptions = projects.projects.map((p) => ({ id: p.id, name: p.name }));
 const clientOptions = clients.map((c) => ({ id: c.id, name: c.client_name }));
+
+const referenceOptions = agreementsData
+  .map((a) => a.agreement_referance)
+  .filter((ref, idx, arr) => ref && arr.indexOf(ref) === idx)
+  .filter((ref): ref is string => typeof ref === 'string')
+  .map((ref) => ({ id: ref, name: ref }));
 
 type AgreementRow = typeof agreementsData[number];
 
@@ -61,7 +70,30 @@ const columns: Column<AgreementRow>[] = [
     sortable: true,
     filterable: true,
     options: clientOptions,
-    render: (value: unknown, row: AgreementRow): ReactNode => row.client_name,
+    render: (value: unknown, row: AgreementRow): ReactNode => {
+      const client = clients.find((c) => c.client_name === row.client_name);
+      return (
+        <span className="flex items-center gap-2">
+          {row.client_name}
+          {client?.avatar && (
+            <Image
+              src={client.avatar}
+              alt={client.client_name}
+              width={24}
+              height={24}
+              className="rounded-full"
+            />
+          )}
+        </span>
+      );
+    },
+  },
+  {
+    key: "agreement_referance",
+    label: "Reference",
+    filterable: true,
+    options: referenceOptions,
+    render: (value: unknown) => value ? String(value) : 'None',
   },
   {
     key: "agreement_date",
@@ -95,6 +127,7 @@ const columns: Column<AgreementRow>[] = [
 ];
 
 export default function AgreementsPage() {
+  const router = useRouter();
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -103,7 +136,11 @@ export default function AgreementsPage() {
           List of all agreements with project and client details
         </p>
       </div>
-      <TableBuilder data={agreementsData} columns={columns} />
+      <TableBuilder
+        data={agreementsData}
+        columns={columns}
+        onRowClick={(row) => router.push(`/dashboard/agreements/${row.agreement_id}`)}
+      />
     </div>
   );
 } 
