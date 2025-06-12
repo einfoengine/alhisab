@@ -70,7 +70,9 @@
       "end_date": "2024-06-20",
       "tags": ["tag_001", "tag_003"],
       "content_type": "Static",
-      "mother_task": null
+      "mother_task": null,
+      "platforms": ["Website"],
+      "project_id": "proj_001"
     },
     {
       "id": "task_002",
@@ -88,7 +90,9 @@
       "end_date": "2024-06-12",
       "tags": ["tag_002"],
       "content_type": "Static",
-      "mother_task": "task_001"
+      "mother_task": "task_001",
+      "platforms": ["Website"],
+      "project_id": "proj_001"
     },
     {
       "id": "task_003",
@@ -106,7 +110,9 @@
       "end_date": "2024-06-15",
       "tags": ["tag_002"],
       "content_type": "Static",
-      "mother_task": "task_001"
+      "mother_task": "task_001",
+      "platforms": ["Website"],
+      "project_id": "proj_001"
     },
     {
       "id": "task_004",
@@ -124,7 +130,9 @@
       "end_date": "2024-06-18",
       "tags": ["tag_002"],
       "content_type": "Static",
-      "mother_task": "task_001"
+      "mother_task": "task_001",
+      "platforms": ["Website"],
+      "project_id": "proj_001"
     },
     {
       "id": "task_005",
@@ -142,7 +150,9 @@
       "end_date": "2024-06-30",
       "tags": ["tag_004", "tag_005"],
       "content_type": "Static",
-      "mother_task": null
+      "mother_task": null,
+      "platforms": ["Website"],
+      "project_id": "proj_001"
     },
     {
       "id": "task_006",
@@ -160,7 +170,9 @@
       "end_date": "2024-06-13",
       "tags": ["tag_005"],
       "content_type": "Static",
-      "mother_task": "task_005"
+      "mother_task": "task_005",
+      "platforms": ["Website"],
+      "project_id": "proj_001"
     },
     {
       "id": "task_007",
@@ -178,7 +190,9 @@
       "end_date": "2024-06-15",
       "tags": ["tag_001"],
       "content_type": "Static",
-      "mother_task": null
+      "mother_task": null,
+      "platforms": ["Website"],
+      "project_id": "proj_001"
     },
     {
       "id": "task_008",
@@ -196,7 +210,9 @@
       "end_date": "2024-06-18",
       "tags": ["tag_001"],
       "content_type": "Static",
-      "mother_task": "task_007"
+      "mother_task": "task_007",
+      "platforms": ["Website"],
+      "project_id": "proj_001"
     }
   ]
 } 
