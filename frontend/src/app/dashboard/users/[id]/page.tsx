@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import PageHeader from '@/components/elements/PageHeader';
 import users from '@/data/users.json';
 import projects from '@/data/projects.json';
+import Image from 'next/image';
 
 const UserDetailsPage = () => {
   const params = useParams();
@@ -17,7 +18,7 @@ const UserDetailsPage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-gray-900">User not found</h1>
-          <p className="mt-2 text-gray-600">The user you're looking for doesn't exist.</p>
+          <p className="mt-2 text-gray-600">The user you&apos;re looking for doesn&apos;t exist.</p>
         </div>
       </div>
     );
@@ -36,14 +37,16 @@ const UserDetailsPage = () => {
             {/* Profile Card */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-start gap-6">
-                <img 
-                  src={user.avatar} 
+                <Image
+                  src={user.avatar || '/default-avatar.png'}
                   alt={user.name}
-                  className="w-24 h-24 rounded-full"
+                  width={96}
+                  height={96}
+                  className="rounded-full"
                 />
                 <div className="flex-1">
                   <h2 className="text-2xl font-semibold text-gray-900">{user.name}</h2>
-                  <p className="text-gray-600">{user.email}</p>
+                  <p className="text-gray-600">{user.name}&apos;s Profile</p>
                   <div className="mt-2 flex items-center gap-2">
                     <span className={`px-2 py-1 rounded-full text-sm ${
                       user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'

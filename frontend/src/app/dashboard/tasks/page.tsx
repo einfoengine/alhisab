@@ -25,6 +25,7 @@ import { CSS } from '@dnd-kit/utilities';
 import projectsData from '@/data/projects.json';
 import { ChevronUpIcon, ChevronDownIcon, FunnelIcon } from '@heroicons/react/24/outline';
 import servicesData from '@/data/services.json';
+import Image from 'next/image';
 
 type User = {
   id: string;
@@ -640,11 +641,13 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
               task.assigned_to.map((userId: string) => {
                 const user = users.users.find((u: User) => u.id === userId);
                 return user ? (
-                  <img
+                  <Image
                     key={user.id}
                     src={user.avatar || '/default-avatar.png'}
                     alt={user.name}
-                    className="w-7 h-7 rounded-full border-2 border-white shadow-sm"
+                    width={28}
+                    height={28}
+                    className="rounded-full border-2 border-white shadow-sm"
                     title={user.name}
                   />
                 ) : null;
@@ -669,7 +672,7 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
                     className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 rounded ${task.assigned_to.includes(meUser.id) ? 'bg-pink-100' : ''}`}
                     onClick={() => handleAssigneeToggle(meUser.id)}
                   >
-                    <img src={meUser.avatar || '/default-avatar.png'} alt={meUser.name} className="w-7 h-7 rounded-full border-2 border-pink-400" />
+                    <Image src={meUser.avatar || '/default-avatar.png'} alt={meUser.name} width={28} height={28} className="rounded-full border-2 border-pink-400" />
                     <span className="font-medium">Me</span>
                     {task.assigned_to.includes(meUser.id) && <span className="ml-auto text-pink-500">✓</span>}
                   </div>
@@ -680,7 +683,7 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
                     className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 rounded ${task.assigned_to.includes(user.id) ? 'bg-blue-100' : ''}`}
                     onClick={() => handleAssigneeToggle(user.id)}
                   >
-                    <img src={user.avatar || '/default-avatar.png'} alt={user.name} className="w-7 h-7 rounded-full border-2 border-white" />
+                    <Image src={user.avatar || '/default-avatar.png'} alt={user.name} width={28} height={28} className="rounded-full border-2 border-white" />
                     <span>{user.name}</span>
                     {task.assigned_to.includes(user.id) && <span className="ml-auto text-blue-500">✓</span>}
                   </div>

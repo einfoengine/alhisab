@@ -1,46 +1,34 @@
 'use client';
 
 import React from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { motion } from 'framer-motion';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
-export type DraggableItem = {
+type DraggableItem = {
   id: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
-interface DraggableListProps<T extends DraggableItem> {
-  items: T[];
-  onReorder: (items: T[]) => void;
-  renderItem: (item: T, index: number) => React.ReactNode;
+interface DraggableListProps {
+  items: DraggableItem[];
+  onReorder: (items: DraggableItem[]) => void;
+  renderItem: (item: DraggableItem) => React.ReactNode;
   className?: string;
 }
 
-const DraggableList = <T extends DraggableItem>({
-  items,
-  onReorder,
-  renderItem,
-  className = '',
-}: DraggableListProps<T>) => {
-  const handleDragEnd = (result: any) => {
+const DraggableList: React.FC<DraggableListProps> = ({ items, onReorder, renderItem, className = '' }) => {
+  const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-
+    
     const newItems = Array.from(items);
     const [reorderedItem] = newItems.splice(result.source.index, 1);
     newItems.splice(result.destination.index, 0, reorderedItem);
-
-    // Update order property for each item
-    const updatedItems = newItems.map((item, index) => ({
-      ...item,
-      order: index + 1,
-    }));
-
-    onReorder(updatedItems);
+    
+    onReorder(newItems);
   };
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="tasks">
+      <Droppable droppableId="draggable-list">
         {(provided) => (
           <div
             {...provided.droppableProps}
@@ -50,20 +38,16 @@ const DraggableList = <T extends DraggableItem>({
             {items.map((item, index) => (
               <Draggable key={item.id} draggableId={item.id} index={index}>
                 {(provided, snapshot) => (
-                  <motion.div
+                  <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.2 }}
-                    className={`transform transition-all duration-200 ${
-                      snapshot.isDragging ? 'scale-105 shadow-lg' : ''
+                    className={`p-4 bg-white rounded-lg shadow-sm transform transition-all duration-200 ${
+                      snapshot.isDragging ? 'scale-105 shadow-md' : ''
                     }`}
                   >
-                    {renderItem(item, index)}
-                  </motion.div>
+                    {renderItem(item)}
+                  </div>
                 )}
               </Draggable>
             ))}

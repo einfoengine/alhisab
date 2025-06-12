@@ -8,6 +8,7 @@ import clients from '@/data/clients.json';
 import services from '@/data/services.json';
 import packages from '@/data/packages.json';
 import PageHeader from '@/components/elements/PageHeader';
+import Image from 'next/image';
 
 type ServiceWithDiscount = {
   id: string;
@@ -89,10 +90,12 @@ const ProjectsPage = () => {
         return (
           <div className="flex items-center gap-2">
             {client?.avatar && (
-              <img 
-                src={client.avatar} 
+              <Image
+                src={client.avatar}
                 alt={client.client_name}
-                className="w-8 h-8 rounded-full"
+                width={48}
+                height={48}
+                className="rounded-full"
               />
             )}
             <div>
