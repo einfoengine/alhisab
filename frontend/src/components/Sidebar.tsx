@@ -19,12 +19,12 @@ import {
 
 const menuItems = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+  { name: 'Users', href: '/dashboard/users', icon: UserIcon },
   { name: 'Messages', href: '/dashboard/messages', icon: UserGroupIcon },
   { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
   { name: 'Packages', href: '/dashboard/packages', icon: CubeIcon },
   { name: 'Leads', href: '/dashboard/leads', icon: UserGroupIcon },
   { name: 'Tasks', href: '/dashboard/tasks', icon: CheckBadgeIcon },
-  { name: 'Users', href: '/dashboard/users', icon: UserIcon },
   { name: 'Clients', href: '/dashboard/clients', icon: UserIcon },
   { name: 'Agreements', href: '/dashboard/agreements', icon: ClipboardDocumentIcon },
   { name: 'Projects', href: '/dashboard/projects', icon: DocumentTextIcon },
