@@ -2,6 +2,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import projectsData from '@/data/projects.json';
+import usersData from '@/data/users.json';
 
 const DEFAULT_PLATFORMS = [
   "Facebook",
@@ -328,18 +329,44 @@ export default function NewAuditPage() {
   };
 
   // Project name dropdown
-  const projectOptions: { value: string; label: string }[] = (projectsData.projects || []).map((p: any) => ({ value: p.name, label: p.name }));
+  const projectOptions: { value: string; label: string }[] = (projectsData.projects || []).map((p: { name: string }) => ({ value: p.name, label: p.name }));
+
+  // Dedicated handler for Prepared By dropdown
+  const handlePreparedByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setForm((prev) => ({ ...prev, prepared_by: value }));
+  };
+
+  // Prepared By dropdown options
+  const preparedByOptions: { value: string; label: string }[] = (usersData.users || []).map((u: { name: string }) => ({ value: u.name, label: u.name }));
 
   // Add metric logic
   const addMetric = (platIdx: number, type: "organic" | "paid") => {
     setForm((prev) => {
       const updated = { ...prev };
       const platforms = [...project.platforms];
-      platforms[platIdx][type].metrics = [
-        ...platforms[platIdx][type].metrics,
-        { metric: "", my_matrix: "", required_matrix: "", status: "" } as { metric: string; my_matrix: string; required_matrix: string; status: string }
-      ];
+      platforms[platIdx][type].metrics = [...platforms[platIdx][type].metrics];
+      platforms[platIdx][type].metrics.push({ metric: "", my_matrix: "", required_matrix: "", status: "" });
       updated.projects = [ { ...project, platforms } ];
+      return updated;
+    });
+  };
+
+  // Cross-Platform Summary add/remove logic
+  const addCrossSummary = () => {
+    setForm((prev) => {
+      const updated = { ...prev };
+      const cross = [...project.cross_platform_summary.platforms];
+      cross.push({ platform: "", organic_score: "", paid_media_score: "", total_score: "" });
+      updated.projects = [ { ...project, cross_platform_summary: { platforms: cross } } ];
+      return updated;
+    });
+  };
+  const removeCrossSummary = (idx: number) => {
+    setForm((prev) => {
+      const updated = { ...prev };
+      const cross = project.cross_platform_summary.platforms.filter((_, i) => i !== idx);
+      updated.projects = [ { ...project, cross_platform_summary: { platforms: cross } } ];
       return updated;
     });
   };
@@ -389,7 +416,10 @@ export default function NewAuditPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Prepared By</label>
-            <input name="prepared_by" value={form.prepared_by} onChange={handleChange} className="mt-1 block w-full border rounded p-2" required />
+            <select name="prepared_by" value={form.prepared_by} onChange={handlePreparedByChange} className="mt-1 block w-full border rounded p-2" required>
+              <option value="">Select user</option>
+              {preparedByOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+            </select>
           </div>
         </div>
         <hr />
@@ -419,7 +449,7 @@ export default function NewAuditPage() {
               <h3 className="font-semibold text-blue-700">Organic Metrics</h3>
               {platform.organic.metrics.map((metric: { metric: string; my_matrix: string; required_matrix: string; status: string }, metIdx: number) => (
                 <div key={metIdx} className="flex gap-2 mb-1">
-                  <input value={metric.metric} readOnly className="border rounded p-1 w-1/4 bg-gray-100" />
+                  <input value={metric.metric} readOnly={!!metric.metric} onChange={e => handleMetricChange(platIdx, "organic", metIdx, "metric", e.target.value)} className="border rounded p-1 w-1/4" placeholder="Metric" required />
                   <input value={metric.my_matrix} onChange={e => handleMetricChange(platIdx, "organic", metIdx, "my_matrix", e.target.value)} className="border rounded p-1 w-1/4" placeholder="My Matrix" required />
                   <input value={metric.required_matrix} onChange={e => handleMetricChange(platIdx, "organic", metIdx, "required_matrix", e.target.value)} className="border rounded p-1 w-1/4" placeholder="Required Matrix" required />
                   <input value={metric.status} onChange={e => handleMetricChange(platIdx, "organic", metIdx, "status", e.target.value)} className="border rounded p-1 w-1/4" placeholder="Status" required />
@@ -437,7 +467,7 @@ export default function NewAuditPage() {
               <h3 className="font-semibold text-orange-700">Paid Metrics</h3>
               {platform.paid.metrics.map((metric: { metric: string; my_matrix: string; required_matrix: string; status: string }, metIdx: number) => (
                 <div key={metIdx} className="flex gap-2 mb-1">
-                  <input value={metric.metric} readOnly className="border rounded p-1 w-1/4 bg-gray-100" />
+                  <input value={metric.metric} readOnly={!!metric.metric} onChange={e => handleMetricChange(platIdx, "paid", metIdx, "metric", e.target.value)} className="border rounded p-1 w-1/4" placeholder="Metric" required />
                   <input value={metric.my_matrix} onChange={e => handleMetricChange(platIdx, "paid", metIdx, "my_matrix", e.target.value)} className="border rounded p-1 w-1/4" placeholder="My Matrix" required />
                   <input value={metric.required_matrix} onChange={e => handleMetricChange(platIdx, "paid", metIdx, "required_matrix", e.target.value)} className="border rounded p-1 w-1/4" placeholder="Required Matrix" required />
                   <input value={metric.status} onChange={e => handleMetricChange(platIdx, "paid", metIdx, "status", e.target.value)} className="border rounded p-1 w-1/4" placeholder="Status" required />
@@ -461,8 +491,10 @@ export default function NewAuditPage() {
             <input value={row.organic_score} onChange={e => handleCrossSummaryChange(idx, "organic_score", e.target.value)} className="border rounded p-1" placeholder="Organic Score" required />
             <input value={row.paid_media_score} onChange={e => handleCrossSummaryChange(idx, "paid_media_score", e.target.value)} className="border rounded p-1" placeholder="Paid Media Score" required />
             <input value={row.total_score} onChange={e => handleCrossSummaryChange(idx, "total_score", e.target.value)} className="border rounded p-1" placeholder="Total Score" required />
+            <button type="button" onClick={() => removeCrossSummary(idx)} className="text-red-400">x</button>
           </div>
         ))}
+        <button type="button" onClick={addCrossSummary} className="text-blue-600 text-xs">+ Add Row</button>
         <hr />
         {/* Recommendations */}
         <h2 className="text-lg font-semibold">Recommendations</h2>

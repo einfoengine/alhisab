@@ -78,10 +78,6 @@ interface Audit {
   projects: Project[];
 }
 
-interface Params {
-  params: { id: string };
-}
-
 function statusColor(status: string): string {
   switch (status.toLowerCase()) {
     case 'ok':
@@ -319,9 +315,10 @@ function getPlatformMetrics(platform: Platform) {
   return { organicMetrics, paidMetrics };
 }
 
-export default function AuditDetailsPage({ params }: Params) {
+export default async function AuditDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const audits: Audit[] = auditDataRaw as Audit[];
-  const audit = audits.find((a) => String(a.report_id) === params.id);
+  const audit = audits.find((a) => String(a.report_id) === id);
   if (!audit) return notFound();
   // For now, show the first project (or you can add a selector for multiple projects)
   const project = audit.projects[0];

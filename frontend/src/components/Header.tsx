@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { BellIcon, Bars3Icon } from '@heroicons/react/24/outline';
 import OffCanvasMenu from './OffCanvasMenu';
+import TopMenu from './TopMenu';
 
 export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -15,12 +16,9 @@ export default function Header() {
 
   return (
     <>
-      <header className="nt-component nt-header h-16">
-        <div className="h-full px-6 flex items-center justify-between">
-          <div className="flex items-center">
-            <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
-          </div>
-          
+      <header className="nt-component nt-header">
+        <TopMenu />
+        <div className="h-16 px-6 flex items-center justify-end border-b border-gray-200">
           <div className="flex items-center space-x-4">
             <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full">
               <BellIcon className="h-6 w-6" />

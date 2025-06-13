@@ -1,25 +1,13 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
-import Header from '@/components/Header';
-// import '../../styles/dashboard.scss';
+import DashboardShell from './DashboardShell';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   if (!children) {
     notFound();
   }
 
-  return (
-    <div className="nt-dashboard min-h-screen bg-gray-50 flex">
-      <Sidebar />
-      <div className="nt-main-body grow">
-        <Header />
-        <main className="nt-contents">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+  return <DashboardShell>{children}</DashboardShell>;
 };
 
 export default DashboardLayout;

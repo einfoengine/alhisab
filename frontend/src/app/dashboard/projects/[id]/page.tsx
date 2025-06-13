@@ -270,10 +270,10 @@ const ProjectDetailsPage = () => {
                       </div>
                       <div className="mt-2">
                         <p className="text-sm text-gray-600">
-                          Amount: {invoice.currency} {invoice.total_amount.toLocaleString()}
+                          Amount: $ {invoice.total.toLocaleString()}
                         </p>
                         <p className="text-sm text-gray-600">
-                          Due: {invoice.currency} {invoice.due_amount.toLocaleString()}
+                          Due: $ {invoice.total.toLocaleString()}
                         </p>
                       </div>
                     </div>
