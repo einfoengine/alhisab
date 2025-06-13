@@ -17,6 +17,7 @@ import {
   LineElement,
 } from 'chart.js';
 import { Bar, Doughnut, Line, Pie } from 'react-chartjs-2';
+import { FaInfoCircle } from 'react-icons/fa';
 // import projectsData from '../../../../data/projects.json';
 // import { jsPDF } from 'jspdf';
 
@@ -103,8 +104,11 @@ function generatePDF(audit: Audit, project: Project) {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' }) as jsPDF & { lastAutoTable?: { finalY: number } };
   let y = 40;
   doc.setFontSize(20);
-  doc.text(audit.report_title, 40, y);
-  y += 28;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const title = audit.report_title;
+  const titleLines = doc.splitTextToSize(title, pageWidth - 80);
+  doc.text(titleLines, 40, y);
+  y += 28 + (titleLines.length - 1) * 18;
   doc.setFontSize(12);
   doc.text(`Project: ${project.project_name}`, 40, y);
   y += 16;
@@ -116,6 +120,47 @@ function generatePDF(audit: Audit, project: Project) {
   y += 16;
   doc.text(`Date: ${audit.report_date}`, 40, y);
   y += 24;
+
+  doc.setFontSize(15);
+  doc.setFillColor(241, 245, 249);
+  doc.rect(35, y - 8, pageWidth - 70, 110, 'F');
+  doc.text('Audit Summary', 45, y + 10);
+  doc.setFontSize(12);
+  let sy = y + 30;
+  doc.text(`Avg. Content Quality: ${project.avg_content_quality || '-'}`, 50, sy);
+  doc.text(`Conversion Potential: ${project.conversion_potential || '-'}`, 250, sy);
+  sy += 18;
+  if (project.content_ratio) {
+    doc.text(`Content Ratio (Direct/Other): ${project.content_ratio.direct}% / ${project.content_ratio.other}%`, 50, sy);
+    sy += 18;
+  }
+  if (project.traffic_sources) {
+    doc.text('Traffic Sources:', 50, sy);
+    let tx = 170;
+    project.traffic_sources.forEach((src) => {
+      doc.text(`${src.source}: ${src.percent}%`, tx, sy);
+      tx += 120;
+    });
+    sy += 18;
+  }
+  if (project.cross_platform_content_relation) {
+    doc.text('Cross-Platform Content Relation:', 50, sy);
+    sy += 16;
+    const relLines = doc.splitTextToSize(project.cross_platform_content_relation, pageWidth - 100);
+    doc.text(relLines, 60, sy);
+    sy += relLines.length * 14;
+  }
+  if (project.growth_factors) {
+    doc.text('Growth Factors:', 50, sy);
+    sy += 16;
+    project.growth_factors.forEach((factor) => {
+      doc.text(`- ${factor}`, 60, sy);
+      sy += 14;
+    });
+  }
+  y = sy + 10;
+  if (y > 700) { doc.addPage(); y = 40; }
+
   project.platforms.forEach((platform) => {
     doc.setFontSize(15);
     doc.text(`${platform.name} Audit`, 40, y);
@@ -390,39 +435,40 @@ export default function AuditDetailsPage({ params }: Params) {
       {/* New Audit Summary Section */}
       <section className="mb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
-            <div className="flex items-center gap-6">
+          <div className="bg-white rounded-xl shadow p-6 flex flex-col gap-4 border border-slate-100">
+            <div className="flex items-center gap-8 mb-2">
               <div>
-                <div className="text-xs text-gray-500">Avg. Content Quality</div>
+                <div className="text-xs text-gray-500 flex items-center gap-1">Avg. Content Quality <FaInfoCircle className="inline text-blue-400" title="Average quality of all content across platforms" /></div>
                 <div className="text-2xl font-bold text-blue-700">{project.avg_content_quality || '-'}</div>
               </div>
+              <div className="border-l h-10 mx-2" />
               <div>
-                <div className="text-xs text-gray-500">Conversion Potential</div>
+                <div className="text-xs text-gray-500 flex items-center gap-1">Conversion Potential <FaInfoCircle className="inline text-orange-400" title="Estimated conversion potential based on content and funnel" /></div>
                 <div className="text-xl font-semibold text-orange-600">{project.conversion_potential || '-'}</div>
               </div>
             </div>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-8">
               <div className="w-40">
-                <div className="text-xs text-gray-500 mb-1">Content Ratio</div>
+                <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">Content Ratio <FaInfoCircle className="inline text-slate-400" title="Ratio of direct product/service content vs other content" /></div>
                 {contentRatioData && (
                   <Pie data={contentRatioData} options={{ plugins: { legend: { position: 'bottom' } } }} />
                 )}
               </div>
               <div className="w-40">
-                <div className="text-xs text-gray-500 mb-1">Traffic Sources</div>
+                <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">Traffic Sources <FaInfoCircle className="inline text-slate-400" title="Distribution of traffic sources" /></div>
                 {trafficSourcesData && (
                   <Pie data={trafficSourcesData} options={{ plugins: { legend: { position: 'bottom' } } }} />
                 )}
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
+          <div className="bg-white rounded-xl shadow p-6 flex flex-col gap-4 border border-slate-100">
             <div>
-              <div className="text-xs text-gray-500 mb-1">Cross-Platform Content Relation</div>
+              <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">Cross-Platform Content Relation <FaInfoCircle className="inline text-slate-400" title="How consistent and unified content is across platforms" /></div>
               <div className="text-base text-gray-700">{project.cross_platform_content_relation || '-'}</div>
             </div>
             <div>
-              <div className="text-xs text-gray-500 mb-1">Growth Factors</div>
+              <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">Growth Factors <FaInfoCircle className="inline text-slate-400" title="Key factors driving growth" /></div>
               <ul className="list-disc pl-5 text-gray-700">
                 {project.growth_factors && project.growth_factors.map((factor: string, idx: number) => (
                   <li key={idx}>{factor}</li>
