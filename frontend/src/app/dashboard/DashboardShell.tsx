@@ -18,6 +18,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         style={{ marginLeft: collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH }}
       >
         <Header />
+        
         <main className="nt-contents">
           {children}
         </main>

@@ -63,7 +63,7 @@ const menuGroups = [
     ]
   },
   {
-    name: 'Audit & Compliance',
+    name: 'Audit & Strategies',
     icon: ShieldCheckIcon,
     items: [
       { name: 'Audit', href: '/dashboard/audit', icon: MagnifyingGlassCircleIcon },
@@ -98,6 +98,7 @@ interface SidebarProps {
 export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
   const pathname = usePathname();
   const [expandedGroups, setExpandedGroups] = useState<string[]>(['Main']);
+  const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
 
   const toggleGroup = (groupName: string) => {
     setExpandedGroups(prev =>
@@ -121,7 +122,10 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
         {menuGroups.map((group) => {
           const GroupIcon = group.icon;
           return (
-            <div key={group.name} className="mb-4">
+            <div key={group.name} className="mb-4 relative"
+              onMouseEnter={() => collapsed && setHoveredGroup(group.name)}
+              onMouseLeave={() => collapsed && setHoveredGroup(null)}
+            >
               <button
                 onClick={() => toggleGroup(group.name)}
                 className={`w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 ${collapsed ? 'justify-center px-0' : ''}`}
@@ -138,6 +142,30 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                   )
                 )}
               </button>
+              {/* Sliding menu for collapsed view */}
+              {collapsed && hoveredGroup === group.name && (
+                <div className="absolute left-full top-0 mt-0 ml-2 w-48 bg-white shadow-lg rounded-lg py-2 z-50 animate-slide-in">
+                  {group.items.map((item) => {
+                    const isActive = pathname === item.href;
+                    const ItemIcon = item.icon;
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={`flex items-center px-4 py-2 text-sm font-medium rounded transition-all duration-200 whitespace-nowrap ${
+                          isActive
+                            ? 'bg-blue-50 text-blue-600'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        }`}
+                      >
+                        <ItemIcon className="h-5 w-5 mr-3" />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+              {/* Expanded view */}
               {expandedGroups.includes(group.name) && !collapsed && (
                 <div className="mt-1">
                   {group.items.map((item) => {
