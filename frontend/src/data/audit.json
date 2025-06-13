@@ -151,6 +151,23 @@
           "Enhance organic SEO through backlink building and content refresh.",
           "Set specific ROAS goals for each paid campaign and optimize based on performance.",
           "Consider A/B testing creatives for better performance insights."
+        ],
+        "avg_content_quality": "7.2/10",
+        "conversion_potential": "Medium-High",
+        "content_ratio": { "direct": 62, "other": 38 },
+        "traffic_sources": [
+          { "source": "Organic Social", "percent": 38 },
+          { "source": "Paid Social", "percent": 27 },
+          { "source": "Search", "percent": 21 },
+          { "source": "Referral", "percent": 8 },
+          { "source": "Direct", "percent": 6 }
+        ],
+        "cross_platform_content_relation": "Content themes are moderately consistent across platforms, but campaign messaging is not always unified. Instagram and Facebook share the most overlap, while LinkedIn and Website content is more siloed.",
+        "growth_factors": [
+          "Consistent use of video content on Instagram and TikTok.",
+          "Strong paid media performance on Facebook.",
+          "SEO improvements driving organic website traffic.",
+          "Engagement from influencer collaborations."
         ]
       }
     ]

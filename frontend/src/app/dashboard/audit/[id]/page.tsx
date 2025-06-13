@@ -16,7 +16,7 @@ import {
   PointElement,
   LineElement,
 } from 'chart.js';
-import { Bar, Doughnut, Line } from 'react-chartjs-2';
+import { Bar, Doughnut, Line, Pie } from 'react-chartjs-2';
 // import projectsData from '../../../../data/projects.json';
 // import { jsPDF } from 'jspdf';
 
@@ -56,6 +56,18 @@ interface Project {
     platforms: CrossPlatformSummaryRow[];
   };
   recommendations: string[];
+  avg_content_quality?: number;
+  conversion_potential?: number;
+  content_ratio?: {
+    direct: number;
+    other: number;
+  };
+  traffic_sources?: {
+    source: string;
+    percent: number;
+  }[];
+  cross_platform_content_relation?: string;
+  growth_factors?: string[];
 }
 interface Audit {
   report_id: string;
@@ -319,6 +331,35 @@ export default function AuditDetailsPage({ params }: Params) {
     ],
   };
 
+  // Prepare data for new summary section
+  const contentRatioData = project.content_ratio
+    ? {
+        labels: ['Direct Product/Service', 'Other Content'],
+        datasets: [
+          {
+            data: [project.content_ratio.direct, project.content_ratio.other],
+            backgroundColor: ['#2563eb', '#f59e42'],
+            borderWidth: 1,
+          },
+        ],
+      }
+    : null;
+
+  const trafficSourcesData = project.traffic_sources
+    ? {
+        labels: project.traffic_sources.map((s) => s.source),
+        datasets: [
+          {
+            data: project.traffic_sources.map((s) => s.percent),
+            backgroundColor: [
+              '#2563eb', '#f59e42', '#22c55e', '#ef4444', '#a3a3a3', '#3b82f6', '#fbbf24', '#6366f1', '#14b8a6', '#eab308'
+            ],
+            borderWidth: 1,
+          },
+        ],
+      }
+    : null;
+
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: 32, background: '#f8fafc', minHeight: '100vh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
@@ -345,6 +386,53 @@ export default function AuditDetailsPage({ params }: Params) {
         <div style={{ flex: 1 }}><b>Date:</b> {audit.report_date}</div>
         <div style={{ flex: 1 }}><b>Prepared By:</b> {audit.prepared_by}</div>
       </section>
+
+      {/* New Audit Summary Section */}
+      <section className="mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
+            <div className="flex items-center gap-6">
+              <div>
+                <div className="text-xs text-gray-500">Avg. Content Quality</div>
+                <div className="text-2xl font-bold text-blue-700">{project.avg_content_quality || '-'}</div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-500">Conversion Potential</div>
+                <div className="text-xl font-semibold text-orange-600">{project.conversion_potential || '-'}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-6">
+              <div className="w-40">
+                <div className="text-xs text-gray-500 mb-1">Content Ratio</div>
+                {contentRatioData && (
+                  <Pie data={contentRatioData} options={{ plugins: { legend: { position: 'bottom' } } }} />
+                )}
+              </div>
+              <div className="w-40">
+                <div className="text-xs text-gray-500 mb-1">Traffic Sources</div>
+                {trafficSourcesData && (
+                  <Pie data={trafficSourcesData} options={{ plugins: { legend: { position: 'bottom' } } }} />
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6 flex flex-col gap-4">
+            <div>
+              <div className="text-xs text-gray-500 mb-1">Cross-Platform Content Relation</div>
+              <div className="text-base text-gray-700">{project.cross_platform_content_relation || '-'}</div>
+            </div>
+            <div>
+              <div className="text-xs text-gray-500 mb-1">Growth Factors</div>
+              <ul className="list-disc pl-5 text-gray-700">
+                {project.growth_factors && project.growth_factors.map((factor: string, idx: number) => (
+                  <li key={idx}>{factor}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {project.platforms.map((platform) => {
         const { organicMetrics, paidMetrics } = getPlatformMetrics(platform);
         
