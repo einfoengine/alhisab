@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   HomeIcon,
   BriefcaseIcon,
@@ -97,9 +97,17 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
-  const pathname = usePathname();
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(['Main']);
+  const rawPathname = usePathname();
+  const pathname = rawPathname || '';
+  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
+
+  useEffect(() => {
+    const groupWithActive = menuGroups.find((group) =>
+      group.items.some((item) => pathname.startsWith(item.href))
+    );
+    setExpandedGroups(groupWithActive ? [groupWithActive.name] : []);
+  }, [pathname]);
 
   const toggleGroup = (groupName: string) => {
     setExpandedGroups(prev =>
@@ -153,7 +161,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                       <Link
                         key={item.name}
                         href={item.href}
-                        className={`flex items-center px-4 py-2 text-sm font-medium rounded transition-all duration-200 whitespace-nowrap ${
+                        className={`flex items-center px-4 py-2 text-sm font-medium rounded transition-all duration-200 ${
                           isActive
                             ? 'bg-blue-50 text-blue-600'
                             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -190,7 +198,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                         href={item.href}
                         className={`flex items-center px-8 py-2 text-sm font-medium rounded transition-all duration-200 ${
                           isActive
-                            ? 'bg-blue-50 text-blue-600'
+                            ? 'bg-blue-600 text-white font-bold shadow focus:outline-none ring-2 ring-blue-300'
                             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                         }`}
                       >
