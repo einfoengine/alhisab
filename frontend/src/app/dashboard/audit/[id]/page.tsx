@@ -4,6 +4,19 @@ import { notFound } from 'next/navigation';
 import auditDataRaw from '../../../../data/audit.json';
 import { jsPDF } from 'jspdf';
 import autoTable, { RowInput, CellHookData } from 'jspdf-autotable';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement,
+} from 'chart.js';
+import { Bar, Doughnut, Line } from 'react-chartjs-2';
 // import projectsData from '../../../../data/projects.json';
 // import { jsPDF } from 'jspdf';
 
@@ -202,6 +215,41 @@ function generatePDF(audit: Audit, project: Project) {
   doc.save(`${audit.report_title.replace(/\s+/g, '_')}.pdf`);
 }
 
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement
+);
+
+function getStatusCounts(platforms: Platform[]): { [key: string]: number } {
+  const counts: { [key: string]: number } = {};
+  platforms.forEach(platform => {
+    platform.organic.metrics.forEach(metric => {
+      counts[metric.status] = (counts[metric.status] || 0) + 1;
+    });
+    platform.paid.metrics.forEach(metric => {
+      counts[metric.status] = (counts[metric.status] || 0) + 1;
+    });
+  });
+  return counts;
+}
+
+function getPlatformScores(platforms: Platform[]): { [key: string]: { organic: number; paid: number } } {
+  const scores: { [key: string]: { organic: number; paid: number } } = {};
+  platforms.forEach(platform => {
+    const organicScore = parseFloat(platform.organic.summary.average_performance);
+    const paidScore = parseFloat(platform.paid.summary.average_performance);
+    scores[platform.name] = { organic: organicScore, paid: paidScore };
+  });
+  return scores;
+}
+
 export default function AuditDetailsPage({ params }: Params) {
   const audits: Audit[] = auditDataRaw as Audit[];
   const audit = audits.find((a) => String(a.report_id) === params.id);
@@ -209,6 +257,64 @@ export default function AuditDetailsPage({ params }: Params) {
   // For now, show the first project (or you can add a selector for multiple projects)
   const project = audit.projects[0];
   const projectName = project ? project.project_name : '';
+
+  if (!project) {
+    return notFound();
+  }
+
+  const statusCounts = getStatusCounts(project.platforms);
+  const platformScores = getPlatformScores(project.platforms);
+
+  const statusData = {
+    labels: Object.keys(statusCounts),
+    datasets: [
+      {
+        data: Object.values(statusCounts),
+        backgroundColor: [
+          '#22c55e', // ok
+          '#ef4444', // below
+          '#f59e42', // high
+          '#3b82f6', // low
+          '#a3a3a3', // short/slow
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const platformComparisonData = {
+    labels: Object.keys(platformScores),
+    datasets: [
+      {
+        label: 'Organic Score',
+        data: Object.values(platformScores).map(s => s.organic),
+        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+        borderColor: 'rgb(59, 130, 246)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Paid Score',
+        data: Object.values(platformScores).map(s => s.paid),
+        backgroundColor: 'rgba(245, 158, 66, 0.5)',
+        borderColor: 'rgb(245, 158, 66)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const trendData = {
+    labels: Object.keys(platformScores),
+    datasets: [
+      {
+        label: 'Total Score',
+        data: Object.values(platformScores).map(s => (s.organic + s.paid) / 2),
+        borderColor: 'rgb(34, 197, 94)',
+        backgroundColor: 'rgba(34, 197, 94, 0.5)',
+        tension: 0.4,
+      },
+    ],
+  };
+
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: 32, background: '#f8fafc', minHeight: '100vh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
@@ -353,6 +459,75 @@ export default function AuditDetailsPage({ params }: Params) {
           ))}
         </ul>
       </section>
+
+      {/* Graphs Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-4">Status Distribution</h3>
+          <div className="h-64">
+            <Doughnut
+              data={statusData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                  },
+                },
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-4">Platform Performance Comparison</h3>
+          <div className="h-64">
+            <Bar
+              data={platformComparisonData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                  },
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    max: 10,
+                  },
+                },
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow md:col-span-2">
+          <h3 className="text-lg font-semibold mb-4">Performance Trend</h3>
+          <div className="h-64">
+            <Line
+              data={trendData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                  },
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    max: 10,
+                  },
+                },
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 } 
