@@ -69,36 +69,22 @@ interface Params {
   params: { id: string };
 }
 
-function StatusBadge({ status }: { status: string }) {
-  let color = '#6b7280'; // gray
-  if (status.toLowerCase() === 'ok') color = '#22c55e'; // green
-  else if (status.toLowerCase() === 'below') color = '#ef4444'; // red
-  else if (status.toLowerCase() === 'high') color = '#f59e42'; // orange
-  else if (status.toLowerCase() === 'low') color = '#3b82f6'; // blue
-  else if (status.toLowerCase() === 'short' || status.toLowerCase() === 'slow') color = '#a3a3a3'; // gray
-  return (
-    <span style={{
-      display: 'inline-block',
-      minWidth: 60,
-      textAlign: 'center',
-      background: color + '22',
-      color,
-      borderRadius: 12,
-      fontWeight: 600,
-      fontSize: 13,
-      padding: '2px 12px',
-      letterSpacing: 0.5,
-    }}>{status}</span>
-  );
-}
-
-function statusColor(status: string): [number, number, number] {
-  if (status.toLowerCase() === 'ok') return [34, 197, 94]; // green
-  if (status.toLowerCase() === 'below') return [239, 68, 68]; // red
-  if (status.toLowerCase() === 'high') return [245, 158, 66]; // orange
-  if (status.toLowerCase() === 'low') return [59, 130, 246]; // blue
-  if (status.toLowerCase() === 'short' || status.toLowerCase() === 'slow') return [163, 163, 163]; // gray
-  return [107, 114, 128]; // default gray
+function statusColor(status: string): string {
+  switch (status.toLowerCase()) {
+    case 'ok':
+      return '#22c55e'; // green
+    case 'below':
+      return '#ef4444'; // red
+    case 'high':
+      return '#f59e42'; // orange
+    case 'low':
+      return '#3b82f6'; // blue
+    case 'short':
+    case 'slow':
+      return '#a3a3a3'; // gray
+    default:
+      return '#6b7280'; // default gray
+  }
 }
 
 function generatePDF(audit: Audit, project: Project) {
@@ -250,6 +236,24 @@ function getPlatformScores(platforms: Platform[]): { [key: string]: { organic: n
   return scores;
 }
 
+function getPlatformMetrics(platform: Platform) {
+  const organicMetrics = platform.organic.metrics.map(m => ({
+    metric: m.metric,
+    score: parseFloat(m.my_matrix),
+    required: parseFloat(m.required_matrix),
+    status: m.status
+  }));
+
+  const paidMetrics = platform.paid.metrics.map(m => ({
+    metric: m.metric,
+    score: parseFloat(m.my_matrix),
+    required: parseFloat(m.required_matrix),
+    status: m.status
+  }));
+
+  return { organicMetrics, paidMetrics };
+}
+
 export default function AuditDetailsPage({ params }: Params) {
   const audits: Audit[] = auditDataRaw as Audit[];
   const audit = audits.find((a) => String(a.report_id) === params.id);
@@ -341,116 +345,325 @@ export default function AuditDetailsPage({ params }: Params) {
         <div style={{ flex: 1 }}><b>Date:</b> {audit.report_date}</div>
         <div style={{ flex: 1 }}><b>Prepared By:</b> {audit.prepared_by}</div>
       </section>
-      {project && project.platforms.map((platform) => (
-        <section key={platform.name} style={{ margin: '32px 0', background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, boxShadow: '0 2px 12px #0001', padding: 32 }}>
-          <h2 style={{ fontSize: 22, marginBottom: 18, color: '#222', letterSpacing: 0.5 }}>{platform.name} Audit</h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32 }}>
-            <div style={{ width: '100%' }}>
-              <h3 style={{ fontSize: 17, marginBottom: 8, color: '#2563eb' }}>Organic Performance</h3>
-              <table style={{ width: '100%', margin: '8px 0', borderCollapse: 'collapse', background: '#f9fafb', borderRadius: 8, overflow: 'hidden' }}>
-                <thead>
-                  <tr style={{ background: '#f1f5f9' }}>
-                    <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>Metric</th>
-                    <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>My Matrix</th>
-                    <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>Required Matrix</th>
-                    <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {platform.organic.metrics.map((m, i) => (
-                    <tr key={i} style={{ background: i % 2 === 0 ? '#fff' : '#f3f4f6' }}>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{m.metric}</td>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{m.my_matrix}</td>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{m.required_matrix}</td>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}><StatusBadge status={m.status} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div style={{ marginTop: 8 }}>
-                <b>Organic Summary Table</b>
-                <table style={{ width: '100%', margin: '8px 0', borderCollapse: 'collapse', background: '#f9fafb', borderRadius: 8 }}>
-                  <thead>
-                    <tr style={{ background: '#f1f5f9' }}>
-                      <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>Metric Category</th>
-                      <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>Average Performance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{platform.organic.summary.category}</td>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{platform.organic.summary.average_performance}</td>
-                    </tr>
-                  </tbody>
-                </table>
+      {project.platforms.map((platform) => {
+        const { organicMetrics, paidMetrics } = getPlatformMetrics(platform);
+        
+        const platformData = {
+          labels: ['Organic', 'Paid'],
+          datasets: [
+            {
+              label: 'Average Performance',
+              data: [
+                parseFloat(platform.organic.summary.average_performance),
+                parseFloat(platform.paid.summary.average_performance)
+              ],
+              backgroundColor: [
+                'rgba(59, 130, 246, 0.5)',
+                'rgba(245, 158, 66, 0.5)'
+              ],
+              borderColor: [
+                'rgb(59, 130, 246)',
+                'rgb(245, 158, 66)'
+              ],
+              borderWidth: 1
+            }
+          ]
+        };
+
+        const metricsData = {
+          labels: organicMetrics.map(m => m.metric),
+          datasets: [
+            {
+              label: 'Current Score',
+              data: organicMetrics.map(m => m.score),
+              backgroundColor: 'rgba(59, 130, 246, 0.5)',
+              borderColor: 'rgb(59, 130, 246)',
+              borderWidth: 1
+            },
+            {
+              label: 'Required Score',
+              data: organicMetrics.map(m => m.required),
+              backgroundColor: 'rgba(245, 158, 66, 0.5)',
+              borderColor: 'rgb(245, 158, 66)',
+              borderWidth: 1
+            }
+          ]
+        };
+
+        const paidMetricsData = {
+          labels: paidMetrics.map(m => m.metric),
+          datasets: [
+            {
+              label: 'Current Score',
+              data: paidMetrics.map(m => m.score),
+              backgroundColor: 'rgba(59, 130, 246, 0.5)',
+              borderColor: 'rgb(59, 130, 246)',
+              borderWidth: 1
+            },
+            {
+              label: 'Required Score',
+              data: paidMetrics.map(m => m.required),
+              backgroundColor: 'rgba(245, 158, 66, 0.5)',
+              borderColor: 'rgb(245, 158, 66)',
+              borderWidth: 1
+            }
+          ]
+        };
+
+        return (
+          <section key={platform.name} className="mb-12">
+            <h2 className="text-2xl font-bold mb-6">{platform.name} Audit</h2>
+            
+            {/* Platform Graphs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-4">Performance Overview</h3>
+                <div className="h-64">
+                  <Bar
+                    data={platformData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          display: false
+                        }
+                      },
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          max: 10
+                        }
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-4">Organic Metrics Comparison</h3>
+                <div className="h-64">
+                  <Bar
+                    data={metricsData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          position: 'bottom'
+                        }
+                      },
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          max: 10
+                        }
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-4">Paid Metrics Comparison</h3>
+                <div className="h-64">
+                  <Bar
+                    data={paidMetricsData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          position: 'bottom'
+                        }
+                      },
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          max: 10
+                        }
+                      }
+                    }}
+                  />
+                </div>
               </div>
             </div>
-            <div style={{ width: '100%' }}>
-              <h3 style={{ fontSize: 17, marginBottom: 8, color: '#2563eb' }}>Paid Performance</h3>
-              <table style={{ width: '100%', margin: '8px 0', borderCollapse: 'collapse', background: '#f9fafb', borderRadius: 8, overflow: 'hidden' }}>
-                <thead>
-                  <tr style={{ background: '#f1f5f9' }}>
-                    <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>Metric</th>
-                    <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>My Matrix</th>
-                    <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>Required Matrix</th>
-                    <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {platform.paid.metrics.map((m, i) => (
-                    <tr key={i} style={{ background: i % 2 === 0 ? '#fff' : '#f3f4f6' }}>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{m.metric}</td>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{m.my_matrix}</td>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{m.required_matrix}</td>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}><StatusBadge status={m.status} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div style={{ marginTop: 8 }}>
-                <b>Paid Summary Table</b>
-                <table style={{ width: '100%', margin: '8px 0', borderCollapse: 'collapse', background: '#f9fafb', borderRadius: 8 }}>
-                  <thead>
-                    <tr style={{ background: '#f1f5f9' }}>
-                      <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>Metric Category</th>
-                      <th style={{ border: '1px solid #e5e7eb', padding: 8, fontWeight: 600 }}>Average Performance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{platform.paid.summary.category}</td>
-                      <td style={{ border: '1px solid #e5e7eb', padding: 8 }}>{platform.paid.summary.average_performance}</td>
-                    </tr>
-                  </tbody>
-                </table>
+
+            {/* Platform Tables */}
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Organic Performance</h3>
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metric</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">My Matrix</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Required Matrix</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {platform.organic.metrics.map((metric, idx) => (
+                        <tr key={idx}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{metric.metric}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{metric.my_matrix}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{metric.required_matrix}</td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white`}
+                              style={{ backgroundColor: statusColor(metric.status) }}
+                            >
+                              {metric.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-4 text-sm text-gray-600">
+                  <strong>Summary:</strong> {platform.organic.summary.category} - {platform.organic.summary.average_performance}
+                </div>
               </div>
+
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Paid Performance</h3>
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metric</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">My Matrix</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Required Matrix</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {platform.paid.metrics.map((metric, idx) => (
+                        <tr key={idx}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{metric.metric}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{metric.my_matrix}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{metric.required_matrix}</td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white`}
+                              style={{ backgroundColor: statusColor(metric.status) }}
+                            >
+                              {metric.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-4 text-sm text-gray-600">
+                  <strong>Summary:</strong> {platform.paid.summary.category} - {platform.paid.summary.average_performance}
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      })}
+
+      {/* Cross-Platform Comparison Section */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold mb-6">Cross-Platform Comparison</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold mb-4">Status Distribution</h3>
+            <div className="h-64">
+              <Doughnut
+                data={statusData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'bottom',
+                    },
+                  },
+                }}
+              />
             </div>
           </div>
-        </section>
-      ))}
-      <section style={{ margin: '32px 0' }}>
-        <h2 style={{ fontSize: 22, marginBottom: 12, color: '#222' }}>Cross-Platform Summary</h2>
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 24, background: '#f9fafb', borderRadius: 8 }}>
-          <thead>
-            <tr style={{ background: '#f1f5f9' }}>
-              <th style={{ border: '1px solid #e5e7eb', padding: 10, fontWeight: 600 }}>Platform</th>
-              <th style={{ border: '1px solid #e5e7eb', padding: 10, fontWeight: 600 }}>Organic Score</th>
-              <th style={{ border: '1px solid #e5e7eb', padding: 10, fontWeight: 600 }}>Paid Media Score</th>
-              <th style={{ border: '1px solid #e5e7eb', padding: 10, fontWeight: 600 }}>Total Score (out of 10)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {project.cross_platform_summary.platforms.map((row, i) => (
-              <tr key={i} style={{ background: i % 2 === 0 ? '#fff' : '#f3f4f6' }}>
-                <td style={{ border: '1px solid #e5e7eb', padding: 10 }}>{row.platform}</td>
-                <td style={{ border: '1px solid #e5e7eb', padding: 10 }}>{row.organic_score}</td>
-                <td style={{ border: '1px solid #e5e7eb', padding: 10 }}>{row.paid_media_score}</td>
-                <td style={{ border: '1px solid #e5e7eb', padding: 10 }}>{row.total_score}</td>
+
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold mb-4">Platform Performance Comparison</h3>
+            <div className="h-64">
+              <Bar
+                data={platformComparisonData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'bottom',
+                    },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      max: 10,
+                    },
+                  },
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow md:col-span-2">
+            <h3 className="text-lg font-semibold mb-4">Performance Trend</h3>
+            <div className="h-64">
+              <Line
+                data={trendData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'bottom',
+                    },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      max: 10,
+                    },
+                  },
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Cross-Platform Summary Table */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Platform</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organic Score</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid Media Score</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Score</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {project.cross_platform_summary.platforms.map((row, idx) => (
+                <tr key={idx}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.platform}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.organic_score}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.paid_media_score}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.total_score}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
+
+      {/* Recommendations Section */}
       <section style={{ margin: '32px 0' }}>
         <h2 style={{ fontSize: 22, marginBottom: 12, color: '#222' }}>Recommendations</h2>
         <ul style={{ paddingLeft: 20, fontSize: 16 }}>
@@ -459,75 +672,6 @@ export default function AuditDetailsPage({ params }: Params) {
           ))}
         </ul>
       </section>
-
-      {/* Graphs Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Status Distribution</h3>
-          <div className="h-64">
-            <Doughnut
-              data={statusData}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: 'bottom',
-                  },
-                },
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Platform Performance Comparison</h3>
-          <div className="h-64">
-            <Bar
-              data={platformComparisonData}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: 'bottom',
-                  },
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    max: 10,
-                  },
-                },
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow md:col-span-2">
-          <h3 className="text-lg font-semibold mb-4">Performance Trend</h3>
-          <div className="h-64">
-            <Line
-              data={trendData}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: 'bottom',
-                  },
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    max: 10,
-                  },
-                },
-              }}
-            />
-          </div>
-        </div>
-      </div>
     </div>
   );
 } 
