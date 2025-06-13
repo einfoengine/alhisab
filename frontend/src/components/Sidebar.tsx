@@ -60,6 +60,7 @@ const menuGroups = [
     items: [
       { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
       { name: 'Packages', href: '/dashboard/packages', icon: CubeIcon },
+      { name: 'Add New Service', href: '/dashboard/services/new', icon: PlusIcon, isAction: true },
     ]
   },
   {
@@ -171,6 +172,18 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                   {group.items.map((item) => {
                     const isActive = pathname === item.href;
                     const ItemIcon = item.icon;
+                    if (item.isAction) {
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          className="flex items-center px-8 py-2 text-sm font-bold rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-all duration-200 my-2"
+                        >
+                          <ItemIcon className="h-5 w-5 mr-3" />
+                          {item.name}
+                        </Link>
+                      );
+                    }
                     return (
                       <Link
                         key={item.name}

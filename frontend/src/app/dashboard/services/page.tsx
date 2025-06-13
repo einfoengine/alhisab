@@ -6,6 +6,7 @@ import servicesData from '@/data/services.json';
 import ProductsList from '@/components/ProductsList';
 import TableBuilder from '@/components/TableBuilder';
 import PageHeader from '@/components/elements/PageHeader';
+import { PlusIcon } from '@heroicons/react/24/outline';
 
 interface Service {
   id: string;
@@ -88,6 +89,11 @@ export default function ServicesPage() {
         title="Services"
         viewMode={viewMode}
         setViewMode={setViewMode}
+        actions={[{
+          name: 'Add New',
+          icon: PlusIcon,
+          onClick: () => router.push('/dashboard/services/new'),
+        }]}
       />
       {viewMode === 'grid' ? (
         <ProductsList
