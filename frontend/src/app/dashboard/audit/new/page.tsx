@@ -97,12 +97,74 @@ const DEFAULT_METRICS = {
 
 type PlatformName = keyof typeof DEFAULT_METRICS;
 
-const emptyMetric = (metric: string) => ({ metric, my_matrix: "", required_matrix: "", status: "" });
+// Add sensible defaults for required_matrix for each metric (unique keys)
+const REQUIRED_MATRIX_DEFAULTS: Record<string, string> = {
+  // Facebook
+  "Facebook:Static Post Frequency": "6+/mo",
+  "Facebook:Video Post Frequency": "4+/mo",
+  "Facebook:Reels Post Frequency": "4+/mo",
+  "Facebook:Story Frequency": "12+/mo",
+  "Facebook:Long Video Frequency": "2+/mo",
+  "Facebook:Engagement Rate": "3.5%+",
+  "Facebook:Follower Growth Rate": "5%+",
+  "Facebook:Avg. Reach per Post": "1,500+",
+  "Facebook:CPM": "<$5.00",
+  "Facebook:CPC": "<$0.50",
+  "Facebook:CTR": ">1%",
+  "Facebook:Conversion Rate": ">3%",
+  "Facebook:ROAS": "3x+",
+  // Instagram
+  "Instagram:Static Post Frequency": "8+/mo",
+  "Instagram:Reels Post Frequency": "5+/mo",
+  "Instagram:Story Frequency": "15+/mo",
+  "Instagram:Engagement Rate": "5%+",
+  "Instagram:Follower Growth": "5%+",
+  "Instagram:Reel Views Avg.": "25,000+",
+  "Instagram:CPM": "<$6.00",
+  "Instagram:CPC": "<$0.40",
+  "Instagram:CTR": ">1.5%",
+  "Instagram:ROAS": ">3.5x",
+  // LinkedIn
+  "LinkedIn:Static Post Frequency": "6+/mo",
+  "LinkedIn:Article Publishing Frequency": "2+/mo",
+  "LinkedIn:Engagement Rate": "4%+",
+  "LinkedIn:Follower Growth": "3%+",
+  "LinkedIn:CPC": "<$2.50",
+  "LinkedIn:CTR": ">1%",
+  "LinkedIn:ROAS": ">2.5x",
+  // YouTube
+  "YouTube:Upload Frequency": "4/mo",
+  "YouTube:Avg. View Duration": "4:00+ min",
+  "YouTube:Engagement (Like/Cmt)": "6%+",
+  "YouTube:Subscriber Growth": "3%+",
+  "YouTube:Ad ROAS": ">4x",
+  // TikTok
+  "TikTok:Reels Frequency": "3+/week",
+  "TikTok:Avg. View Count": "15,000+",
+  "TikTok:Follower Growth": "6%+",
+  "TikTok:Engagement Rate": ">8%",
+  "TikTok:Ad ROAS": "4x+",
+  // Website
+  "Website:Organic Traffic": "8k+/mo",
+  "Website:Bounce Rate": "<50%",
+  "Website:Avg. Time on Page": ">2:30 min",
+  "Website:Domain Authority": "30+",
+  "Website:CPC (Search)": "<$1.00",
+  "Website:ROAS": ">3x"
+};
+
+const emptyMetric = (metric: string, platform: string) => ({
+  metric,
+  my_matrix: "",
+  required_matrix: REQUIRED_MATRIX_DEFAULTS[`${platform}:${metric}`] || "",
+  status: ""
+});
+
 const emptySummary = { category: "", average_performance: "" };
 const emptyPlatform = (name: string) => ({
   name,
-  organic: { metrics: DEFAULT_METRICS[name as PlatformName].organic.map(emptyMetric), summary: { ...emptySummary } },
-  paid: { metrics: DEFAULT_METRICS[name as PlatformName].paid.map(emptyMetric), summary: { ...emptySummary } },
+  organic: { metrics: DEFAULT_METRICS[name as PlatformName].organic.map(m => emptyMetric(m, name)), summary: { ...emptySummary } },
+  paid: { metrics: DEFAULT_METRICS[name as PlatformName].paid.map(m => emptyMetric(m, name)), summary: { ...emptySummary } },
 });
 const emptyCrossSummary = (platform: string) => ({ platform, organic_score: "", paid_media_score: "", total_score: "" });
 
@@ -146,12 +208,26 @@ export default function NewAuditPage() {
 
   // Dynamic array handlers
   // Platform metrics
-  const handleMetricChange = (platIdx: number, type: "organic" | "paid", metIdx: number, field: string, value: string) => {
+  const handleMetricChange = (
+    platIdx: number,
+    type: "organic" | "paid",
+    metIdx: number,
+    field: string,
+    value: string
+  ) => {
     setForm((prev) => {
       const updated = { ...prev };
       const platforms = [...project.platforms];
       const metrics = [...platforms[platIdx][type].metrics];
-      metrics[metIdx] = { ...metrics[metIdx], [field]: value };
+      const metric = { ...metrics[metIdx], [field]: value };
+      // If my_matrix or required_matrix changes, recalc status
+      if (field === "my_matrix" || field === "required_matrix") {
+        metric.status = calculateStatus(
+          field === "my_matrix" ? value : metric.my_matrix,
+          field === "required_matrix" ? value : metric.required_matrix
+        );
+      }
+      metrics[metIdx] = metric;
       platforms[platIdx][type].metrics = metrics;
       updated.projects = [ { ...project, platforms } ];
       return updated;
@@ -254,6 +330,45 @@ export default function NewAuditPage() {
   // Project name dropdown
   const projectOptions: { value: string; label: string }[] = (projectsData.projects || []).map((p: any) => ({ value: p.name, label: p.name }));
 
+  // Add metric logic
+  const addMetric = (platIdx: number, type: "organic" | "paid") => {
+    setForm((prev) => {
+      const updated = { ...prev };
+      const platforms = [...project.platforms];
+      platforms[platIdx][type].metrics = [
+        ...platforms[platIdx][type].metrics,
+        { metric: "", my_matrix: "", required_matrix: "", status: "" } as { metric: string; my_matrix: string; required_matrix: string; status: string }
+      ];
+      updated.projects = [ { ...project, platforms } ];
+      return updated;
+    });
+  };
+
+  // Automatic status calculation
+  function calculateStatus(my_matrix: string, required_matrix: string): string {
+    // Try to parse numbers, handle % and $ and x
+    const parse = (val: string) => {
+      if (!val) return NaN;
+      if (val.includes("%")) return parseFloat(val);
+      if (val.includes("x")) return parseFloat(val);
+      if (val.includes("$")) return parseFloat(val.replace(/[^\d.]/g, ""));
+      return parseFloat(val);
+    };
+    const myVal = parse(my_matrix);
+    const reqVal = parse(required_matrix);
+    if (isNaN(myVal) || isNaN(reqVal)) return "";
+    // Heuristic: if required is a min (e.g. 5+, >3%), OK if my >= req
+    if (/[+>]/.test(required_matrix)) {
+      return myVal >= reqVal ? "OK" : "Below";
+    }
+    // If required is a max (e.g. <50%, <$1.00), OK if my <= req
+    if (/[<]/.test(required_matrix)) {
+      return myVal <= reqVal ? "OK" : "High";
+    }
+    // Otherwise, just compare
+    return myVal === reqVal ? "OK" : myVal > reqVal ? "High" : "Low";
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow mt-8">
       <h1 className="text-2xl font-bold mb-6">New Manual Audit</h1>
@@ -310,6 +425,7 @@ export default function NewAuditPage() {
                   <input value={metric.status} onChange={e => handleMetricChange(platIdx, "organic", metIdx, "status", e.target.value)} className="border rounded p-1 w-1/4" placeholder="Status" required />
                 </div>
               ))}
+              <button type="button" onClick={() => addMetric(platIdx, "organic")} className="text-blue-600 text-xs">+ Add Metric</button>
             </div>
             {/* Organic Summary */}
             <div className="mb-2">
@@ -327,6 +443,7 @@ export default function NewAuditPage() {
                   <input value={metric.status} onChange={e => handleMetricChange(platIdx, "paid", metIdx, "status", e.target.value)} className="border rounded p-1 w-1/4" placeholder="Status" required />
                 </div>
               ))}
+              <button type="button" onClick={() => addMetric(platIdx, "paid")} className="text-orange-600 text-xs">+ Add Metric</button>
             </div>
             {/* Paid Summary */}
             <div className="mb-2">
