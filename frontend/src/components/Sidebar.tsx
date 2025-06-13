@@ -14,7 +14,8 @@ import {
   CheckBadgeIcon,
   ClipboardDocumentIcon,
   MagnifyingGlassCircleIcon,
-  CalendarDaysIcon
+  CalendarDaysIcon,
+  PlusIcon
 } from '@heroicons/react/24/outline';
 
 const menuItems = [
@@ -30,6 +31,7 @@ const menuItems = [
   { name: 'Projects', href: '/dashboard/projects', icon: DocumentTextIcon },
   { name: 'Planning', href: '/dashboard/planning', icon: CheckBadgeIcon },
   { name: 'Audit', href: '/dashboard/audit', icon: MagnifyingGlassCircleIcon },
+  { name: 'New Audit', href: '/dashboard/audit/new', icon: PlusIcon },
   { name: 'Meetings', href: '/dashboard/meetings', icon: CalendarDaysIcon },
   { name: 'Invoices', href: '/dashboard/invoices', icon: CurrencyDollarIcon },
   { name: 'Accounting', href: '/dashboard/accounting', icon: Cog6ToothIcon },
