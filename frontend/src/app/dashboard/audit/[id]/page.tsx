@@ -17,7 +17,7 @@ import {
   LineElement,
 } from 'chart.js';
 import { Bar, Doughnut, Line, Pie } from 'react-chartjs-2';
-import { FaInfoCircle } from 'react-icons/fa';
+import { FaInfoCircle, FaChartBar, FaRegLightbulb } from 'react-icons/fa';
 // import projectsData from '../../../../data/projects.json';
 // import { jsPDF } from 'jspdf';
 
@@ -123,12 +123,12 @@ function generatePDF(audit: Audit, project: Project) {
 
   doc.setFontSize(15);
   doc.setFillColor(241, 245, 249);
-  doc.rect(35, y - 8, pageWidth - 70, 110, 'F');
+  doc.rect(35, y - 8, pageWidth - 70, 170, 'F');
   doc.text('Audit Summary', 45, y + 10);
   doc.setFontSize(12);
   let sy = y + 30;
   doc.text(`Avg. Content Quality: ${project.avg_content_quality || '-'}`, 50, sy);
-  doc.text(`Conversion Potential: ${project.conversion_potential || '-'}`, 250, sy);
+  doc.text(`Conversion Potential: ${project.conversion_potential || '-'}`, 320, sy);
   sy += 18;
   if (project.content_ratio) {
     doc.text(`Content Ratio (Direct/Other): ${project.content_ratio.direct}% / ${project.content_ratio.other}%`, 50, sy);
@@ -136,26 +136,34 @@ function generatePDF(audit: Audit, project: Project) {
   }
   if (project.traffic_sources) {
     doc.text('Traffic Sources:', 50, sy);
-    let tx = 170;
-    project.traffic_sources.forEach((src) => {
-      doc.text(`${src.source}: ${src.percent}%`, tx, sy);
-      tx += 120;
+    const col1 = 70, col2 = 250, row = sy + 16;
+    const half = Math.ceil(project.traffic_sources.length / 2);
+    project.traffic_sources.forEach((src, idx) => {
+      const x = idx < half ? col1 : col2;
+      const y_ = row + (idx % half) * 16;
+      doc.text(`${src.source}: ${src.percent}%`, x, y_);
     });
-    sy += 18;
+    sy = row + Math.max(half, 1) * 16;
   }
   if (project.cross_platform_content_relation) {
     doc.text('Cross-Platform Content Relation:', 50, sy);
     sy += 16;
     const relLines = doc.splitTextToSize(project.cross_platform_content_relation, pageWidth - 100);
-    doc.text(relLines, 60, sy);
+    relLines.forEach((line: string, i: number) => {
+      doc.text(line, 70, sy + i * 14);
+    });
     sy += relLines.length * 14;
   }
   if (project.growth_factors) {
     doc.text('Growth Factors:', 50, sy);
     sy += 16;
     project.growth_factors.forEach((factor) => {
-      doc.text(`- ${factor}`, 60, sy);
-      sy += 14;
+      const lines = doc.splitTextToSize(factor, pageWidth - 100);
+      doc.text(`- ${lines[0]}`, 70, sy);
+      for (let i = 1; i < lines.length; i++) {
+        doc.text(`  ${lines[i]}`, 80, sy + i * 14);
+      }
+      sy += lines.length * 14;
     });
   }
   y = sy + 10;
@@ -481,6 +489,8 @@ export default function AuditDetailsPage({ params }: Params) {
 
       {project.platforms.map((platform) => {
         const { organicMetrics, paidMetrics } = getPlatformMetrics(platform);
+        const hasOrganic = organicMetrics.length > 0;
+        const hasPaid = paidMetrics.length > 0;
         
         const platformData = {
           labels: ['Organic', 'Paid'],
@@ -546,83 +556,48 @@ export default function AuditDetailsPage({ params }: Params) {
 
         return (
           <section key={platform.name} className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">{platform.name} Audit</h2>
-            
-            {/* Platform Graphs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2"><FaChartBar className="text-blue-400" />{platform.name} Audit</h2>
+            {/* Platform Graphs in a single row or 2+1 grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow flex flex-col items-center">
                 <h3 className="text-lg font-semibold mb-4">Performance Overview</h3>
-                <div className="h-64">
-                  <Bar
-                    data={platformData}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      plugins: {
-                        legend: {
-                          display: false
-                        }
-                      },
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          max: 10
-                        }
-                      }
-                    }}
-                  />
+                <div className="h-48 w-full flex items-center justify-center">
+                  <Bar data={platformData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 10 } } }} />
                 </div>
               </div>
-
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">Organic Metrics Comparison</h3>
-                <div className="h-64">
-                  <Bar
-                    data={metricsData}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      plugins: {
-                        legend: {
-                          position: 'bottom'
-                        }
-                      },
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          max: 10
-                        }
-                      }
-                    }}
-                  />
-                </div>
+              <div className="bg-white p-6 rounded-lg shadow flex flex-col items-center">
+                <h3 className="text-lg font-semibold mb-4">Organic Metrics</h3>
+                {hasOrganic ? (
+                  <div className="h-48 w-full flex items-center justify-center">
+                    <Bar data={metricsData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, max: 10 } } }} />
+                  </div>
+                ) : (
+                  <div className="h-48 flex items-center justify-center text-gray-400">No Organic Data</div>
+                )}
               </div>
-
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">Paid Metrics Comparison</h3>
-                <div className="h-64">
-                  <Bar
-                    data={paidMetricsData}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      plugins: {
-                        legend: {
-                          position: 'bottom'
-                        }
-                      },
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                          max: 10
-                        }
-                      }
-                    }}
-                  />
-                </div>
+              <div className="bg-white p-6 rounded-lg shadow flex flex-col items-center">
+                <h3 className="text-lg font-semibold mb-4">Paid Metrics</h3>
+                {hasPaid ? (
+                  <div className="h-48 w-full flex items-center justify-center">
+                    <Bar data={paidMetricsData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, max: 10 } } }} />
+                  </div>
+                ) : (
+                  <div className="h-48 flex items-center justify-center text-gray-400">No Paid Data</div>
+                )}
               </div>
             </div>
-
+            {/* Platform Highlights Card */}
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6 flex items-center gap-4">
+              <FaRegLightbulb className="text-yellow-400 text-2xl" />
+              <div>
+                <div className="font-semibold text-slate-700 mb-1">Platform Highlights</div>
+                <ul className="list-disc pl-5 text-slate-600 text-sm">
+                  <li>Best performing metric: <span className="font-bold">{[...organicMetrics, ...paidMetrics].sort((a, b) => b.score - a.score)[0]?.metric || '-'}</span></li>
+                  <li>Lowest performing metric: <span className="font-bold">{[...organicMetrics, ...paidMetrics].sort((a, b) => a.score - b.score)[0]?.metric || '-'}</span></li>
+                  <li>Total metrics analyzed: <span className="font-bold">{organicMetrics.length + paidMetrics.length}</span></li>
+                </ul>
+              </div>
+            </div>
             {/* Platform Tables */}
             <div className="space-y-8">
               <div>
