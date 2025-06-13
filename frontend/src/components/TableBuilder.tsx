@@ -291,7 +291,7 @@ export default function TableBuilder<T extends { id: string | number; [key: stri
             {paginatedData.map((item) => (
               <tr
                 key={item.id}
-                onClick={() => onRowClick}
+                onClick={() => onRowClick?.(item)}
                 className="cursor-pointer hover:bg-gray-100"
               >
                 {selectable && (

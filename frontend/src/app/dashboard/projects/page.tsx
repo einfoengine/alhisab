@@ -89,15 +89,38 @@ const ProjectsPage = () => {
         const client = clients.find(c => c.id === item.client_id);
         return (
           <div className="flex items-center gap-2">
-            {client?.avatar && (
+            {client?.avatar ? (
               <Image
                 src={client.avatar}
                 alt={client.client_name}
                 width={48}
                 height={48}
                 className="rounded-full"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
               />
-            )}
+            ) : null}
+            <span
+              style={{
+                display: client?.avatar ? 'none' : 'flex',
+                width: 48,
+                height: 48,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#e5e7eb',
+                borderRadius: '9999px',
+                fontWeight: 600,
+                fontSize: 20,
+                color: '#374151',
+              }}
+              className="avatar-fallback"
+            >
+              {client?.client_name?.[0] || '?'}
+            </span>
             <div>
               <div className="font-medium">{client?.client_name || 'Unknown Client'}</div>
               {client?.company_names?.[0] && (
