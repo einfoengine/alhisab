@@ -2,6 +2,8 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import auditDataRaw from '../../../../data/audit.json';
+import { jsPDF } from 'jspdf';
+import autoTable, { RowInput, CellHookData } from 'jspdf-autotable';
 // import projectsData from '../../../../data/projects.json';
 // import { jsPDF } from 'jspdf';
 
@@ -77,6 +79,129 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+function statusColor(status: string): [number, number, number] {
+  if (status.toLowerCase() === 'ok') return [34, 197, 94]; // green
+  if (status.toLowerCase() === 'below') return [239, 68, 68]; // red
+  if (status.toLowerCase() === 'high') return [245, 158, 66]; // orange
+  if (status.toLowerCase() === 'low') return [59, 130, 246]; // blue
+  if (status.toLowerCase() === 'short' || status.toLowerCase() === 'slow') return [163, 163, 163]; // gray
+  return [107, 114, 128]; // default gray
+}
+
+function generatePDF(audit: Audit, project: Project) {
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' }) as jsPDF & { lastAutoTable?: { finalY: number } };
+  let y = 40;
+  doc.setFontSize(20);
+  doc.text(audit.report_title, 40, y);
+  y += 28;
+  doc.setFontSize(12);
+  doc.text(`Project: ${project.project_name}`, 40, y);
+  y += 16;
+  doc.text(`Client ID: ${project.client_id}`, 40, y);
+  y += 16;
+  doc.text(`Report ID: ${audit.report_id}`, 40, y);
+  y += 16;
+  doc.text(`Prepared by: ${audit.prepared_by}`, 40, y);
+  y += 16;
+  doc.text(`Date: ${audit.report_date}`, 40, y);
+  y += 24;
+  project.platforms.forEach((platform) => {
+    doc.setFontSize(15);
+    doc.text(`${platform.name} Audit`, 40, y);
+    y += 18;
+    doc.setFontSize(12);
+    // Organic Table
+    autoTable(doc, {
+      startY: y,
+      head: [["Metric", "My Matrix", "Required Matrix", "Status"]],
+      body: platform.organic.metrics.map((m) => [m.metric, m.my_matrix, m.required_matrix, m.status]) as RowInput[],
+      styles: { fontSize: 10, cellPadding: 4 },
+      headStyles: { fillColor: [37, 99, 235], textColor: 255 },
+      bodyStyles: {},
+      didParseCell: (data: CellHookData) => {
+        if (data.section === 'body' && data.column.index === 3) {
+          data.cell.styles.fillColor = statusColor(data.cell.raw as string);
+          data.cell.styles.textColor = [255, 255, 255];
+        } else if (data.section === 'body') {
+          data.cell.styles.textColor = [34, 34, 34];
+        }
+      },
+      margin: { left: 40, right: 40 },
+      theme: 'grid',
+      tableWidth: 'auto',
+    });
+    y = doc.lastAutoTable?.finalY ? doc.lastAutoTable.finalY + 8 : y + 8;
+    autoTable(doc, {
+      startY: y,
+      head: [["Metric Category", "Average Performance"]],
+      body: [[platform.organic.summary.category, platform.organic.summary.average_performance]],
+      styles: { fontSize: 10, cellPadding: 4 },
+      headStyles: { fillColor: [241, 245, 249], textColor: [34, 34, 34] },
+      margin: { left: 40, right: 40 },
+      theme: 'grid',
+      tableWidth: 'auto',
+    });
+    y = doc.lastAutoTable?.finalY ? doc.lastAutoTable.finalY + 16 : y + 16;
+    // Paid Table
+    autoTable(doc, {
+      startY: y,
+      head: [["Metric", "My Matrix", "Required Matrix", "Status"]],
+      body: platform.paid.metrics.map((m) => [m.metric, m.my_matrix, m.required_matrix, m.status]) as RowInput[],
+      styles: { fontSize: 10, cellPadding: 4 },
+      headStyles: { fillColor: [37, 99, 235], textColor: 255 },
+      bodyStyles: {},
+      didParseCell: (data: CellHookData) => {
+        if (data.section === 'body' && data.column.index === 3) {
+          data.cell.styles.fillColor = statusColor(data.cell.raw as string);
+          data.cell.styles.textColor = [255, 255, 255];
+        } else if (data.section === 'body') {
+          data.cell.styles.textColor = [34, 34, 34];
+        }
+      },
+      margin: { left: 40, right: 40 },
+      theme: 'grid',
+      tableWidth: 'auto',
+    });
+    y = doc.lastAutoTable?.finalY ? doc.lastAutoTable.finalY + 8 : y + 8;
+    autoTable(doc, {
+      startY: y,
+      head: [["Metric Category", "Average Performance"]],
+      body: [[platform.paid.summary.category, platform.paid.summary.average_performance]],
+      styles: { fontSize: 10, cellPadding: 4 },
+      headStyles: { fillColor: [241, 245, 249], textColor: [34, 34, 34] },
+      margin: { left: 40, right: 40 },
+      theme: 'grid',
+      tableWidth: 'auto',
+    });
+    y = doc.lastAutoTable?.finalY ? doc.lastAutoTable.finalY + 24 : y + 24;
+    if (y > 700) { doc.addPage(); y = 40; }
+  });
+  doc.setFontSize(15);
+  doc.text('Cross-Platform Summary', 40, y);
+  y += 18;
+  autoTable(doc, {
+    startY: y,
+    head: [["Platform", "Organic Score", "Paid Media Score", "Total Score (out of 10)"]],
+    body: project.cross_platform_summary.platforms.map((row: { platform: string; organic_score: string; paid_media_score: string; total_score: string }) => [row.platform, row.organic_score, row.paid_media_score, row.total_score]) as RowInput[],
+    styles: { fontSize: 10, cellPadding: 4 },
+    headStyles: { fillColor: [37, 99, 235], textColor: 255 },
+    margin: { left: 40, right: 40 },
+    theme: 'grid',
+    tableWidth: 'auto',
+  });
+  y = doc.lastAutoTable?.finalY ? doc.lastAutoTable.finalY + 18 : y + 18;
+  doc.setFontSize(15);
+  doc.text('Recommendations', 40, y);
+  y += 18;
+  doc.setFontSize(12);
+  project.recommendations.forEach((rec: string) => {
+    doc.text(`- ${rec}`, 50, y);
+    y += 14;
+    if (y > 700) { doc.addPage(); y = 40; }
+  });
+  doc.save(`${audit.report_title.replace(/\s+/g, '_')}.pdf`);
+}
+
 export default function AuditDetailsPage({ params }: Params) {
   const audits: Audit[] = auditDataRaw as Audit[];
   const audit = audits.find((a) => String(a.report_id) === params.id);
@@ -96,6 +221,12 @@ export default function AuditDetailsPage({ params }: Params) {
         </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontSize: 15, color: '#888' }}>{audit.report_date}</div>
+          <button
+            onClick={() => generatePDF(audit, project)}
+            style={{ padding: '8px 16px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontWeight: 600, marginTop: 8 }}
+          >
+            Download PDF
+          </button>
         </div>
       </div>
       <section style={{ margin: '24px 0', color: '#444', fontSize: 16, display: 'flex', gap: 48 }}>
@@ -108,7 +239,7 @@ export default function AuditDetailsPage({ params }: Params) {
         <section key={platform.name} style={{ margin: '32px 0', background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, boxShadow: '0 2px 12px #0001', padding: 32 }}>
           <h2 style={{ fontSize: 22, marginBottom: 18, color: '#222', letterSpacing: 0.5 }}>{platform.name} Audit</h2>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32 }}>
-            <div style={{ flex: 1, minWidth: 350 }}>
+            <div style={{ width: '100%' }}>
               <h3 style={{ fontSize: 17, marginBottom: 8, color: '#2563eb' }}>Organic Performance</h3>
               <table style={{ width: '100%', margin: '8px 0', borderCollapse: 'collapse', background: '#f9fafb', borderRadius: 8, overflow: 'hidden' }}>
                 <thead>
@@ -148,7 +279,7 @@ export default function AuditDetailsPage({ params }: Params) {
                 </table>
               </div>
             </div>
-            <div style={{ flex: 1, minWidth: 350 }}>
+            <div style={{ width: '100%' }}>
               <h3 style={{ fontSize: 17, marginBottom: 8, color: '#2563eb' }}>Paid Performance</h3>
               <table style={{ width: '100%', margin: '8px 0', borderCollapse: 'collapse', background: '#f9fafb', borderRadius: 8, overflow: 'hidden' }}>
                 <thead>
