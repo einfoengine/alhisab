@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import clientsData from '@/data/clients.json';
 import meetingsData from '@/data/meetings.json';
 import PageHeader from '@/components/elements/PageHeader';
-import { CalendarIcon, DocumentTextIcon, BriefcaseIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, DocumentTextIcon, BriefcaseIcon, ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 
 interface Client {
@@ -89,12 +89,19 @@ export default function ClientDetailsPage() {
   return (
     <div className="p-8">
       <PageHeader
-        title="Client Details"
-        actions={[{
-          name: 'Back to Clients',
-          icon: ArrowLeftIcon,
-          onClick: () => router.push('/dashboard/clients'),
-        }]}
+        title={client.client_name}
+        actions={[
+          {
+            name: 'Back to Clients',
+            icon: ArrowLeftIcon,
+            onClick: () => router.push('/dashboard/clients'),
+          },
+          {
+            name: 'Edit',
+            icon: PencilIcon,
+            onClick: () => router.push(`/dashboard/clients/${client.id}/edit`),
+          }
+        ]}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">

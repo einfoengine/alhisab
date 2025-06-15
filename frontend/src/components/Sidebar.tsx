@@ -29,6 +29,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const menuGroups = [
+  
   {
     name: 'Main',
     icon: HomeIcon,
@@ -96,26 +97,47 @@ interface SidebarProps {
   setCollapsed: (collapsed: boolean | ((prev: boolean) => boolean)) => void;
 }
 
+
 export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
   const rawPathname = usePathname();
   const pathname = rawPathname || '';
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
 
+  // Find the group with the longest matching child href
+  function getActiveGroup(pathname: string) {
+    let bestGroup: typeof menuGroups[0] | undefined = undefined;
+    let bestLength = -1;
+    for (const group of menuGroups) {
+      for (const item of group.items) {
+        if (pathname.startsWith(item.href) && item.href.length > bestLength) {
+          bestGroup = group;
+          bestLength = item.href.length;
+        }
+      }
+    }
+    return bestGroup;
+  }
+
+  const groupWithActive = getActiveGroup(pathname);
+
+  // When the active group changes, collapse all others and only expand the active group
   useEffect(() => {
-    const groupWithActive = menuGroups.find((group) =>
-      group.items.some((item) => pathname.startsWith(item.href))
-    );
-    setExpandedGroups(groupWithActive ? [groupWithActive.name] : []);
+    if (groupWithActive) {
+      setExpandedGroups([groupWithActive.name]);
+    }
   }, [pathname]);
 
   const toggleGroup = (groupName: string) => {
-    setExpandedGroups(prev =>
-      prev.includes(groupName)
-        ? prev.filter(name => name !== groupName)
-        : [...prev, groupName]
-    );
+    // Prevent toggling closed for the active group
+    if (groupWithActive && groupWithActive.name === groupName) return;
+    setExpandedGroups([groupName, groupWithActive?.name].filter(Boolean) as string[]);
   };
+
+  // Use expandedGroups (with active group always included)
+  const forcedExpandedGroups = groupWithActive
+    ? Array.from(new Set([...expandedGroups, groupWithActive.name]))
+    : expandedGroups;
 
   const handleCollapse = () => setCollapsed((prev: boolean) => !prev);
 
@@ -144,7 +166,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                   <span className={`${collapsed ? 'hidden' : 'inline ml-2'}`}>{group.name}</span>
                 </span>
                 {!collapsed && (
-                  expandedGroups.includes(group.name) ? (
+                  forcedExpandedGroups.includes(group.name) ? (
                     <ChevronDownIcon className="h-4 w-4" />
                   ) : (
                     <ChevronRightIcon className="h-4 w-4" />
@@ -175,7 +197,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                 </div>
               )}
               {/* Expanded view */}
-              {expandedGroups.includes(group.name) && !collapsed && (
+              {forcedExpandedGroups.includes(group.name) && !collapsed && (
                 <div className="mt-1">
                   {group.items.map((item) => {
                     const isActive = pathname === item.href;
