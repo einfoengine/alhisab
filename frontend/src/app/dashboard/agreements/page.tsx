@@ -8,6 +8,7 @@ import { Column } from "@/types/table";
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { PlusIcon } from '@heroicons/react/24/outline';
 
 // Helper to get project info by title
 const getProjectByTitle = (title: string) =>
@@ -130,11 +131,19 @@ export default function AgreementsPage() {
   const router = useRouter();
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Agreements</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          List of all agreements with project and client details
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Agreements</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            List of all agreements with project and client details
+          </p>
+        </div>
+        <button
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={() => router.push('/dashboard/agreements/new')}
+        >
+          <PlusIcon className="h-5 w-5" /> New Agreement
+        </button>
       </div>
       <TableBuilder
         data={agreementsData}

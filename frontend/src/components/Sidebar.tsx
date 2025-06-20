@@ -38,6 +38,15 @@ const menuGroups = [
     ]
   },
   {
+    name: 'Services & Packages',
+    icon: BriefcaseIcon,
+    items: [
+      { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
+      { name: 'Packages', href: '/dashboard/packages', icon: CubeIcon },
+      { name: 'Add New Service', href: '/dashboard/services/new', icon: PlusIcon, isAction: true },
+    ]
+  },
+  {
     name: 'Client Management',
     icon: UsersIcon,
     items: [
@@ -53,15 +62,6 @@ const menuGroups = [
       { name: 'Projects', href: '/dashboard/projects', icon: DocumentTextIcon },
       { name: 'Tasks', href: '/dashboard/tasks', icon: CheckBadgeIcon },
       { name: 'Planning', href: '/dashboard/planning', icon: CheckBadgeIcon },
-    ]
-  },
-  {
-    name: 'Services & Packages',
-    icon: BriefcaseIcon,
-    items: [
-      { name: 'Services', href: '/dashboard/services', icon: BriefcaseIcon },
-      { name: 'Packages', href: '/dashboard/packages', icon: CubeIcon },
-      { name: 'Add New Service', href: '/dashboard/services/new', icon: PlusIcon, isAction: true },
     ]
   },
   {
@@ -129,9 +129,11 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
   }, [pathname]);
 
   const toggleGroup = (groupName: string) => {
-    // Prevent toggling closed for the active group
-    if (groupWithActive && groupWithActive.name === groupName) return;
-    setExpandedGroups([groupName, groupWithActive?.name].filter(Boolean) as string[]);
+    setExpandedGroups(prev =>
+      prev.includes(groupName)
+        ? prev.filter(name => name !== groupName)
+        : [...prev, groupName]
+    );
   };
 
   // Use expandedGroups (with active group always included)
@@ -218,11 +220,10 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                       <Link
                         key={item.name}
                         href={item.href}
-                        className={`flex items-center px-8 py-2 text-sm font-medium rounded transition-all duration-200 ${
-                          isActive
-                            ? 'bg-blue-600 text-white font-bold shadow focus:outline-none ring-2 ring-blue-300'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                        }`}
+                        className={`flex items-center px-8 py-2 text-sm font-medium rounded transition-all duration-200
+                          ${isActive ? 'bg-blue-600 text-white font-bold border-l-4 border-blue-700 shadow focus:outline-none ring-2 ring-blue-300' :
+                          'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                        `}
                       >
                         <ItemIcon className="h-5 w-5 mr-3" />
                         {item.name}

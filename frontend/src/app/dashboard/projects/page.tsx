@@ -9,6 +9,7 @@ import services from '@/data/services.json';
 import packages from '@/data/packages.json';
 import PageHeader from '@/components/elements/PageHeader';
 import Image from 'next/image';
+import { PlusIcon } from '@heroicons/react/24/outline';
 
 type ServiceWithDiscount = {
   id: string;
@@ -231,8 +232,15 @@ const ProjectsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageHeader title="Projects" />
-        
+        <div className="flex items-center justify-between mb-6">
+          <PageHeader title="Projects" />
+          <button
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            onClick={() => router.push('/dashboard/projects/new')}
+          >
+            <PlusIcon className="h-5 w-5" /> New Project
+          </button>
+        </div>
         <div className="mt-6">
           <div className="bg-white rounded-lg shadow-sm">
             <TableBuilder<Project>

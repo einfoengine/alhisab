@@ -23,9 +23,10 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import projectsData from '@/data/projects.json';
-import { ChevronUpIcon, ChevronDownIcon, FunnelIcon } from '@heroicons/react/24/outline';
+import { ChevronUpIcon, ChevronDownIcon, FunnelIcon, PlusIcon } from '@heroicons/react/24/outline';
 import servicesData from '@/data/services.json';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 type User = {
   id: string;
@@ -122,6 +123,7 @@ function SortIcon({ active, direction }: { active: boolean; direction: 'asc' | '
 }
 
 const TasksPage = () => {
+  const router = useRouter();
   const [taskList, setTaskList] = useState<Task[]>(tasks.tasks as unknown as Task[]);
   const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({});
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
@@ -282,10 +284,23 @@ const TasksPage = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [openFilter]);
 
+  const handleAddNewTask = () => {
+    router.push('/dashboard/tasks/new');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-8 py-8">
-        <PageHeader title="Tasks" />
+        <PageHeader 
+          title="Tasks" 
+          actions={[
+            {
+              name: 'Add New Task',
+              icon: PlusIcon,
+              onClick: handleAddNewTask
+            }
+          ]}
+        />
         <div className="mt-6">
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="overflow-x-auto">

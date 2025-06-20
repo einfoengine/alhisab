@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import TableBuilder from '../../../components/TableBuilder';
 import auditDataRaw from '../../../data/audit.json';
 import projectsData from '../../../data/projects.json';
+import { PlusIcon } from '@heroicons/react/24/outline';
 
 interface PlatformMetric {
   metric: string;
@@ -95,7 +96,15 @@ export default function AuditsPage() {
   const router = useRouter();
   return (
     <div>
-      <h1>Audits</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1>Audits</h1>
+        <button
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={() => router.push('/dashboard/audit/new')}
+        >
+          <PlusIcon className="h-5 w-5" /> New Audit
+        </button>
+      </div>
       <TableBuilder
         columns={columns}
         data={data}

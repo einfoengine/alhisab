@@ -18,7 +18,7 @@ import OffCanvasMenu from './OffCanvasMenu';
 
 const tools = [
   { name: 'Accounting', href: '/accounting', icon: CalculatorIcon },
-  { name: 'Lead Management', href: '/leads', icon: UserGroupIcon },
+  { name: 'Task Management', href: '/tasks', icon: UserGroupIcon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
   { name: 'Planner', href: '/planner', icon: ClipboardDocumentCheckIcon },
   { name: 'Reports', href: '/reports', icon: ChartBarIcon },

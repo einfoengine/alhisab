@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ImageUploader from './elements/ImageUploader';
 
 interface ServiceFormValues {
   id?: string;
@@ -44,6 +45,18 @@ export default function FormServices({ initialValues, onSubmit, submitLabel = 'S
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value ? Number(value) : undefined }));
+  };
+
+  const handleImageChange = (file: File | null) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setForm((prev) => ({ ...prev, image: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setForm((prev) => ({ ...prev, image: '' }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,17 +110,14 @@ export default function FormServices({ initialValues, onSubmit, submitLabel = 'S
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-        <input
-          type="text"
+        <label className="block text-sm font-medium text-gray-700 mb-1">Service Image</label>
+        <ImageUploader
           name="image"
           value={form.image}
-          onChange={handleChange}
-          className="w-full border border-gray-300 rounded px-3 py-2"
+          onChange={handleImageChange}
+          label="Upload Service Image"
+          previewClassName="h-32 w-32 mx-auto"
         />
-        {form.image && (
-          <img src={form.image} alt="Preview" className="mt-2 h-32 rounded object-cover" />
-        )}
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Features (comma separated)</label>
