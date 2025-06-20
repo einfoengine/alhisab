@@ -18,7 +18,7 @@ import OffCanvasMenu from './OffCanvasMenu';
 
 const tools = [
   { name: 'Accounting', href: '/accounting', icon: CalculatorIcon },
-  { name: 'Task Management', href: '/tasks', icon: UserGroupIcon },
+  { name: 'Project Management', href: '/tasks', icon: UserGroupIcon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
   { name: 'Planner', href: '/planner', icon: ClipboardDocumentCheckIcon },
   { name: 'Reports', href: '/reports', icon: ChartBarIcon },
@@ -38,7 +38,7 @@ export default function TopMenu() {
 
   return (
     <>
-      <div className="nt-component nt-top-menu bg-white border-b border-gray-200">
+      <div className="nt-component nt-top-menu bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Left: Tools */}

@@ -19,7 +19,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       >
         <Header />
         
-        <main className="nt-contents">
+        <main className="nt-contents pt-16">
           {children}
         </main>
       </div>
