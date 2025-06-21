@@ -5,6 +5,7 @@
       "name": "Search Engine Optimization",
       "serviceShortName": "SEO",
       "serviceCategory": "web_marketing",
+      "category_id": "web_marketing",
       "serviceTasks": [
         "On-page SEO optimization",
         "Off-page SEO and link building",
@@ -14,6 +15,7 @@
         "Local SEO optimization",
         "SEO performance tracking"
       ],
+      "action_items": ["act_004", "act_005", "act_014"],
       "shortDescription": "Improve your website's visibility in search engines",
       "serviceMaster": "John Smith",
       "description": "Our comprehensive SEO services help your website rank higher in search engine results, driving more organic traffic and increasing your online visibility. We use data-driven strategies and best practices to optimize your website for search engines.",
@@ -39,6 +41,7 @@
       "name": "Search Engine Marketing",
       "serviceShortName": "SEM",
       "serviceCategory": "web_marketing",
+      "category_id": "web_marketing",
       "serviceTasks": [
         "Google Ads campaign setup",
         "Keyword research and selection",
@@ -48,6 +51,7 @@
         "A/B testing and optimization",
         "Remarketing campaigns"
       ],
+      "action_items": ["act_004", "act_006", "act_011"],
       "shortDescription": "Paid advertising campaigns to reach your target audience",
       "description": "Our SEM services help you create and manage effective paid advertising campaigns across search engines. We optimize your ad spend and maximize ROI through strategic campaign management and continuous optimization.",
       "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
@@ -72,6 +76,7 @@
       "name": "Social Media Marketing",
       "serviceShortName": "SMM",
       "serviceCategory": "social_media",
+      "category_id": "social_media",
       "serviceTasks": [
         "Social media content creation",
         "Community management and engagement",
@@ -81,6 +86,7 @@
         "Social media analytics and reporting",
         "Platform-specific optimization"
       ],
+      "action_items": ["act_001", "act_003", "act_012", "act_013"],
       "shortDescription": "Engage with your audience on social platforms",
       "serviceMaster": "Michael Brown",
       "description": "We help you build and maintain a strong social media presence across all major platforms. Our social media marketing services include content creation, community management, and paid social advertising.",
@@ -106,6 +112,7 @@
       "name": "Content Marketing",
       "serviceShortName": "CM",
       "serviceCategory": "content_creation",
+      "category_id": "content_creation",
       "serviceTasks": [
         "Content strategy development",
         "Blog writing and optimization",
@@ -115,6 +122,7 @@
         "Content performance analytics",
         "Content distribution strategy"
       ],
+      "action_items": ["act_001", "act_002", "act_003", "act_004", "act_012"],
       "shortDescription": "Create engaging content that converts",
       "serviceMaster": "Emily Davis",
       "description": "Our content marketing services help you create and distribute valuable, relevant content to attract and engage your target audience. We develop content strategies that drive traffic and generate leads.",
@@ -140,6 +148,7 @@
       "name": "Email Marketing",
       "serviceShortName": "EM",
       "serviceCategory": "web_marketing",
+      "category_id": "web_marketing",
       "serviceTasks": [
         "Email list building and segmentation",
         "Email campaign design and creation",
@@ -149,6 +158,7 @@
         "Performance tracking and analytics",
         "Compliance and best practices"
       ],
+      "action_items": ["act_007", "act_011"],
       "shortDescription": "Nurture leads and drive conversions",
       "serviceMaster": "David Wilson",
       "description": "Our email marketing services help you build and nurture relationships with your audience through targeted email campaigns.",
@@ -174,6 +184,7 @@
       "name": "Web Development",
       "serviceShortName": "WD",
       "serviceCategory": "web_apps",
+      "category_id": "web_apps",
       "serviceTasks": [
         "Website design and development",
         "Frontend and backend development",
@@ -183,6 +194,7 @@
         "Deployment and hosting setup",
         "Maintenance and updates"
       ],
+      "action_items": ["act_008", "act_014", "act_016", "act_017", "act_018"],
       "shortDescription": "Custom web applications and websites",
       "serviceMaster": "Sarah Johnson",
       "description": "We build custom web applications and websites that are fast, secure, and user-friendly. Our development team uses modern technologies to create scalable solutions that meet your business needs.",
@@ -208,6 +220,7 @@
       "name": "Digital Strategy",
       "serviceShortName": "DS",
       "serviceCategory": "strategy_planning",
+      "category_id": "strategy_planning",
       "serviceTasks": [
         "Digital transformation strategy",
         "Business process optimization",
@@ -217,6 +230,7 @@
         "Performance measurement framework",
         "Change management planning"
       ],
+      "action_items": ["act_019", "act_020"],
       "shortDescription": "Strategic digital transformation and planning",
       "serviceMaster": "Robert Chen",
       "description": "Our digital strategy services help organizations transform their business through technology. We develop comprehensive strategies that align with your business goals and drive measurable results.",
@@ -242,6 +256,7 @@
       "name": "UI/UX Design",
       "serviceShortName": "UXD",
       "serviceCategory": "design_creative",
+      "category_id": "design_creative",
       "serviceTasks": [
         "User research and persona development",
         "Wireframing and prototyping",
@@ -251,6 +266,7 @@
         "Design system creation",
         "Interactive prototype development"
       ],
+      "action_items": ["act_008", "act_018"],
       "shortDescription": "User-centered design for better experiences",
       "serviceMaster": "Lisa Wang",
       "description": "We create intuitive and engaging user experiences through research-driven design. Our UI/UX services focus on understanding user needs and creating interfaces that are both beautiful and functional.",
@@ -276,6 +292,7 @@
       "name": "Brand Identity Design",
       "serviceShortName": "BID",
       "serviceCategory": "design_creative",
+      "category_id": "design_creative",
       "serviceTasks": [
         "Brand strategy and positioning",
         "Logo design and variations",
@@ -285,6 +302,7 @@
         "Brand application across platforms",
         "Brand audit and refresh"
       ],
+      "action_items": ["act_001", "act_009", "act_015"],
       "shortDescription": "Create a memorable and cohesive brand identity",
       "serviceMaster": "Alex Rodriguez",
       "description": "We help businesses establish strong brand identities that resonate with their target audience. Our brand design services create cohesive visual systems that build trust and recognition.",
@@ -310,6 +328,7 @@
       "name": "Data Analytics",
       "serviceShortName": "DA",
       "serviceCategory": "data_analytics",
+      "category_id": "data_analytics",
       "serviceTasks": [
         "Data collection and integration",
         "Statistical analysis and modeling",
@@ -319,6 +338,7 @@
         "Data visualization and reporting",
         "Data quality assessment"
       ],
+      "action_items": ["act_011", "act_020"],
       "shortDescription": "Turn data into actionable insights",
       "serviceMaster": "Maria Garcia",
       "description": "Our data analytics services help you make informed business decisions by transforming raw data into meaningful insights. We provide comprehensive analysis and reporting to drive growth and optimization.",
@@ -344,6 +364,7 @@
       "name": "Business Process Consulting",
       "serviceShortName": "BPC",
       "serviceCategory": "consulting",
+      "category_id": "consulting",
       "serviceTasks": [
         "Process mapping and analysis",
         "Efficiency improvement recommendations",
@@ -353,6 +374,7 @@
         "Performance measurement setup",
         "Continuous improvement framework"
       ],
+      "action_items": ["act_019", "act_020"],
       "shortDescription": "Optimize your business processes for efficiency",
       "serviceMaster": "James Wilson",
       "description": "We help organizations streamline their operations through process analysis and optimization. Our consulting services identify inefficiencies and implement solutions that improve productivity and reduce costs.",
@@ -378,6 +400,7 @@
       "name": "Video Production",
       "serviceShortName": "VP",
       "serviceCategory": "content_creation",
+      "category_id": "content_creation",
       "serviceTasks": [
         "Video concept and script development",
         "Pre-production planning and storyboarding",
@@ -387,6 +410,7 @@
         "Video optimization for different platforms",
         "Distribution strategy and analytics"
       ],
+      "action_items": ["act_001", "act_010"],
       "shortDescription": "Professional video content for your brand",
       "serviceMaster": "Chris Thompson",
       "description": "We create high-quality video content that tells your story and engages your audience. From concept to final delivery, our video production services cover all aspects of creating compelling visual content.",

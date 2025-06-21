@@ -184,6 +184,144 @@
           "release_amount": 6000
         }
       ]
+    },
+    {
+      "id": "proj_004",
+      "name": "Ultima - Complete Digital Marketing",
+      "description": "Comprehensive digital marketing solution covering all aspects of online presence and growth",
+      "client_id": "cli_004",
+      "project_master": "Emily Davis",
+      "project_type": "comprehensive_marketing",
+      "start_date": "2024-04-01",
+      "end_date": "2024-12-31",
+      "status": "active",
+      "key_deliverables": [
+        "Complete brand identity and website",
+        "SEO and SEM campaigns",
+        "Social media presence across all platforms",
+        "Content marketing strategy and execution",
+        "Email marketing automation",
+        "Data analytics and reporting dashboard",
+        "Business process optimization",
+        "Ongoing digital strategy consultation"
+      ],
+      "services": [
+        {
+          "id": "ser_001",
+          "discount": 20,
+          "category": "web_marketing"
+        },
+        {
+          "id": "ser_002",
+          "discount": 20,
+          "category": "web_marketing"
+        },
+        {
+          "id": "ser_003",
+          "discount": 20,
+          "category": "social_media"
+        },
+        {
+          "id": "ser_004",
+          "discount": 20,
+          "category": "content_creation"
+        },
+        {
+          "id": "ser_005",
+          "discount": 20,
+          "category": "web_marketing"
+        },
+        {
+          "id": "ser_006",
+          "discount": 20,
+          "category": "web_apps"
+        },
+        {
+          "id": "ser_007",
+          "discount": 20,
+          "category": "strategy_planning"
+        },
+        {
+          "id": "ser_008",
+          "discount": 20,
+          "category": "design_creative"
+        },
+        {
+          "id": "ser_009",
+          "discount": 20,
+          "category": "design_creative"
+        },
+        {
+          "id": "ser_010",
+          "discount": 20,
+          "category": "data_analytics"
+        },
+        {
+          "id": "ser_011",
+          "discount": 20,
+          "category": "consulting"
+        },
+        {
+          "id": "ser_012",
+          "discount": 20,
+          "category": "content_creation"
+        }
+      ],
+      "packages": [
+        {
+          "id": "enterprise",
+          "discount": 25
+        },
+        {
+          "id": "professional",
+          "discount": 20
+        }
+      ],
+      "payment_methods": ["bank_transfer", "credit_card", "paypal"],
+      "payment_security": "escrow",
+      "agreement_number": "AG-2024-004",
+      "project_value": 150000,
+      "milestones": [
+        {
+          "name": "Strategy & Brand Development",
+          "release_amount": 30000,
+          "services": ["ser_007", "ser_009"]
+        },
+        {
+          "name": "Website & Design Implementation",
+          "release_amount": 40000,
+          "services": ["ser_006", "ser_008"]
+        },
+        {
+          "name": "Marketing Campaign Launch",
+          "release_amount": 40000,
+          "services": ["ser_001", "ser_002", "ser_003", "ser_004", "ser_005"]
+        },
+        {
+          "name": "Analytics & Optimization",
+          "release_amount": 20000,
+          "services": ["ser_010", "ser_011"]
+        },
+        {
+          "name": "Content Production & Final Delivery",
+          "release_amount": 20000,
+          "services": ["ser_012"]
+        }
+      ],
+      "project_highlights": [
+        "Complete digital transformation",
+        "All-in-one marketing solution",
+        "Cross-platform presence",
+        "Data-driven optimization",
+        "Ongoing support and maintenance"
+      ],
+      "expected_outcomes": [
+        "Increased online visibility by 300%",
+        "Lead generation improvement by 250%",
+        "Brand recognition enhancement",
+        "Streamlined business processes",
+        "Comprehensive analytics dashboard"
+      ]
     }
   ]
 }
