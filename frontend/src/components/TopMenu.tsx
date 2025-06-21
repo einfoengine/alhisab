@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   CalculatorIcon,
-  UserGroupIcon,
   CalendarIcon,
   ClipboardDocumentCheckIcon,
   ChartBarIcon,
@@ -14,13 +13,14 @@ import {
   Bars3Icon,
   MagnifyingGlassCircleIcon,
   LightBulbIcon,
+  Squares2X2Icon,
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import OffCanvasMenu from './OffCanvasMenu';
 
 const tools = [
   { name: 'Accounting', href: '/accounting', icon: CalculatorIcon },
-  { name: 'Project Management', href: '/tasks', icon: UserGroupIcon },
+  { name: 'Chess', href: '/chess', icon: Squares2X2Icon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
   { name: 'Planner', href: '/planner', icon: ClipboardDocumentCheckIcon },
   { name: 'Audit', href: '/dashboard/audit', icon: MagnifyingGlassCircleIcon },

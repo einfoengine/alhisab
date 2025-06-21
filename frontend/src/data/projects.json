@@ -18,11 +18,11 @@
       ],
       "services": [
         {
-          "id": "web_design",
+          "id": "ser_006",
           "discount": 15
         },
         {
-          "id": "seo_basic",
+          "id": "ser_001",
           "discount": 10
         }
       ],
@@ -77,11 +77,11 @@
       ],
       "services": [
         {
-          "id": "mobile_app",
+          "id": "ser_006",
           "discount": 20
         },
         {
-          "id": "backend_development",
+          "id": "ser_003",
           "discount": 15
         }
       ],
@@ -136,16 +136,20 @@
       ],
       "services": [
         {
-          "id": "seo_basic",
+          "id": "ser_001",
           "discount": 10
         },
         {
-          "id": "social_media",
+          "id": "ser_003",
           "discount": 15
         },
         {
-          "id": "content_creation",
+          "id": "ser_004",
           "discount": 10
+        },
+        {
+          "id": "ser_002",
+          "discount": 12
         }
       ],
       "packages": [

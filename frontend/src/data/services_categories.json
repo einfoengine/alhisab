@@ -1,0 +1,68 @@
+{
+  "categories": [
+    {
+      "id": "web_apps",
+      "name": "Web & Apps Development",
+      "description": "Custom web applications, mobile apps, and software development services",
+      "icon": "💻",
+      "color": "blue",
+      "subcategories": ["Frontend Development", "Backend Development", "Mobile Apps", "E-commerce", "CMS Development"]
+    },
+    {
+      "id": "social_media",
+      "name": "Social Media Marketing",
+      "description": "Social media management, advertising, and community engagement",
+      "icon": "📱",
+      "color": "purple",
+      "subcategories": ["Content Creation", "Community Management", "Paid Advertising", "Influencer Marketing", "Analytics"]
+    },
+    {
+      "id": "content_creation",
+      "name": "Content Creation",
+      "description": "Blog writing, video production, graphic design, and multimedia content",
+      "icon": "✍️",
+      "color": "green",
+      "subcategories": ["Blog Writing", "Video Production", "Graphic Design", "Copywriting", "Photography"]
+    },
+    {
+      "id": "web_marketing",
+      "name": "Web Marketing",
+      "description": "SEO, PPC, email marketing, and digital advertising services",
+      "icon": "📈",
+      "color": "orange",
+      "subcategories": ["SEO", "PPC", "Email Marketing", "Display Advertising", "Conversion Optimization"]
+    },
+    {
+      "id": "strategy_planning",
+      "name": "Strategy and Planning",
+      "description": "Business strategy, digital transformation, and consulting services",
+      "icon": "🎯",
+      "color": "red",
+      "subcategories": ["Digital Strategy", "Business Consulting", "Market Research", "Process Optimization", "Change Management"]
+    },
+    {
+      "id": "design_creative",
+      "name": "Design & Creative",
+      "description": "UI/UX design, branding, and creative services",
+      "icon": "🎨",
+      "color": "pink",
+      "subcategories": ["UI/UX Design", "Brand Identity", "Logo Design", "Print Design", "Illustration"]
+    },
+    {
+      "id": "data_analytics",
+      "name": "Data & Analytics",
+      "description": "Data analysis, business intelligence, and reporting services",
+      "icon": "📊",
+      "color": "indigo",
+      "subcategories": ["Data Analysis", "Business Intelligence", "Reporting", "Data Visualization", "Predictive Analytics"]
+    },
+    {
+      "id": "consulting",
+      "name": "Business Consulting",
+      "description": "Business process improvement, operations, and management consulting",
+      "icon": "🏢",
+      "color": "teal",
+      "subcategories": ["Process Improvement", "Operations Management", "Project Management", "Risk Management", "Compliance"]
+    }
+  ]
+} 

@@ -23,10 +23,11 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import projectsData from '@/data/projects.json';
-import { ChevronUpIcon, ChevronDownIcon, FunnelIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { ChevronUpIcon, ChevronDownIcon, FunnelIcon, PlusIcon, TableCellsIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 import servicesData from '@/data/services.json';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import TasksBoardView from '@/components/TasksBoardView';
 
 type User = {
   id: string;
@@ -76,6 +77,7 @@ type Task = {
 };
 
 type FilterableColumn = 'status' | 'content_type' | 'categories';
+type ViewMode = 'table' | 'board';
 
 const COLUMN_WIDTHS = {
   drag: '40px',
@@ -131,6 +133,7 @@ const TasksPage = () => {
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [filterServiceType, setFilterServiceType] = useState<string>('');
   const [openFilter, setOpenFilter] = useState<FilterableColumn | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -203,86 +206,80 @@ const TasksPage = () => {
     setSortConfig({ key, direction });
   };
 
-  // Helper to get unique values for a column
   function getUniqueValues(key: FilterableColumn): string[] {
-    if (key === 'categories') {
-      return Array.from(new Set(taskList.flatMap((t: Task) => t.categories)));
-    }
-    if (key === 'content_type') {
-      return Array.from(new Set(taskList.map((t: Task) => t.content_type).filter(Boolean)));
-    }
-    if (key === 'status') {
-      return Array.from(new Set(taskList.map((t: Task) => t.status)));
-    }
-    return [];
+    const values = new Set<string>();
+    taskList.forEach(task => {
+      if (key === 'categories') {
+        if (Array.isArray(task.categories)) {
+          task.categories.forEach(cat => values.add(cat));
+        }
+      } else {
+        const value = task[key];
+        if (typeof value === 'string' && value) {
+          values.add(value);
+        }
+      }
+    });
+    return Array.from(values).sort();
   }
 
-  // Filter dropdown UI (TableBuilder style)
   function renderFilterDropdown(
     columnKey: FilterableColumn,
     filterValue: string,
     setFilterValue: (v: string) => void,
     labelMap?: Record<string, string>
   ) {
-    let uniqueValues = getUniqueValues(columnKey);
-    if (columnKey === 'content_type') {
-      uniqueValues = SERVICE_OPTIONS.map(s => s.id);
-      labelMap = Object.fromEntries(SERVICE_OPTIONS.map(s => [s.id, s.name]));
+    const values = getUniqueValues(columnKey);
+    const isOpen = openFilter === columnKey;
+
+    function handleClick() {
+      setOpenFilter(isOpen ? null : columnKey);
     }
-    if (columnKey === 'status') {
-      uniqueValues = STATUS_OPTIONS.map(s => s.value);
-      labelMap = Object.fromEntries(STATUS_OPTIONS.map(s => [s.value, s.label]));
-    }
+
     return (
-      <div className="relative inline-block">
+      <div className="relative">
         <button
-          className="ml-1 text-gray-500 hover:text-gray-700"
-          onClick={e => {
-            e.stopPropagation();
-            setOpenFilter(openFilter === columnKey ? null : columnKey);
-          }}
-          type="button"
+          onClick={handleClick}
+          className={`flex items-center gap-1 px-2 py-1 text-xs rounded border ${
+            filterValue ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-300 text-gray-700'
+          } hover:bg-gray-50`}
         >
-          <FunnelIcon className="w-4 h-4" />
+          <FunnelIcon className="w-3 h-3" />
+          {filterValue ? (labelMap?.[filterValue] || filterValue) : 'Filter'}
+          {isOpen ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />}
         </button>
-        {openFilter === columnKey && (
-          <div className="absolute z-20 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg p-2" onClick={e => e.stopPropagation()}>
-            <button
-              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500"
-              onClick={() => {
-                setFilterValue('');
-                setOpenFilter(null);
-              }}
-            >
-              Reset Filter
-            </button>
-            {uniqueValues.map((value) => (
+
+        {isOpen && (
+          <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+            <div className="p-2">
               <button
-                key={value}
-                className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${filterValue === value ? 'bg-gray-200' : ''}`}
                 onClick={() => {
-                  setFilterValue(value);
+                  setFilterValue('');
                   setOpenFilter(null);
                 }}
+                className="block w-full text-left px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 rounded"
               >
-                {labelMap && labelMap[value] ? labelMap[value] : value}
+                Clear Filter
               </button>
-            ))}
+              <div className="border-t border-gray-200 my-1"></div>
+              {values.map((value) => (
+                <button
+                  key={value}
+                  onClick={() => {
+                    setFilterValue(value);
+                    setOpenFilter(null);
+                  }}
+                  className="block w-full text-left px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 rounded"
+                >
+                  {labelMap?.[value] || value}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
     );
   }
-
-  // Close filter dropdown on outside click
-  useEffect(() => {
-    if (!openFilter) return;
-    function handleClick() {
-      setOpenFilter(null);
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [openFilter]);
 
   const handleAddNewTask = () => {
     router.push('/dashboard/tasks/new');
@@ -301,7 +298,44 @@ const TasksPage = () => {
             }
           ]}
         />
-        <div className="mt-6">
+        
+        {/* View Toggle */}
+        <div className="mt-6 mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setViewMode('table')}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                viewMode === 'table'
+                  ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+              }`}
+            >
+              <TableCellsIcon className="w-4 h-4" />
+              Table View
+            </button>
+            <button
+              onClick={() => setViewMode('board')}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                viewMode === 'board'
+                  ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+              }`}
+            >
+              <Squares2X2Icon className="w-4 h-4" />
+              Board View
+            </button>
+          </div>
+          
+          {/* Filters */}
+          <div className="flex items-center gap-2">
+            {renderFilterDropdown('status', filterStatus, setFilterStatus, Object.fromEntries(STATUS_OPTIONS.map(s => [s.value, s.label])))}
+            {renderFilterDropdown('categories', filterCategory, setFilterCategory)}
+            {renderFilterDropdown('content_type', filterServiceType, setFilterServiceType, Object.fromEntries(SERVICE_OPTIONS.map(s => [s.id, s.name])))}
+          </div>
+        </div>
+
+        {/* Content */}
+        {viewMode === 'table' ? (
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-[1400px] text-sm align-middle">
@@ -367,7 +401,6 @@ const TasksPage = () => {
                         >
                           <SortIcon active={sortConfig?.key === 'categories'} direction={sortConfig?.direction} />
                         </button>
-                        {renderFilterDropdown('categories', filterCategory, setFilterCategory)}
                       </div>
                     </th>
                     <th style={{ width: COLUMN_WIDTHS.priority }} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -390,7 +423,6 @@ const TasksPage = () => {
                         >
                           <SortIcon active={sortConfig?.key === 'status'} direction={sortConfig?.direction} />
                         </button>
-                        {renderFilterDropdown('status', filterStatus, setFilterStatus, Object.fromEntries(STATUS_OPTIONS.map(s => [s.value, s.label])))}
                       </div>
                     </th>
                     <th style={{ width: COLUMN_WIDTHS.contentType }} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -402,7 +434,6 @@ const TasksPage = () => {
                         >
                           <SortIcon active={sortConfig?.key === 'content_type'} direction={sortConfig?.direction} />
                         </button>
-                        {renderFilterDropdown('content_type', filterServiceType, setFilterServiceType, Object.fromEntries(SERVICE_OPTIONS.map(s => [s.id, s.name])))}
                       </div>
                     </th>
                   </tr>
@@ -424,7 +455,15 @@ const TasksPage = () => {
               </table>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <TasksBoardView
+              tasks={filteredAndSortedTasks}
+              onUpdateTask={handleUpdateTask}
+              onAddTask={handleAddNewTask}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

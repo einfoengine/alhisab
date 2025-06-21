@@ -3,6 +3,17 @@
     {
       "id": "ser_001",
       "name": "Search Engine Optimization",
+      "serviceShortName": "SEO",
+      "serviceCategory": "web_marketing",
+      "serviceTasks": [
+        "On-page SEO optimization",
+        "Off-page SEO and link building",
+        "Content strategy and optimization",
+        "Technical SEO audit",
+        "Keyword research and analysis",
+        "Local SEO optimization",
+        "SEO performance tracking"
+      ],
       "shortDescription": "Improve your website's visibility in search engines",
       "serviceMaster": "John Smith",
       "description": "Our comprehensive SEO services help your website rank higher in search engine results, driving more organic traffic and increasing your online visibility. We use data-driven strategies and best practices to optimize your website for search engines.",
@@ -20,11 +31,23 @@
         "max_discount": 150
       },
       "minimum_time_required": 21,
-      "minimum_order_unit": 1
+      "minimum_order_unit": 1,
+      "service_type": "seo"
     },
     {
       "id": "ser_002",
       "name": "Search Engine Marketing",
+      "serviceShortName": "SEM",
+      "serviceCategory": "web_marketing",
+      "serviceTasks": [
+        "Google Ads campaign setup",
+        "Keyword research and selection",
+        "Ad copy creation and optimization",
+        "Budget management and optimization",
+        "Performance tracking and reporting",
+        "A/B testing and optimization",
+        "Remarketing campaigns"
+      ],
       "shortDescription": "Paid advertising campaigns to reach your target audience",
       "description": "Our SEM services help you create and manage effective paid advertising campaigns across search engines. We optimize your ad spend and maximize ROI through strategic campaign management and continuous optimization.",
       "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
@@ -46,6 +69,17 @@
     {
       "id": "ser_003",
       "name": "Social Media Marketing",
+      "serviceShortName": "SMM",
+      "serviceCategory": "social_media",
+      "serviceTasks": [
+        "Social media content creation",
+        "Community management and engagement",
+        "Paid social advertising campaigns",
+        "Social media audit and strategy",
+        "Influencer marketing coordination",
+        "Social media analytics and reporting",
+        "Platform-specific optimization"
+      ],
       "shortDescription": "Engage with your audience on social platforms",
       "serviceMaster": "Michael Brown",
       "description": "We help you build and maintain a strong social media presence across all major platforms. Our social media marketing services include content creation, community management, and paid social advertising.",
@@ -68,6 +102,17 @@
     {
       "id": "ser_004",
       "name": "Content Marketing",
+      "serviceShortName": "CM",
+      "serviceCategory": "content_creation",
+      "serviceTasks": [
+        "Content strategy development",
+        "Blog writing and optimization",
+        "Email marketing campaigns",
+        "Newsletter creation and management",
+        "Content calendar planning",
+        "Content performance analytics",
+        "Content distribution strategy"
+      ],
       "shortDescription": "Create engaging content that converts",
       "serviceMaster": "Emily Davis",
       "description": "Our content marketing services help you create and distribute valuable, relevant content to attract and engage your target audience. We develop content strategies that drive traffic and generate leads.",
@@ -90,6 +135,17 @@
     {
       "id": "ser_005",
       "name": "Email Marketing",
+      "serviceShortName": "EM",
+      "serviceCategory": "web_marketing",
+      "serviceTasks": [
+        "Email list building and segmentation",
+        "Email campaign design and creation",
+        "Automation workflow setup",
+        "A/B testing and optimization",
+        "Email deliverability optimization",
+        "Performance tracking and analytics",
+        "Compliance and best practices"
+      ],
       "shortDescription": "Nurture leads and drive conversions",
       "serviceMaster": "David Wilson",
       "image": "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=800&auto=format&fit=crop&q=60",
@@ -98,6 +154,237 @@
         "max_discount": 100
       },
       "minimum_time_required": 7,
+      "minimum_order_unit": 1
+    },
+    {
+      "id": "ser_006",
+      "name": "Web Development",
+      "serviceShortName": "WD",
+      "serviceCategory": "web_apps",
+      "serviceTasks": [
+        "Website design and development",
+        "Frontend and backend development",
+        "Database design and implementation",
+        "API development and integration",
+        "Testing and quality assurance",
+        "Deployment and hosting setup",
+        "Maintenance and updates"
+      ],
+      "shortDescription": "Custom web applications and websites",
+      "serviceMaster": "Sarah Johnson",
+      "description": "We build custom web applications and websites that are fast, secure, and user-friendly. Our development team uses modern technologies to create scalable solutions that meet your business needs.",
+      "image": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&auto=format&fit=crop&q=60",
+      "features": [
+        "Custom Web Development",
+        "Responsive Design",
+        "E-commerce Solutions",
+        "CMS Development",
+        "API Integration",
+        "Performance Optimization"
+      ],
+      "pricing": {
+        "unit_price": 2499,
+        "max_discount": 300
+      },
+      "minimum_time_required": 42,
+      "minimum_order_unit": 1
+    },
+    {
+      "id": "ser_007",
+      "name": "Digital Strategy",
+      "serviceShortName": "DS",
+      "serviceCategory": "strategy_planning",
+      "serviceTasks": [
+        "Digital transformation strategy",
+        "Business process optimization",
+        "Technology roadmap planning",
+        "Competitive analysis",
+        "Market research and insights",
+        "Performance measurement framework",
+        "Change management planning"
+      ],
+      "shortDescription": "Strategic digital transformation and planning",
+      "serviceMaster": "Robert Chen",
+      "description": "Our digital strategy services help organizations transform their business through technology. We develop comprehensive strategies that align with your business goals and drive measurable results.",
+      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60",
+      "features": [
+        "Digital Transformation",
+        "Business Strategy",
+        "Technology Consulting",
+        "Process Optimization",
+        "Change Management",
+        "Performance Metrics"
+      ],
+      "pricing": {
+        "unit_price": 1999,
+        "max_discount": 250
+      },
+      "minimum_time_required": 35,
+      "minimum_order_unit": 1
+    },
+    {
+      "id": "ser_008",
+      "name": "UI/UX Design",
+      "serviceShortName": "UXD",
+      "serviceCategory": "design_creative",
+      "serviceTasks": [
+        "User research and persona development",
+        "Wireframing and prototyping",
+        "User interface design",
+        "User experience optimization",
+        "Usability testing and feedback",
+        "Design system creation",
+        "Interactive prototype development"
+      ],
+      "shortDescription": "User-centered design for better experiences",
+      "serviceMaster": "Lisa Wang",
+      "description": "We create intuitive and engaging user experiences through research-driven design. Our UI/UX services focus on understanding user needs and creating interfaces that are both beautiful and functional.",
+      "image": "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&auto=format&fit=crop&q=60",
+      "features": [
+        "User Research",
+        "Wireframing",
+        "Prototyping",
+        "UI Design",
+        "Usability Testing",
+        "Design Systems"
+      ],
+      "pricing": {
+        "unit_price": 1799,
+        "max_discount": 200
+      },
+      "minimum_time_required": 28,
+      "minimum_order_unit": 1
+    },
+    {
+      "id": "ser_009",
+      "name": "Brand Identity Design",
+      "serviceShortName": "BID",
+      "serviceCategory": "design_creative",
+      "serviceTasks": [
+        "Brand strategy and positioning",
+        "Logo design and variations",
+        "Color palette and typography",
+        "Brand guidelines creation",
+        "Marketing collateral design",
+        "Brand application across platforms",
+        "Brand audit and refresh"
+      ],
+      "shortDescription": "Create a memorable and cohesive brand identity",
+      "serviceMaster": "Alex Rodriguez",
+      "description": "We help businesses establish strong brand identities that resonate with their target audience. Our brand design services create cohesive visual systems that build trust and recognition.",
+      "image": "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&auto=format&fit=crop&q=60",
+      "features": [
+        "Brand Strategy",
+        "Logo Design",
+        "Visual Identity",
+        "Brand Guidelines",
+        "Marketing Collateral",
+        "Brand Applications"
+      ],
+      "pricing": {
+        "unit_price": 1599,
+        "max_discount": 180
+      },
+      "minimum_time_required": 21,
+      "minimum_order_unit": 1
+    },
+    {
+      "id": "ser_010",
+      "name": "Data Analytics",
+      "serviceShortName": "DA",
+      "serviceCategory": "data_analytics",
+      "serviceTasks": [
+        "Data collection and integration",
+        "Statistical analysis and modeling",
+        "Business intelligence dashboard creation",
+        "Performance metrics tracking",
+        "Predictive analytics implementation",
+        "Data visualization and reporting",
+        "Data quality assessment"
+      ],
+      "shortDescription": "Turn data into actionable insights",
+      "serviceMaster": "Maria Garcia",
+      "description": "Our data analytics services help you make informed business decisions by transforming raw data into meaningful insights. We provide comprehensive analysis and reporting to drive growth and optimization.",
+      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60",
+      "features": [
+        "Data Analysis",
+        "Business Intelligence",
+        "Performance Tracking",
+        "Predictive Analytics",
+        "Data Visualization",
+        "Reporting Systems"
+      ],
+      "pricing": {
+        "unit_price": 1899,
+        "max_discount": 220
+      },
+      "minimum_time_required": 30,
+      "minimum_order_unit": 1
+    },
+    {
+      "id": "ser_011",
+      "name": "Business Process Consulting",
+      "serviceShortName": "BPC",
+      "serviceCategory": "consulting",
+      "serviceTasks": [
+        "Process mapping and analysis",
+        "Efficiency improvement recommendations",
+        "Workflow optimization",
+        "Technology implementation planning",
+        "Change management strategy",
+        "Performance measurement setup",
+        "Continuous improvement framework"
+      ],
+      "shortDescription": "Optimize your business processes for efficiency",
+      "serviceMaster": "James Wilson",
+      "description": "We help organizations streamline their operations through process analysis and optimization. Our consulting services identify inefficiencies and implement solutions that improve productivity and reduce costs.",
+      "image": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop&q=60",
+      "features": [
+        "Process Analysis",
+        "Efficiency Optimization",
+        "Workflow Design",
+        "Technology Planning",
+        "Change Management",
+        "Performance Metrics"
+      ],
+      "pricing": {
+        "unit_price": 2199,
+        "max_discount": 250
+      },
+      "minimum_time_required": 35,
+      "minimum_order_unit": 1
+    },
+    {
+      "id": "ser_012",
+      "name": "Video Production",
+      "serviceShortName": "VP",
+      "serviceCategory": "content_creation",
+      "serviceTasks": [
+        "Video concept and script development",
+        "Pre-production planning and storyboarding",
+        "Video shooting and recording",
+        "Post-production editing and effects",
+        "Audio mixing and sound design",
+        "Video optimization for different platforms",
+        "Distribution strategy and analytics"
+      ],
+      "shortDescription": "Professional video content for your brand",
+      "serviceMaster": "Chris Thompson",
+      "description": "We create high-quality video content that tells your story and engages your audience. From concept to final delivery, our video production services cover all aspects of creating compelling visual content.",
+      "image": "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&auto=format&fit=crop&q=60",
+      "features": [
+        "Video Concept Development",
+        "Professional Shooting",
+        "Post-Production Editing",
+        "Audio Design",
+        "Platform Optimization",
+        "Distribution Strategy"
+      ],
+      "pricing": {
+        "unit_price": 2999,
+        "max_discount": 350
+      },
+      "minimum_time_required": 45,
       "minimum_order_unit": 1
     }
   ]
