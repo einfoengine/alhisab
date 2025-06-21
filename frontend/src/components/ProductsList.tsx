@@ -48,7 +48,7 @@ export default function ProductsList({ services, onProductClick }: ProductsListP
         return onProductClick ? (
           <div key={service.id}>{card}</div>
         ) : (
-          <Link key={service.id} href={`/dashboard/services/${service.id}`}>{card}</Link>
+          <Link key={service.id} href={`/client-management/services/${service.id}`}>{card}</Link>
         );
       })}
     </div>
