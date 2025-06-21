@@ -83,7 +83,7 @@ export default function ClientsPage() {
   const ClientCard = ({ client }: { client: Client }) => (
     <div
       className="bg-white rounded-xl shadow p-6 flex flex-col items-center hover:shadow-lg transition cursor-pointer"
-      onClick={() => router.push(`/client-management/clients/${client.id}`)}
+      onClick={() => router.push(`/business-desk/clients/${client.id}`)}
     >
       {client.avatar ? (
         <img src={client.avatar} alt={client.client_name} className="h-16 w-16 rounded-full object-cover border-2 border-blue-400 shadow mb-2" />
@@ -108,7 +108,7 @@ export default function ClientsPage() {
         actions={[{
           name: 'Add New',
           icon: PlusIcon,
-          onClick: () => router.push('/client-management/clients/new'),
+          onClick: () => router.push('/business-desk/clients/new'),
         }]}
       />
       
@@ -133,7 +133,7 @@ export default function ClientsPage() {
                 <tr
                   key={client.id}
                   className="hover:bg-blue-50 cursor-pointer transition"
-                  onClick={() => router.push(`/client-management/clients/${client.id}`)}
+                  onClick={() => router.push(`/business-desk/clients/${client.id}`)}
                 >
                   {columns.map((col) => (
                     <td key={col.key} className="px-6 py-4 whitespace-nowrap">

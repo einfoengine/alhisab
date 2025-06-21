@@ -21,6 +21,8 @@ import {
   WrenchScrewdriverIcon,
   ChevronDownIcon,
   UserIcon,
+  CircleStackIcon,
+  BeakerIcon,
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import OffCanvasMenu from './OffCanvasMenu';
@@ -38,61 +40,50 @@ const tools = [
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
 ];
 
-const alhisabMenu = [
-  {
-    name: 'Main',
-    icon: HomeIcon,
-    items: [
-      { name: 'Dashboard', href: '/client-management', icon: HomeIcon },
-    ]
-  },
-  {
-    name: 'Services & Packages',
-    icon: DocumentTextIcon,
-    items: [
-      { name: 'Services', href: '/client-management/services', icon: DocumentTextIcon },
-      { name: 'Packages', href: '/client-management/packages', icon: DocumentTextIcon },
-    ]
-  },
-  {
-    name: 'Business Desk',
-    icon: UserGroupIcon,
-    items: [
-      { name: 'Clients', href: '/client-management/clients', icon: UserIcon },
-      { name: 'Leads', href: '/client-management/leads', icon: UserGroupIcon },
-      { name: 'Agreements', href: '/client-management/agreements', icon: DocumentTextIcon },
-    ]
-  },
-  {
-    name: 'Project Management',
-    icon: FolderIcon,
-    items: [
-      { name: 'Projects', href: '/client-management/projects', icon: DocumentTextIcon },
-      { name: 'Tasks', href: '/client-management/tasks', icon: ClipboardDocumentCheckIcon },
-      { name: 'Planning', href: '/client-management/planning', icon: ClipboardDocumentCheckIcon },
-    ]
-  },
-  {
-    name: 'Finance & Meetings',
-    icon: BanknotesIcon,
-    items: [
-      { name: 'Invoices', href: '/client-management/invoices', icon: CalculatorIcon },
-      { name: 'Accounting', href: '/client-management/accounting', icon: Cog6ToothIcon },
-      { name: 'Meetings', href: '/client-management/meetings', icon: CalendarIcon },
-    ]
-  },
-  {
-    name: 'System',
-    icon: WrenchScrewdriverIcon,
-    items: [
-      { name: 'Audit', href: '/client-management/audit', icon: DocumentTextIcon },
-      { name: 'Strategy', href: '/client-management/strategy', icon: DocumentTextIcon },
-      { name: 'Users', href: '/client-management/users', icon: UserIcon },
-      { name: 'Messages', href: '/client-management/messages', icon: UserGroupIcon },
-      { name: 'Settings', href: '/client-management/settings', icon: Cog6ToothIcon },
-    ]
-  }
-];
+const navigation = {
+  main: [
+    { name: 'Home', href: '/', icon: HomeIcon },
+    { name: 'Al-Hisab', href: '/al-hisab', icon: CircleStackIcon },
+    { name: 'Business Desk', href: '/business-desk', icon: UserGroupIcon },
+    { name: 'Chess', href: '/chess', icon: BeakerIcon },
+  ],
+  'Business Desk': [
+    { name: 'Audit', href: '/business-desk/audit', icon: MagnifyingGlassCircleIcon },
+    { name: 'Strategy', href: '/business-desk/strategy', icon: LightBulbIcon },
+  ],
+};
+
+const subNavigation = {
+    main: [
+      { name: 'Dashboard', href: '/business-desk', icon: HomeIcon },
+    ],
+    services: [
+      { name: 'Services', href: '/business-desk/services', icon: DocumentTextIcon },
+      { name: 'Packages', href: '/business-desk/packages', icon: DocumentTextIcon },
+    ],
+    clients: [
+      { name: 'Clients', href: '/business-desk/clients', icon: UserIcon },
+      { name: 'Leads', href: '/business-desk/leads', icon: UserGroupIcon },
+      { name: 'Agreements', href: '/business-desk/agreements', icon: DocumentTextIcon },
+    ],
+    projects: [
+      { name: 'Projects', href: '/business-desk/projects', icon: DocumentTextIcon },
+      { name: 'Tasks', href: '/business-desk/tasks', icon: ClipboardDocumentCheckIcon },
+      { name: 'Planning', href: '/business-desk/planning', icon: ClipboardDocumentCheckIcon },
+    ],
+    financial: [
+      { name: 'Invoices', href: '/business-desk/invoices', icon: CalculatorIcon },
+      { name: 'Accounting', href: '/business-desk/accounting', icon: Cog6ToothIcon },
+      { name: 'Meetings', href: '/business-desk/meetings', icon: CalendarIcon },
+    ],
+    others: [
+      { name: 'Audit', href: '/business-desk/audit', icon: DocumentTextIcon },
+      { name: 'Strategy', href: '/business-desk/strategy', icon: DocumentTextIcon },
+      { name: 'Users', href: '/business-desk/users', icon: UserIcon },
+      { name: 'Messages', href: '/business-desk/messages', icon: UserGroupIcon },
+      { name: 'Settings', href: '/business-desk/settings', icon: Cog6ToothIcon },
+    ],
+  };
 
 export default function TopMenu() {
   const pathname = usePathname() || '';
@@ -131,7 +122,7 @@ export default function TopMenu() {
 
               {isAlhisabMenuOpen && (
                 <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  {alhisabMenu.map((group) => {
+                  {navigation['Business Desk'].map((group) => {
                     const GroupIcon = group.icon;
                     return (
                       <div key={group.name} className="px-3 py-2">
@@ -140,7 +131,7 @@ export default function TopMenu() {
                           <span>{group.name}</span>
                         </div>
                         <div className="space-y-1">
-                          {group.items.map((item) => {
+                          {subNavigation['Business Desk'].map((item) => {
                             const ItemIcon = item.icon;
                             const isActive = pathname.startsWith(item.href);
                             return (

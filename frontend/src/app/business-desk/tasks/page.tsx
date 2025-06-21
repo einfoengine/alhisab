@@ -282,7 +282,7 @@ const TasksPage = () => {
   }
 
   const handleAddNewTask = () => {
-    router.push('/client-management/tasks/new');
+    router.push('/business-desk/tasks/new');
   };
 
   return (
@@ -696,7 +696,7 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
         </div>
       </td>
       <td style={{ width: COLUMN_WIDTHS.title }} className="truncate">
-        <Link href={`/client-management/tasks/${task.id}`} className="text-gray-900 font-medium hover:text-blue-600 block truncate">
+        <Link href={`/business-desk/tasks/${task.id}`} className="text-gray-900 font-medium hover:text-blue-600 block truncate">
           {task.title}
         </Link>
       </td>

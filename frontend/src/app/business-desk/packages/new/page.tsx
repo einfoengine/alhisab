@@ -26,7 +26,7 @@ export default function NewPackagePage() {
   const handleSubmit = async (values: PackageFormValues) => {
     // TODO: Implement actual package creation logic
     console.log('New package:', values);
-    router.push('/client-management/packages');
+    router.push('/business-desk/packages');
   };
 
   return (

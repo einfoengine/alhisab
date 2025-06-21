@@ -31,7 +31,7 @@ const UsersPage = () => {
   const [selectedRole, setSelectedRole] = useState<string>('all');
 
   const handleRowClick = (userId: string) => {
-    router.push(`/client-management/users/${userId}`);
+    router.push(`/business-desk/users/${userId}`);
   };
 
   const filteredUsers = selectedRole === 'all' 

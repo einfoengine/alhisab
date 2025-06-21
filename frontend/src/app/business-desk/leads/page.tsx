@@ -40,7 +40,7 @@ export default function LeadsListPage() {
             {(leads as Lead[]).map((lead) => (
               <tr key={lead.id} className="hover:bg-blue-50 cursor-pointer transition">
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <Link href={`/client-management/leads/${lead.id}`} className="text-blue-600 hover:underline">
+                  <Link href={`/business-desk/leads/${lead.id}`} className="text-blue-600 hover:underline">
                     {lead.name}
                   </Link>
                 </td>

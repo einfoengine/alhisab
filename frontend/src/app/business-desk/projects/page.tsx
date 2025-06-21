@@ -70,7 +70,7 @@ const ProjectsPage = () => {
   };
 
   const handleRowClick = (projectId: string) => {
-    router.push(`/client-management/projects/${projectId}`);
+    router.push(`/business-desk/projects/${projectId}`);
   };
 
   const toggleServicesDropdown = (projectId: string, event: React.MouseEvent) => {
@@ -199,7 +199,7 @@ const ProjectsPage = () => {
                     <div 
                       key={service.id}
                       className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
-                      onClick={() => router.push(`/client-management/services/${service.id}`)}
+                      onClick={() => router.push(`/business-desk/services/${service.id}`)}
                     >
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-gray-900 truncate">{serviceInfo.name}</div>
@@ -322,7 +322,7 @@ const ProjectsPage = () => {
           <PageHeader title="Projects" />
           <button
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-            onClick={() => router.push('/client-management/projects/new')}
+            onClick={() => router.push('/business-desk/projects/new')}
           >
             <PlusIcon className="h-5 w-5" /> New Project
           </button>

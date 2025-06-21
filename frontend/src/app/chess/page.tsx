@@ -14,41 +14,27 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import projectsData from '@/data/projects.json';
+import servicesData from '@/data/services.json';
 
-// Sample projects data - in a real app this would come from an API
-const projects = [
-  {
-    id: 'proj_001',
-    name: 'E-commerce Website Development',
-    status: 'active',
-    progress: 75,
-    tasks: [
-      { id: 'task_001', name: 'Design Homepage', status: 'completed' },
-      { id: 'task_002', name: 'Implement Payment Gateway', status: 'in_progress' },
-      { id: 'task_003', name: 'Setup Database', status: 'pending' },
-    ]
-  },
-  {
-    id: 'proj_002',
-    name: 'Mobile App Development',
-    status: 'planning',
-    progress: 25,
-    tasks: [
-      { id: 'task_004', name: 'UI/UX Design', status: 'in_progress' },
-      { id: 'task_005', name: 'Backend API', status: 'pending' },
-    ]
-  },
-  {
-    id: 'proj_003',
-    name: 'Digital Marketing Campaign',
-    status: 'completed',
-    progress: 100,
-    tasks: [
-      { id: 'task_006', name: 'SEO Optimization', status: 'completed' },
-      { id: 'task_007', name: 'Social Media Management', status: 'completed' },
-    ]
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'active':
+      return 'bg-green-100 text-green-800';
+    case 'completed':
+      return 'bg-blue-100 text-blue-800';
+    case 'in_progress':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'planning':
+        return 'bg-purple-100 text-purple-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
   }
-];
+};
+
+const getServiceFromId = (serviceId: string) => {
+    return servicesData.services.find(s => s.id === serviceId);
+}
 
 interface ChessSidebarProps {
   collapsed: boolean;
@@ -65,19 +51,6 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
         ? prev.filter(id => id !== projectId)
         : [...prev, projectId]
     );
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'completed':
-        return 'bg-blue-100 text-blue-800';
-      case 'planning':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
   };
 
   return (
@@ -175,7 +148,7 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
           </div>
           
           <div className="space-y-1">
-            {projects.map((project) => (
+            {projectsData.projects.map((project) => (
               <div key={project.id}>
                 <button
                   onClick={() => toggleProject(project.id)}
@@ -192,12 +165,12 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                         <div className="font-medium">{project.name}</div>
                         <div className="flex items-center gap-2 mt-1">
                           <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(project.status)}`}>
-                            {project.status}
+                            {project.status.replace('_', ' ')}
                           </span>
                           <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                             <div
                               className="h-full bg-blue-500 rounded-full transition-all duration-300"
-                              style={{ width: `${project.progress}%` }}
+                              style={{ width: `50%` }} // Placeholder progress
                             />
                           </div>
                         </div>
@@ -213,22 +186,27 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                   )}
                 </button>
                 
-                {/* Project Tasks */}
+                {/* Project Services */}
                 {expandedProjects.includes(project.id) && !collapsed && (
                   <div className="ml-6 mt-1 space-y-1">
-                    {project.tasks.map((task) => (
-                      <Link
-                        key={task.id}
-                        href={`/chess/project/${project.id}/task/${task.id}`}
-                        className={`block px-3 py-1.5 text-xs rounded transition-colors ${
-                          pathname.includes(`/chess/project/${project.id}/task/${task.id}`)
-                            ? 'bg-blue-50 text-blue-600'
-                            : 'text-gray-500 hover:bg-gray-50'
-                        }`}
-                      >
-                        {task.name}
-                      </Link>
-                    ))}
+                    {project.services.map((service) => {
+                      const serviceInfo = getServiceFromId(service.id);
+                      if (!serviceInfo) return null;
+
+                      return (
+                        <Link
+                          key={service.id}
+                          href={`/chess/project/${project.id}/service/${service.id}`}
+                          className={`block px-3 py-1.5 text-xs rounded transition-colors ${
+                            pathname.includes(`/chess/project/${project.id}/service/${service.id}`)
+                              ? 'bg-blue-50 text-blue-600'
+                              : 'text-gray-500 hover:bg-gray-50'
+                          }`}
+                        >
+                          {serviceInfo.name}
+                        </Link>
+                      )
+                    })}
                   </div>
                 )}
               </div>
@@ -265,19 +243,6 @@ const ChessPage = () => {
     };
   }, []);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'completed':
-        return 'bg-blue-100 text-blue-800';
-      case 'planning':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <ChessSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
@@ -301,7 +266,7 @@ const ChessPage = () => {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Total Projects</p>
-                    <p className="text-2xl font-bold text-gray-900">{projects.length}</p>
+                    <p className="text-2xl font-bold text-gray-900">{projectsData.projects.length}</p>
                   </div>
                 </div>
               </div>
@@ -314,7 +279,7 @@ const ChessPage = () => {
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Active Projects</p>
                     <p className="text-2xl font-bold text-gray-900">
-                      {projects.filter(p => p.status === 'active').length}
+                      {projectsData.projects.filter(p => p.status === 'active').length}
                     </p>
                   </div>
                 </div>
@@ -352,27 +317,27 @@ const ChessPage = () => {
               </div>
               <div className="p-6">
                 <div className="space-y-4">
-                  {projects.map((project) => (
+                  {projectsData.projects.map((project) => (
                     <div key={project.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                       <div className="flex items-center">
                         <FolderIcon className="w-8 h-8 text-blue-600 mr-4" />
                         <div>
                           <h3 className="font-medium text-gray-900">{project.name}</h3>
-                          <p className="text-sm text-gray-600">{project.tasks.length} tasks</p>
+                          <p className="text-sm text-gray-600">{project.services.length} services</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <div className="text-sm font-medium text-gray-900">{project.progress}%</div>
+                          <div className="text-sm font-medium text-gray-900">50%</div> {/* Placeholder progress */}
                           <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div
                               className="h-full bg-blue-500 rounded-full transition-all duration-300"
-                              style={{ width: `${project.progress}%` }}
+                              style={{ width: `50%` }}
                             />
                           </div>
                         </div>
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
-                          {project.status}
+                          {project.status.replace('_', ' ')}
                         </span>
                       </div>
                     </div>

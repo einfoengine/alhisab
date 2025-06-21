@@ -144,19 +144,19 @@ export default function ServicesPage() {
         actions={[{
           name: 'Add New',
           icon: PlusIcon,
-          onClick: () => router.push('/client-management/services/new'),
+          onClick: () => router.push('/business-desk/services/new'),
         }]}
       />
       {viewMode === 'grid' ? (
         <ProductsList
           services={services}
-          onProductClick={(id: string) => router.push(`/client-management/services/${id}`)}
+          onProductClick={(id: string) => router.push(`/business-desk/services/${id}`)}
         />
       ) : (
         <TableBuilder<Service>
           columns={columns}
           data={services}
-          onRowClick={(item) => router.push(`/client-management/services/${item.id}`)}
+          onRowClick={(item) => router.push(`/business-desk/services/${item.id}`)}
           itemsPerPage={8}
         />
       )}

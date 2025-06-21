@@ -94,12 +94,12 @@ export default function ClientDetailsPage() {
           {
             name: 'Back to Clients',
             icon: ArrowLeftIcon,
-            onClick: () => router.push('/client-management/clients'),
+            onClick: () => router.push('/business-desk/clients'),
           },
           {
             name: 'Edit',
             icon: PencilIcon,
-            onClick: () => router.push(`/client-management/clients/${client.id}/edit`),
+            onClick: () => router.push(`/business-desk/clients/${client.id}/edit`),
           }
         ]}
       />

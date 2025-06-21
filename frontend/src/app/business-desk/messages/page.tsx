@@ -54,7 +54,7 @@ const MessagesPage = () => {
   };
 
   const handleRowClick = (item: MessageRow) => {
-    router.push(`/client-management/messages/${item.id}`);
+    router.push(`/business-desk/messages/${item.id}`);
   };
 
   return (

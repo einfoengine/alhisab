@@ -140,7 +140,7 @@ export default function AgreementsPage() {
         </div>
         <button
           className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          onClick={() => router.push('/client-management/agreements/new')}
+          onClick={() => router.push('/business-desk/agreements/new')}
         >
           <PlusIcon className="h-5 w-5" /> New Agreement
         </button>
@@ -148,7 +148,7 @@ export default function AgreementsPage() {
       <TableBuilder
         data={agreementsData}
         columns={columns}
-        onRowClick={(row) => router.push(`/client-management/agreements/${row.agreement_id}`)}
+        onRowClick={(row) => router.push(`/business-desk/agreements/${row.agreement_id}`)}
       />
     </div>
   );

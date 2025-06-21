@@ -41,7 +41,7 @@ export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
   }, [params]);
 
   const handleBack = () => {
-    router.push('/client-management/tasks');
+    router.push('/business-desk/tasks');
   };
 
   const handleAddComment = (message: string) => {
@@ -103,7 +103,7 @@ export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
               onClick={() => {
                 if (confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
                   // Handle delete logic here
-                  router.push('/client-management/tasks');
+                  router.push('/business-desk/tasks');
                 }
               }}
               className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center space-x-2"

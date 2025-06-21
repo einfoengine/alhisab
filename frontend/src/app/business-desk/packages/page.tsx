@@ -27,7 +27,7 @@ export default function PackagesPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const handlePackageClick = (packageId: string) => {
-    router.push(`/client-management/packages/${packageId}`);
+    router.push(`/business-desk/packages/${packageId}`);
   };
 
   return (
@@ -54,7 +54,7 @@ export default function PackagesPage() {
             </button>
           </div>
           <button
-            onClick={() => router.push('/client-management/packages/new')}
+            onClick={() => router.push('/business-desk/packages/new')}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
           >
             <PlusIcon className="h-5 w-5" />

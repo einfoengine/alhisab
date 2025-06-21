@@ -38,7 +38,7 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
           {
             name: 'Edit',
             icon: PencilIcon,
-            onClick: () => router.push(`/client-management/services/${service.id}/edit`),
+            onClick: () => router.push(`/business-desk/services/${service.id}/edit`),
           },
           {
             name: 'Delete',

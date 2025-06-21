@@ -100,7 +100,7 @@ export default function AuditsPage() {
         <h1>Audits</h1>
         <button
           className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          onClick={() => router.push('/client-management/audit/new')}
+          onClick={() => router.push('/business-desk/audit/new')}
         >
           <PlusIcon className="h-5 w-5" /> New Audit
         </button>
@@ -108,7 +108,7 @@ export default function AuditsPage() {
       <TableBuilder
         columns={columns}
         data={data}
-        onRowClick={(row) => router.push(`/client-management/audit/${row.report_id}`)}
+        onRowClick={(row) => router.push(`/business-desk/audit/${row.report_id}`)}
       />
     </div>
   );

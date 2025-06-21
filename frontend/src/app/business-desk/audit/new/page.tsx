@@ -320,7 +320,7 @@ export default function NewAuditPage() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     alert("Audit submitted! (Demo only)");
-    router.push("/client-management/audit");
+    router.push("/business-desk/audit");
   };
 
   const handleProjectNameChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
