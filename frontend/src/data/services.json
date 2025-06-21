@@ -37,41 +37,6 @@
       "service_type": "repeatable"
     },
     {
-      "id": "ser_002",
-      "name": "Search Engine Marketing",
-      "serviceShortName": "SEM",
-      "serviceCategory": "web_marketing",
-      "category_id": "web_marketing",
-      "serviceTasks": [
-        "Google Ads campaign setup",
-        "Keyword research and selection",
-        "Ad copy creation and optimization",
-        "Budget management and optimization",
-        "Performance tracking and reporting",
-        "A/B testing and optimization",
-        "Remarketing campaigns"
-      ],
-      "action_items": ["act_004", "act_006", "act_011"],
-      "shortDescription": "Paid advertising campaigns to reach your target audience",
-      "description": "Our SEM services help you create and manage effective paid advertising campaigns across search engines. We optimize your ad spend and maximize ROI through strategic campaign management and continuous optimization.",
-      "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      "features": [
-        "Google Ads Management",
-        "Campaign Strategy",
-        "Ad Copy Creation",
-        "Budget Optimization",
-        "Performance Tracking",
-        "A/B Testing"
-      ],
-      "pricing": {
-        "unit_price": 1299,
-        "max_discount": 200
-      },
-      "minimum_time_required": 14,
-      "minimum_order_unit": 1,
-      "service_type": "repeatable"
-    },
-    {
       "id": "ser_003",
       "name": "Social Media Marketing",
       "serviceShortName": "SMM",
@@ -140,42 +105,6 @@
         "max_discount": 180
       },
       "minimum_time_required": 21,
-      "minimum_order_unit": 1,
-      "service_type": "repeatable"
-    },
-    {
-      "id": "ser_005",
-      "name": "Email Marketing",
-      "serviceShortName": "EM",
-      "serviceCategory": "web_marketing",
-      "category_id": "web_marketing",
-      "serviceTasks": [
-        "Email list building and segmentation",
-        "Email campaign design and creation",
-        "Automation workflow setup",
-        "A/B testing and optimization",
-        "Email deliverability optimization",
-        "Performance tracking and analytics",
-        "Compliance and best practices"
-      ],
-      "action_items": ["act_007", "act_011"],
-      "shortDescription": "Nurture leads and drive conversions",
-      "serviceMaster": "David Wilson",
-      "description": "Our email marketing services help you build and nurture relationships with your audience through targeted email campaigns.",
-      "image": "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=800&auto=format&fit=crop&q=60",
-      "features": [
-        "Email Campaign Design",
-        "List Building",
-        "Automation",
-        "A/B Testing",
-        "Analytics",
-        "Compliance"
-      ],
-      "pricing": {
-        "unit_price": 499,
-        "max_discount": 100
-      },
-      "minimum_time_required": 7,
       "minimum_order_unit": 1,
       "service_type": "repeatable"
     },
@@ -288,42 +217,6 @@
       "service_type": "non-repeatable"
     },
     {
-      "id": "ser_009",
-      "name": "Brand Identity Design",
-      "serviceShortName": "BID",
-      "serviceCategory": "design_creative",
-      "category_id": "design_creative",
-      "serviceTasks": [
-        "Brand strategy and positioning",
-        "Logo design and variations",
-        "Color palette and typography",
-        "Brand guidelines creation",
-        "Marketing collateral design",
-        "Brand application across platforms",
-        "Brand audit and refresh"
-      ],
-      "action_items": ["act_001", "act_009", "act_015"],
-      "shortDescription": "Create a memorable and cohesive brand identity",
-      "serviceMaster": "Alex Rodriguez",
-      "description": "We help businesses establish strong brand identities that resonate with their target audience. Our brand design services create cohesive visual systems that build trust and recognition.",
-      "image": "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&auto=format&fit=crop&q=60",
-      "features": [
-        "Brand Strategy",
-        "Logo Design",
-        "Visual Identity",
-        "Brand Guidelines",
-        "Marketing Collateral",
-        "Brand Applications"
-      ],
-      "pricing": {
-        "unit_price": 1599,
-        "max_discount": 180
-      },
-      "minimum_time_required": 21,
-      "minimum_order_unit": 1,
-      "service_type": "non-repeatable"
-    },
-    {
       "id": "ser_010",
       "name": "Data Analytics",
       "serviceShortName": "DA",
@@ -392,42 +285,6 @@
         "max_discount": 250
       },
       "minimum_time_required": 35,
-      "minimum_order_unit": 1,
-      "service_type": "non-repeatable"
-    },
-    {
-      "id": "ser_012",
-      "name": "Video Production",
-      "serviceShortName": "VP",
-      "serviceCategory": "content_creation",
-      "category_id": "content_creation",
-      "serviceTasks": [
-        "Video concept and script development",
-        "Pre-production planning and storyboarding",
-        "Video shooting and recording",
-        "Post-production editing and effects",
-        "Audio mixing and sound design",
-        "Video optimization for different platforms",
-        "Distribution strategy and analytics"
-      ],
-      "action_items": ["act_001", "act_010"],
-      "shortDescription": "Professional video content for your brand",
-      "serviceMaster": "Chris Thompson",
-      "description": "We create high-quality video content that tells your story and engages your audience. From concept to final delivery, our video production services cover all aspects of creating compelling visual content.",
-      "image": "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&auto=format&fit=crop&q=60",
-      "features": [
-        "Video Concept Development",
-        "Professional Shooting",
-        "Post-Production Editing",
-        "Audio Design",
-        "Platform Optimization",
-        "Distribution Strategy"
-      ],
-      "pricing": {
-        "unit_price": 2999,
-        "max_discount": 350
-      },
-      "minimum_time_required": 45,
       "minimum_order_unit": 1,
       "service_type": "non-repeatable"
     }
