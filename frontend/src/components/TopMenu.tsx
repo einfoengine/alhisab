@@ -27,7 +27,7 @@ import OffCanvasMenu from './OffCanvasMenu';
 
 const tools = [
   { name: 'Accounting', href: '/accounting', icon: CalculatorIcon },
-  { name: 'Client Management', href: '/client-management', icon: UserGroupIcon },
+  { name: 'Business Desk', href: '/client-management', icon: UserGroupIcon },
   { name: 'Chess', href: '/chess', icon: Squares2X2Icon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
   { name: 'Planner', href: '/planner', icon: ClipboardDocumentCheckIcon },
@@ -55,7 +55,7 @@ const alhisabMenu = [
     ]
   },
   {
-    name: 'Client Management',
+    name: 'Business Desk',
     icon: UserGroupIcon,
     items: [
       { name: 'Clients', href: '/client-management/clients', icon: UserIcon },

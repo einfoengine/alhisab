@@ -48,7 +48,7 @@ const menuGroups = [
     ]
   },
   {
-    name: 'Client Management',
+    name: 'Business Desk',
     icon: UsersIcon,
     items: [
       { name: 'Clients', href: '/client-management/clients', icon: UserIcon },
