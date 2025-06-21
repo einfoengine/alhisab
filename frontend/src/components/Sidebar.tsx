@@ -14,14 +14,12 @@ import {
   CubeIcon,
   CheckBadgeIcon,
   ClipboardDocumentIcon,
-  MagnifyingGlassCircleIcon,
   CalendarDaysIcon,
   PlusIcon,
   ChevronDownIcon,
   ChevronRightIcon,
   UsersIcon,
   FolderIcon,
-  ShieldCheckIcon,
   BanknotesIcon,
   WrenchScrewdriverIcon,
   ArrowLeftOnRectangleIcon,
@@ -65,14 +63,6 @@ const menuGroups = [
     ]
   },
   {
-    name: 'Audit & Strategies',
-    icon: ShieldCheckIcon,
-    items: [
-      { name: 'Audit', href: '/dashboard/audit', icon: MagnifyingGlassCircleIcon },
-      { name: 'New Audit', href: '/dashboard/audit/new', icon: PlusIcon },
-    ]
-  },
-  {
     name: 'Finance & Meetings',
     icon: BanknotesIcon,
     items: [
@@ -85,6 +75,8 @@ const menuGroups = [
     name: 'System',
     icon: WrenchScrewdriverIcon,
     items: [
+      { name: 'Audit', href: '/dashboard/audit', icon: ClipboardDocumentIcon },
+      { name: 'Strategy', href: '/dashboard/strategy', icon: ClipboardDocumentIcon },
       { name: 'Users', href: '/dashboard/users', icon: UserIcon },
       { name: 'Messages', href: '/dashboard/messages', icon: UserGroupIcon },
       { name: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
