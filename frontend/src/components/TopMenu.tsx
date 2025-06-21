@@ -29,12 +29,12 @@ import OffCanvasMenu from './OffCanvasMenu';
 
 const tools = [
   { name: 'Accounting', href: '/accounting', icon: CalculatorIcon },
-  { name: 'Business Desk', href: '/client-management', icon: UserGroupIcon },
+  { name: 'Business Desk', href: '/business-desk', icon: UserGroupIcon },
   { name: 'Chess', href: '/chess', icon: Squares2X2Icon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
   { name: 'Planner', href: '/planner', icon: ClipboardDocumentCheckIcon },
-  { name: 'Audit', href: '/client-management/audit', icon: MagnifyingGlassCircleIcon },
-  { name: 'Strategy', href: '/client-management/strategy', icon: LightBulbIcon },
+  { name: 'Audit', href: '/business-desk/audit', icon: MagnifyingGlassCircleIcon },
+  { name: 'Strategy', href: '/business-desk/strategy', icon: LightBulbIcon },
   { name: 'Reports', href: '/reports', icon: ChartBarIcon },
   { name: 'Documents', href: '/documents', icon: DocumentTextIcon },
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
