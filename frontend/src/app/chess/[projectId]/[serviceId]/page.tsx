@@ -6,7 +6,7 @@ import servicesData from '@/data/services.json';
 import projectsData from '@/data/projects.json';
 import TasksBoardView from '@/components/TasksBoardView';
 import TasksListView from '@/components/TasksListView';
-import TimelineSelector from '@/components/TimelineSelector';
+import TimelineSelector, { TimelineView } from '@/components/TimelineSelector';
 import Breadcrumb from '@/components/Breadcrumb';
 import ViewToggler, { ViewMode } from '@/components/elements/ViewToggler';
 import { CalendarDaysIcon, HomeIcon, BriefcaseIcon, CubeIcon } from '@heroicons/react/24/outline';
@@ -74,6 +74,7 @@ const ServiceTasksPage = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('board');
+  const [timelineView, setTimelineView] = useState<TimelineView>('monthly');
 
   useEffect(() => {
     if (projectId && serviceId) {
@@ -124,14 +125,33 @@ const ServiceTasksPage = () => {
   }, [projectId, serviceId]);
 
   const filteredTasks = useMemo(() => {
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    return tasks.filter(task => {
-      const taskStartDate = new Date(task.start_date);
-      const taskEndDate = new Date(task.end_date);
-      return (taskStartDate <= endOfMonth && taskEndDate >= startOfMonth);
-    });
-  }, [tasks, currentDate]);
+    if (timelineView === 'monthly') {
+      const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      return tasks.filter(task => {
+        const taskStartDate = new Date(task.start_date);
+        const taskEndDate = new Date(task.end_date);
+        return (taskStartDate <= endOfMonth && taskEndDate >= startOfMonth);
+      });
+    } else {
+      // Weekly view
+      const startOfWeek = new Date(currentDate);
+      const dayOfWeek = startOfWeek.getDay(); // 0=Sun, 1=Mon
+      const offset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      startOfWeek.setDate(startOfWeek.getDate() - offset);
+      startOfWeek.setHours(0, 0, 0, 0);
+      
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
+      
+      return tasks.filter(task => {
+        const taskStartDate = new Date(task.start_date);
+        const taskEndDate = new Date(task.end_date);
+        return (taskStartDate <= endOfWeek && taskEndDate >= startOfWeek);
+      });
+    }
+  }, [tasks, currentDate, timelineView]);
 
   const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
     setTasks(prevTasks =>
@@ -147,6 +167,10 @@ const ServiceTasksPage = () => {
 
   const handleDateChange = (date: Date) => {
     setCurrentDate(date);
+  };
+
+  const handleViewChange = (view: TimelineView) => {
+    setTimelineView(view);
   };
 
   if (!project || !service) {
@@ -180,6 +204,8 @@ const ServiceTasksPage = () => {
         currentDate={currentDate}
         onDateChange={handleDateChange}
         taskCount={filteredTasks.length}
+        view={timelineView}
+        onViewChange={handleViewChange}
       />
       
       <main className="flex-1 overflow-hidden">
