@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import servicesData from '@/data/services.json';
 import projectsData from '@/data/projects.json';
 import TasksBoardView from '@/components/TasksBoardView';
-import TimelineSelector, { TimelineView } from '@/components/TimelineSelector';
-import { FolderIcon, ChevronLeftIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
+import TimelineSelector from '@/components/TimelineSelector';
+import Breadcrumb from '@/components/Breadcrumb';
+import { CalendarDaysIcon, HomeIcon, BriefcaseIcon, CubeIcon } from '@heroicons/react/24/outline';
 
 type Task = {
   id: string;
@@ -63,7 +64,6 @@ type Service = {
 }
 
 const ServiceTasksPage = () => {
-  const router = useRouter();
   const params = useParams() as { projectId: string; serviceId: string };
   const { projectId, serviceId } = params;
 
@@ -71,7 +71,6 @@ const ServiceTasksPage = () => {
   const [service, setService] = useState<Service | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [timelineView, setTimelineView] = useState<TimelineView>('monthly');
 
   useEffect(() => {
     if (projectId && serviceId) {
@@ -82,26 +81,17 @@ const ServiceTasksPage = () => {
         setProject(foundProject);
         setService(foundService);
         
-        // Generate tasks with more realistic dates spanning multiple months
         const serviceTasks = foundService.serviceTasks.map((taskTitle, index) => {
           const baseDate = new Date();
-          
-          // Spread tasks across multiple months for better timeline demonstration
-          const monthOffset = Math.floor(index / 3); // 3 tasks per month
-          const weekOffset = index % 3; // Spread within the month
-          
+          const monthOffset = Math.floor(index / 3);
+          const weekOffset = index % 3;
           const startDate = new Date(baseDate);
           startDate.setMonth(baseDate.getMonth() + monthOffset);
-          startDate.setDate(baseDate.getDate() + (weekOffset * 7)); // Spread across weeks
-          
+          startDate.setDate(baseDate.getDate() + (weekOffset * 7));
           const endDate = new Date(startDate);
-          endDate.setDate(startDate.getDate() + 14); // 2 weeks duration
-          
-          // Randomize status for better visual demonstration
+          endDate.setDate(startDate.getDate() + 14);
           const statuses: Task['status'][] = ['planning', 'doing', 'qc', 'done', 'delivered'];
           const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-          
-          // Randomize priority
           const priorities: Task['priority'][] = ['low', 'medium', 'high'];
           const randomPriority = priorities[Math.floor(Math.random() * priorities.length)];
           
@@ -130,38 +120,15 @@ const ServiceTasksPage = () => {
     }
   }, [projectId, serviceId]);
 
-  // Filter tasks based on timeline view and current date
   const filteredTasks = useMemo(() => {
-    if (timelineView === 'monthly') {
-      const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-      
-      return tasks.filter(task => {
-        const taskStartDate = new Date(task.start_date);
-        const taskEndDate = new Date(task.end_date);
-        
-        // Task overlaps with the selected month
-        return (taskStartDate <= endOfMonth && taskEndDate >= startOfMonth);
-      });
-    } else {
-      // Weekly view
-      const startOfWeek = new Date(currentDate);
-      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-      startOfWeek.setHours(0, 0, 0, 0);
-      
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
-      endOfWeek.setHours(23, 59, 59, 999);
-      
-      return tasks.filter(task => {
-        const taskStartDate = new Date(task.start_date);
-        const taskEndDate = new Date(task.end_date);
-        
-        // Task overlaps with the selected week
-        return (taskStartDate <= endOfWeek && taskEndDate >= startOfWeek);
-      });
-    }
-  }, [tasks, currentDate, timelineView]);
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    return tasks.filter(task => {
+      const taskStartDate = new Date(task.start_date);
+      const taskEndDate = new Date(task.end_date);
+      return (taskStartDate <= endOfMonth && taskEndDate >= startOfMonth);
+    });
+  }, [tasks, currentDate]);
 
   const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
     setTasks(prevTasks =>
@@ -172,7 +139,6 @@ const ServiceTasksPage = () => {
   };
 
   const handleAddTask = () => {
-    // For demonstration, you might open a modal form here
     console.log('Add new task for service:', service?.name);
   };
 
@@ -180,54 +146,38 @@ const ServiceTasksPage = () => {
     setCurrentDate(date);
   };
 
-  const handleViewChange = (view: TimelineView) => {
-    setTimelineView(view);
-  };
-
   if (!project || !service) {
     return <div className="p-8 text-center">Loading project and service details...</div>;
   }
 
+  const breadcrumbItems = [
+    { name: 'Dashboard', href: '/business-desk', isCurrent: false, icon: HomeIcon },
+    { name: 'Projects', href: '/business-desk/projects', isCurrent: false, icon: BriefcaseIcon },
+    { name: project.name, href: `/business-desk/projects/${project.id}`, isCurrent: false, icon: CubeIcon },
+    { name: service.name, href: '#', isCurrent: true },
+  ];
+
   return (
     <div className="h-screen flex flex-col bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 p-4 flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => router.back()}
-            className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
-          >
-            <ChevronLeftIcon className="w-5 h-5 text-gray-600" />
-          </button>
-          <div className="flex items-center gap-2">
-            <FolderIcon className="w-6 h-6 text-blue-600" />
-            <div>
-              <h1 className="text-lg font-semibold text-gray-900">{project.name}</h1>
-              <p className="text-sm text-gray-500">{service.name} - Task Board</p>
-            </div>
-          </div>
-        </div>
+      <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+        <Breadcrumb items={breadcrumbItems} />
         <div className="flex items-center gap-2">
           <button
-            className="p-1.5 rounded-md hover:bg-gray-100 transition-colors flex items-center gap-2"
+            className="px-3 py-1.5 rounded-md hover:bg-gray-100 transition-colors flex items-center gap-2 border text-sm font-medium text-gray-700"
             title="Planning"
           >
-            <CalendarDaysIcon className="w-5 h-5 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Plannings</span>
+            <CalendarDaysIcon className="w-5 h-5 text-gray-500" />
+            <span>Plannings</span>
           </button>
         </div>
       </header>
       
-      {/* Timeline Selector */}
       <TimelineSelector
         currentDate={currentDate}
-        view={timelineView}
         onDateChange={handleDateChange}
-        onViewChange={handleViewChange}
         taskCount={filteredTasks.length}
       />
       
-      {/* Task Board */}
       <main className="flex-1 overflow-hidden">
         <TasksBoardView 
           tasks={filteredTasks} 
