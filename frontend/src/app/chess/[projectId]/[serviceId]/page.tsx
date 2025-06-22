@@ -5,8 +5,10 @@ import { useParams } from 'next/navigation';
 import servicesData from '@/data/services.json';
 import projectsData from '@/data/projects.json';
 import TasksBoardView from '@/components/TasksBoardView';
+import TasksListView from '@/components/TasksListView';
 import TimelineSelector from '@/components/TimelineSelector';
 import Breadcrumb from '@/components/Breadcrumb';
+import ViewToggler, { ViewMode } from '@/components/elements/ViewToggler';
 import { CalendarDaysIcon, HomeIcon, BriefcaseIcon, CubeIcon } from '@heroicons/react/24/outline';
 
 type Task = {
@@ -71,6 +73,7 @@ const ServiceTasksPage = () => {
   const [service, setService] = useState<Service | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState<ViewMode>('board');
 
   useEffect(() => {
     if (projectId && serviceId) {
@@ -161,7 +164,8 @@ const ServiceTasksPage = () => {
     <div className="h-screen flex flex-col bg-gray-50">
       <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
         <Breadcrumb items={breadcrumbItems} />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <ViewToggler viewMode={viewMode} onViewModeChange={setViewMode} />
           <button
             className="px-3 py-1.5 rounded-md hover:bg-gray-100 transition-colors flex items-center gap-2 border text-sm font-medium text-gray-700"
             title="Planning"
@@ -179,11 +183,15 @@ const ServiceTasksPage = () => {
       />
       
       <main className="flex-1 overflow-hidden">
-        <TasksBoardView 
-          tasks={filteredTasks} 
-          onUpdateTask={handleUpdateTask} 
-          onAddTask={handleAddTask} 
-        />
+        {viewMode === 'board' ? (
+          <TasksBoardView 
+            tasks={filteredTasks} 
+            onUpdateTask={handleUpdateTask} 
+            onAddTask={handleAddTask} 
+          />
+        ) : (
+          <TasksListView tasks={filteredTasks} />
+        )}
       </main>
     </div>
   );

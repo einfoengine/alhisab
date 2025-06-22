@@ -1,48 +1,40 @@
+'use client';
+
 import React from 'react';
-import { Squares2X2Icon, TableCellsIcon } from '@heroicons/react/24/outline';
+import { Squares2X2Icon, Bars3Icon } from '@heroicons/react/24/outline';
+
+export type ViewMode = 'board' | 'list';
 
 interface ViewTogglerProps {
-  viewMode: 'grid' | 'table';
-  setViewMode: (mode: 'grid' | 'table') => void;
-  actions?: Array<{
-    name: string;
-    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-    onClick: () => void;
-  }>;
+  viewMode: ViewMode;
+  onViewModeChange: (mode: ViewMode) => void;
 }
 
-const ViewToggler: React.FC<ViewTogglerProps> = ({ viewMode, setViewMode, actions = [] }) => {
+const ViewToggler: React.FC<ViewTogglerProps> = ({ viewMode, onViewModeChange }) => {
   return (
-    <div className="flex items-center space-x-2 bg-white rounded-lg p-1">
+    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
       <button
-        onClick={() => setViewMode('grid')}
-        className={`p-2 rounded-md ${
-          viewMode === 'grid'
-            ? 'bg-blue-50 text-blue-600'
-            : 'text-gray-500 hover:text-gray-700'
+        onClick={() => onViewModeChange('board')}
+        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+          viewMode === 'board'
+            ? 'bg-white text-blue-700 shadow-sm'
+            : 'text-gray-500 hover:text-gray-900'
         }`}
       >
-        <Squares2X2Icon className="h-5 w-5" />
+        <Squares2X2Icon className="w-5 h-5" />
+        Board
       </button>
       <button
-        onClick={() => setViewMode('table')}
-        className={`p-2 rounded-md ${
-          viewMode === 'table'
-            ? 'bg-blue-50 text-blue-600'
-            : 'text-gray-500 hover:text-gray-700'
+        onClick={() => onViewModeChange('list')}
+        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+          viewMode === 'list'
+            ? 'bg-white text-blue-700 shadow-sm'
+            : 'text-gray-500 hover:text-gray-900'
         }`}
       >
-        <TableCellsIcon className="h-5 w-5" />
+        <Bars3Icon className="w-5 h-5" />
+        List
       </button>
-      {actions.map((action) => (
-        <button
-          key={action.name}
-          onClick={action.onClick}
-          className="p-2 rounded-md text-gray-500 hover:text-gray-700"
-        >
-          <action.icon className="h-5 w-5" />
-        </button>
-      ))}
     </div>
   );
 };
