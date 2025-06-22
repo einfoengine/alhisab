@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 export type TimelineView = 'monthly' | 'weekly';
@@ -22,6 +22,7 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
 }) => {
   const [contextMonth, setContextMonth] = useState(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1));
   const [selectedWeek, setSelectedWeek] = useState(1);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   const getStartDateForView = (v: TimelineView, month: Date, week: number) => {
     if (v === 'weekly') {
@@ -42,6 +43,14 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
     const weekNumber = Math.ceil((today.getDate() + dayOfWeek) / 7);
     setSelectedWeek(weekNumber);
     onDateChange(getStartDateForView(view, currentMonth, weekNumber));
+    
+    if (scrollContainerRef.current) {
+        const currentMonthISO = currentMonth.toISOString();
+        const button = scrollContainerRef.current.querySelector(`[data-month='${currentMonthISO}']`) as HTMLButtonElement;
+        if (button) {
+            scrollContainerRef.current.scrollLeft = button.offsetLeft;
+        }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -100,7 +109,7 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
   return (
     <div className="bg-white border-b border-gray-200 px-4 py-2">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex-1 overflow-x-auto">
+        <div className="flex-1 overflow-x-auto" ref={scrollContainerRef}>
           <div className="flex items-center gap-4 text-sm font-medium">
             {months.map((month) => {
               const isCurrent = contextMonth.getMonth() === month.getMonth() && 
@@ -108,6 +117,7 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
               return (
                 <button
                   key={month.toISOString()}
+                  data-month={month.toISOString()}
                   onClick={() => handleMonthSelect(month)}
                   className={`px-3 py-1 rounded-lg text-sm font-medium whitespace-nowrap ${
                     isCurrent ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100'
