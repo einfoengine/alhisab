@@ -148,13 +148,13 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, provided, snapshot, onCardCli
                         )}
                     </div>
                     
-                    <div ref={assigneeRef} className="relative z-10">
+                    <div ref={assigneeRef} className="relative z-10" onClick={(e) => e.stopPropagation()}>
                         <AssigneeSelector
                             isCompact={true}
                             selectedAssignees={task.assigned_to}
                             onAssigneesChange={(assignees: string[]) => onUpdateTask(task.id, { assigned_to: assignees })}
                             trigger={
-                                <button onClick={(e) => {e.stopPropagation();}}>
+                                <div className="cursor-pointer">
                                 {task.assigned_to.length > 0 ? (() => {
                                     const user = usersData.users.find(u => u.id === task.assigned_to[0]);
                                     const initials = user ? user.name.split(' ').map(n => n[0]).join('').substring(0,2) : '';
@@ -164,7 +164,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, provided, snapshot, onCardCli
                                         </div>
                                     ) : null;
                                 })() : <div className="w-6 h-6 rounded-full bg-gray-200" title="Add assignee"></div>}
-                                </button>
+                                </div>
                             }
                         />
                     </div>
