@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
+import AssigneeFilter from './AssigneeFilter';
 
 export type TimelineView = 'monthly' | 'weekly';
 
@@ -11,6 +12,8 @@ export interface TimelineSelectorProps {
   taskCount: number;
   view: TimelineView;
   onViewChange: (view: TimelineView) => void;
+  selectedAssignees: string[];
+  onAssigneeChange: (selected: string[]) => void;
 }
 
 const TimelineSelector: React.FC<TimelineSelectorProps> = ({
@@ -19,6 +22,8 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
   taskCount,
   view,
   onViewChange,
+  selectedAssignees,
+  onAssigneeChange,
 }) => {
   const [contextMonth, setContextMonth] = useState(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1));
   const [selectedWeek, setSelectedWeek] = useState(1);
@@ -155,6 +160,7 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
           <div className="text-sm text-gray-500">
             <span className="font-bold text-gray-700">{taskCount}</span> tasks
           </div>
+          <AssigneeFilter selectedAssignees={selectedAssignees} onChange={onAssigneeChange} />
           <div className="flex items-center bg-gray-100 rounded-lg p-1">
             <button
               onClick={() => handleViewChange('monthly')}

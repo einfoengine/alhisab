@@ -10,6 +10,7 @@ import TimelineSelector, { TimelineView } from '@/components/TimelineSelector';
 import Breadcrumb from '@/components/Breadcrumb';
 import ViewToggler, { ViewMode } from '@/components/elements/ViewToggler';
 import { CalendarDaysIcon, HomeIcon, BriefcaseIcon, CubeIcon } from '@heroicons/react/24/outline';
+import usersData from '@/data/users.json';
 
 type Task = {
   id: string;
@@ -75,6 +76,7 @@ const ServiceTasksPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('board');
   const [timelineView, setTimelineView] = useState<TimelineView>('monthly');
+  const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
 
   useEffect(() => {
     if (projectId && serviceId) {
@@ -99,6 +101,11 @@ const ServiceTasksPage = () => {
           const priorities: Task['priority'][] = ['low', 'medium', 'high'];
           const randomPriority = priorities[Math.floor(Math.random() * priorities.length)];
           
+          const assignedUsers = usersData.users
+            .sort(() => 0.5 - Math.random())
+            .slice(0, Math.floor(Math.random() * 3) + 1)
+            .map(u => u.id);
+
           return {
             id: `${foundService.id}_task_${index}`,
             title: taskTitle,
@@ -107,7 +114,7 @@ const ServiceTasksPage = () => {
             category_id: foundService.category_id,
             categories: [foundService.serviceCategory],
             status: randomStatus,
-            assigned_to: [],
+            assigned_to: assignedUsers,
             priority: randomPriority,
             order: index,
             created_at: new Date().toISOString(),
@@ -125,10 +132,18 @@ const ServiceTasksPage = () => {
   }, [projectId, serviceId]);
 
   const filteredTasks = useMemo(() => {
+    let tasksToFilter = tasks;
+
+    if (selectedAssignees.length > 0) {
+      tasksToFilter = tasksToFilter.filter(task =>
+        task.assigned_to.some(assigneeId => selectedAssignees.includes(assigneeId))
+      );
+    }
+
     if (timelineView === 'monthly') {
       const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
       const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-      return tasks.filter(task => {
+      return tasksToFilter.filter(task => {
         const taskStartDate = new Date(task.start_date);
         const taskEndDate = new Date(task.end_date);
         return (taskStartDate <= endOfMonth && taskEndDate >= startOfMonth);
@@ -145,13 +160,13 @@ const ServiceTasksPage = () => {
       endOfWeek.setDate(startOfWeek.getDate() + 6);
       endOfWeek.setHours(23, 59, 59, 999);
       
-      return tasks.filter(task => {
+      return tasksToFilter.filter(task => {
         const taskStartDate = new Date(task.start_date);
         const taskEndDate = new Date(task.end_date);
         return (taskStartDate <= endOfWeek && taskEndDate >= startOfWeek);
       });
     }
-  }, [tasks, currentDate, timelineView]);
+  }, [tasks, currentDate, timelineView, selectedAssignees]);
 
   const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
     setTasks(prevTasks =>
@@ -171,6 +186,10 @@ const ServiceTasksPage = () => {
 
   const handleViewChange = (view: TimelineView) => {
     setTimelineView(view);
+  };
+
+  const handleAssigneeChange = (assignees: string[]) => {
+    setSelectedAssignees(assignees);
   };
 
   if (!project || !service) {
@@ -206,6 +225,8 @@ const ServiceTasksPage = () => {
         taskCount={filteredTasks.length}
         view={timelineView}
         onViewChange={handleViewChange}
+        selectedAssignees={selectedAssignees}
+        onAssigneeChange={handleAssigneeChange}
       />
       
       <main className="flex-1 overflow-hidden">
