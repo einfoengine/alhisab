@@ -1,312 +1,206 @@
 'use client';
 
-import React from 'react';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { PlusIcon, EllipsisVerticalIcon, CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
-import users from '@/data/users.json';
-import projectsData from '@/data/projects.json';
-import servicesData from '@/data/services.json';
+import React, { useState } from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { PlusIcon, EllipsisVerticalIcon, CalendarIcon, FlagIcon } from '@heroicons/react/24/outline';
+import { format, isToday, isYesterday } from 'date-fns';
+import usersData from '@/data/users.json';
+import TaskDetailsModal from './TaskDetailsModal';
 
 type Task = {
   id: string;
   title: string;
   description: string;
-  type: 'repetitive' | 'one_time';
-  category_id: string;
-  categories: string[];
-  frequency?: 'daily' | 'weekly' | 'monthly';
   status: 'planning' | 'doing' | 'qc' | 'redo' | 'done' | 'delivered' | 'archived';
   assigned_to: string[];
   priority: 'low' | 'medium' | 'high';
   order: number;
-  created_at: string;
   start_date: string;
   end_date: string;
-  last_completed?: string;
-  next_due?: string;
-  progress?: number;
-  tags: string[];
-  content_type: string;
-  mother_task?: string | null;
-  project_id: string;
-  platforms: string[];
-  [key: string]: string | string[] | number | boolean | null | undefined;
+  project_name: string;
+  service_name: string;
+  subtask_count?: number;
 };
 
-interface TasksBoardViewProps {
+type TasksBoardViewProps = {
   tasks: Task[];
   onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
   onAddTask: () => void;
-}
-
-const STATUS_COLUMNS = [
-  { id: 'planning', title: 'Planning', color: 'bg-blue-50 border-blue-200', textColor: 'text-blue-700' },
-  { id: 'doing', title: 'In Progress', color: 'bg-yellow-50 border-yellow-200', textColor: 'text-yellow-700' },
-  { id: 'qc', title: 'Quality Check', color: 'bg-purple-50 border-purple-200', textColor: 'text-purple-700' },
-  { id: 'redo', title: 'Redo', color: 'bg-red-50 border-red-200', textColor: 'text-red-700' },
-  { id: 'done', title: 'Done', color: 'bg-green-50 border-green-200', textColor: 'text-green-700' },
-  { id: 'delivered', title: 'Delivered', color: 'bg-indigo-50 border-indigo-200', textColor: 'text-indigo-700' },
-  { id: 'archived', title: 'Archived', color: 'bg-gray-50 border-gray-200', textColor: 'text-gray-700' },
-];
-
-const PRIORITY_COLORS = {
-  high: 'bg-red-100 text-red-800 border-red-200',
-  medium: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  low: 'bg-green-100 text-green-800 border-green-200',
 };
 
-const PLATFORM_OPTIONS = [
-  { value: 'FB', label: 'Facebook', color: 'bg-blue-600' },
-  { value: 'Insta', label: 'Instagram', color: 'bg-pink-500' },
-  { value: 'Youtube', label: 'YouTube', color: 'bg-red-600' },
-  { value: 'Website', label: 'Website', color: 'bg-gray-700' },
-];
+const columnOrder: Task['status'][] = ['planning', 'doing', 'qc', 'redo', 'done', 'delivered'];
+const columnConfig: Record<Task['status'], { name: string, color: string }> = {
+  planning: { name: 'Planning', color: 'bg-gray-400' },
+  doing: { name: 'In Progress', color: 'bg-blue-500' },
+  qc: { name: 'Quality Check', color: 'bg-purple-500' },
+  redo: { name: 'Redo', color: 'bg-red-500' },
+  done: { name: 'Done', color: 'bg-green-500' },
+  delivered: { name: 'Delivered', color: 'bg-teal-500' },
+  archived: { name: 'Archived', color: 'bg-gray-700' },
+};
 
-function SortableTaskCard({ task }: { task: Task }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: task.id });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+const priorityConfig: Record<string, { icon: React.ElementType, color: string, name: string }> = {
+  low: { icon: FlagIcon, color: 'text-gray-500', name: 'Low' },
+  medium: { icon: FlagIcon, color: 'text-yellow-500', name: 'Medium' },
+  high: { icon: FlagIcon, color: 'text-red-600', name: 'High' },
+};
 
-  const getProjectName = (id: string) => {
-    const project = projectsData.projects.find(p => p.id === id);
-    return project?.name || 'Unknown Project';
-  };
-
-  const getServiceName = (id: string) => {
-    const service = servicesData.services.find(s => s.id === id);
-    return service?.name || 'Unknown Service';
-  };
-
-  const getAssignedUsers = () => {
-    return task.assigned_to.map(userId => {
-      const user = users.users.find(u => u.id === userId);
-      return user;
-    }).filter(Boolean);
-  };
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
-
-  const assignedUsers = getAssignedUsers();
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className={`bg-white rounded-lg border border-gray-200 p-4 mb-3 cursor-move hover:shadow-md transition-shadow ${
-        isDragging ? 'opacity-50' : ''
-      }`}
-    >
-      {/* Task Header */}
-      <div className="flex items-start justify-between mb-3">
-        <h4 className="font-medium text-gray-900 text-sm leading-tight">{task.title}</h4>
-        <button className="text-gray-400 hover:text-gray-600">
-          <EllipsisVerticalIcon className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Task Meta */}
-      <div className="space-y-2 mb-3">
-        {/* Project */}
-        <div className="flex items-center gap-1 text-xs text-gray-600">
-          <TagIcon className="w-3 h-3" />
-          <span>{getProjectName(task.project_id)}</span>
-        </div>
-
-        {/* Service Type */}
-        <div className="text-xs text-gray-600">
-          {getServiceName(task.content_type)}
-        </div>
-
-        {/* Priority */}
-        <div className="flex items-center gap-2">
-          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium border ${PRIORITY_COLORS[task.priority]}`}>
-            {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
-          </span>
-        </div>
-      </div>
-
-      {/* Platforms */}
-      {task.platforms && task.platforms.length > 0 && (
-        <div className="flex items-center gap-1 mb-3">
-          {task.platforms.slice(0, 3).map((platform) => {
-            const platformOption = PLATFORM_OPTIONS.find(p => p.value === platform);
-            return (
-              <span
-                key={platform}
-                className={`w-2 h-2 rounded-full ${platformOption?.color || 'bg-gray-400'}`}
-                title={platformOption?.label || platform}
-              />
-            );
-          })}
-          {task.platforms.length > 3 && (
-            <span className="text-xs text-gray-500">+{task.platforms.length - 3}</span>
-          )}
-        </div>
-      )}
-
-      {/* Dates */}
-      <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
-        <div className="flex items-center gap-1">
-          <CalendarIcon className="w-3 h-3" />
-          <span>{formatDate(task.start_date)}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <CalendarIcon className="w-3 h-3" />
-          <span>{formatDate(task.end_date)}</span>
-        </div>
-      </div>
-
-      {/* Assignees */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          {assignedUsers.slice(0, 3).map((user) => (
-            <div
-              key={user?.id}
-              className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-700"
-              title={user?.name}
-            >
-              {user?.name.charAt(0).toUpperCase()}
-            </div>
-          ))}
-          {assignedUsers.length > 3 && (
-            <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-700">
-              +{assignedUsers.length - 3}
-            </div>
-          )}
-        </div>
-
-        {/* Progress */}
-        {task.progress !== undefined && (
-          <div className="flex items-center gap-1">
-            <div className="w-12 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-500 rounded-full transition-all duration-300"
-                style={{ width: `${task.progress}%` }}
-              />
-            </div>
-            <span className="text-xs text-gray-500">{task.progress}%</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+const formatDateString = (dateStr: string) => {
+    const date = new Date(dateStr);
+    if (isToday(date)) return 'Today';
+    if (isYesterday(date)) return 'Yesterday';
+    return format(date, 'MMM d');
+};
 
 const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, onAddTask }) => {
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor)
-  );
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+
+    if (!destination) {
+      return;
+    }
     
-    if (over && active.id !== over.id) {
-      const activeTask = tasks.find(task => task.id === active.id);
-      const overColumn = STATUS_COLUMNS.find(col => col.id === over.id);
+    if (source.droppableId === destination.droppableId && source.index === destination.index) {
+      return;
+    }
+
+    const startColumnStatus = source.droppableId as Task['status'];
+    const endColumnStatus = destination.droppableId as Task['status'];
+
+    if (startColumnStatus === endColumnStatus) {
+        const columnTasks = tasks
+            .filter(t => t.status === startColumnStatus)
+            .sort((a, b) => a.order - b.order);
+        
+        const [movedItem] = columnTasks.splice(source.index, 1);
+        columnTasks.splice(destination.index, 0, movedItem);
+        
+        columnTasks.forEach((task, index) => {
+            if (task.order !== index) {
+                onUpdateTask(task.id, { order: index });
+            }
+        });
+
+    } else {
+        // Moving to a different column
+        const sourceColTasks = tasks
+            .filter(t => t.status === startColumnStatus)
+            .sort((a, b) => a.order - b.order);
       
-      if (activeTask && overColumn) {
-        onUpdateTask(activeTask.id, { status: overColumn.id as Task['status'] });
-      }
+        const [movedTask] = sourceColTasks.splice(source.index, 1);
+      
+        const destColTasks = tasks
+            .filter(t => t.status === endColumnStatus)
+            .sort((a, b) => a.order - b.order);
+
+        destColTasks.splice(destination.index, 0, { ...movedTask, status: endColumnStatus });
+
+        sourceColTasks.forEach((task, index) => {
+            onUpdateTask(task.id, { order: index });
+        });
+      
+        destColTasks.forEach((task, index) => {
+            onUpdateTask(task.id, { order: index, status: endColumnStatus });
+        });
     }
   };
-
-  const getTasksByStatus = (status: string) => {
-    return tasks.filter(task => task.status === status);
-  };
+  
+  const handleSave = (taskId: string, updates: Partial<Task>) => {
+    onUpdateTask(taskId, updates);
+    setSelectedTask(null);
+  }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Kanban Board */}
-      <div className="flex-1 overflow-x-auto">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <div className="flex gap-4 p-4 min-w-max">
-            {STATUS_COLUMNS.map((column) => {
-              const columnTasks = getTasksByStatus(column.id);
-              
+    <>
+      <TaskDetailsModal isOpen={!!selectedTask} onClose={() => setSelectedTask(null)} task={selectedTask} onSave={handleSave} columnConfig={columnConfig} />
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="flex-1 overflow-x-auto p-4 bg-white">
+          <div className="flex h-full">
+            {columnOrder.map((status, index) => {
+              const column = columnConfig[status];
+              const columnTasks = tasks.filter(t => t.status === status).sort((a,b) => a.order - b.order);
+              const isLastColumn = index === columnOrder.length - 1;
               return (
-                <div
-                  key={column.id}
-                  className={`flex-shrink-0 w-80 ${column.color} border rounded-lg p-4`}
-                >
-                  {/* Column Header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <h3 className={`font-semibold ${column.textColor}`}>
-                        {column.title}
-                      </h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${column.textColor} bg-white/50`}>
-                        {columnTasks.length}
-                      </span>
-                    </div>
-                    <button
-                      onClick={onAddTask}
-                      className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                <Droppable key={status} droppableId={status}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className={`w-[320px] flex-shrink-0 flex flex-col ${!isLastColumn ? 'border-r border-gray-200' : ''}`}
                     >
-                      <PlusIcon className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  {/* Column Tasks */}
-                  <div className="space-y-2">
-                    <SortableContext
-                      items={columnTasks.map(task => task.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {columnTasks.map((task) => (
-                        <SortableTaskCard
-                          key={task.id}
-                          task={task}
-                        />
-                      ))}
-                    </SortableContext>
-                  </div>
-
-                  {/* Empty State */}
-                  {columnTasks.length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                      <p className="text-sm">No tasks</p>
+                      <div className="p-2 sticky top-0 bg-white/80 backdrop-blur-sm z-10 px-4">
+                        <div className="flex justify-between items-center mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className={`w-2.5 h-2.5 rounded-full ${column.color}`}></span>
+                            <h3 className="font-semibold text-gray-700 text-base">{column.name}</h3>
+                            <span className="text-sm font-medium text-gray-400">{columnTasks.length}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <button onClick={onAddTask} className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                              <PlusIcon className="w-5 h-5" />
+                            </button>
+                             <button className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                              <EllipsisVerticalIcon className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className={`flex-1 overflow-y-auto p-2 space-y-3 rounded-lg ${snapshot.isDraggingOver ? 'bg-gray-100' : 'bg-transparent'} px-4`}>
+                        {columnTasks.map((task, index) => {
+                          const PriorityIcon = priorityConfig[task.priority].icon;
+                          const priorityColor = priorityConfig[task.priority].color;
+                          return (
+                            <Draggable key={task.id} draggableId={task.id} index={index}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  onClick={() => setSelectedTask(task)}
+                                  className={`bg-white p-4 rounded-lg shadow-sm border transition-shadow ${snapshot.isDragging ? 'shadow-md border-blue-500' : 'border-gray-200/80 hover:border-gray-400'}`}
+                                >
+                                  <h4 className="font-medium text-gray-800 mb-3">{task.title}</h4>
+                                  <div className="flex items-center justify-between text-sm">
+                                    <div className="flex items-center gap-2">
+                                       <div title={`Priority: ${priorityConfig[task.priority].name}`}>
+                                          <PriorityIcon className={`w-5 h-5 ${priorityColor}`} />
+                                       </div>
+                                       <div className="flex -space-x-2">
+                                        {task.assigned_to.slice(0, 2).map(id => {
+                                            const user = usersData.users.find(u => u.id === id);
+                                            return user ? <img key={id} src={user.avatar} alt={user.name} title={user.name} className="w-6 h-6 rounded-full border-2 border-white" /> : null;
+                                        })}
+                                        {task.assigned_to.length > 2 && <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500 border-2 border-white">+{task.assigned_to.length - 2}</div>}
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-1.5" title={`Due ${format(new Date(task.end_date), 'MMM d, yyyy')}`}>
+                                      <CalendarIcon className="w-4 h-4" />
+                                      <span className={`font-semibold text-xs ${new Date(task.end_date) < new Date() ? 'text-red-500' : ''}`}>{formatDateString(task.end_date)}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </Draggable>
+                          )
+                        })}
+                        {provided.placeholder}
+                        <button onClick={onAddTask} className="w-full text-left flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                          <PlusIcon className="w-4 h-4" />
+                          Add Task
+                        </button>
+                      </div>
                     </div>
                   )}
-                </div>
+                </Droppable>
               );
             })}
           </div>
-        </DndContext>
-      </div>
-    </div>
+        </div>
+      </DragDropContext>
+    </>
   );
 };
 

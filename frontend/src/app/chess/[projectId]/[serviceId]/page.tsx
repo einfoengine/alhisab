@@ -35,12 +35,16 @@ type Task = {
   mother_task?: string | null;
   project_id: string;
   platforms: string[];
+  project_name: string;
+  service_name: string;
+  subtask_count?: number;
   [key: string]: string | string[] | number | boolean | null | undefined;
 };
 
 type Project = {
   id: string;
   name: string;
+  subtask_count?: number;
   // Define other project properties as needed
 };
 
@@ -97,25 +101,27 @@ const ServiceTasksPage = () => {
           const endDate = new Date(startDate);
           endDate.setDate(startDate.getDate() + 14);
           const statuses: Task['status'][] = ['planning', 'doing', 'qc', 'done', 'delivered'];
-          const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+          const statusIndex = index % statuses.length;
+          const status = statuses[statusIndex];
           const priorities: Task['priority'][] = ['low', 'medium', 'high'];
-          const randomPriority = priorities[Math.floor(Math.random() * priorities.length)];
+          const priorityIndex = (index + 1) % priorities.length;
+          const priority = priorities[priorityIndex];
           
+          const userCount = (index % 3) + 1;
           const assignedUsers = usersData.users
-            .sort(() => 0.5 - Math.random())
-            .slice(0, Math.floor(Math.random() * 3) + 1)
+            .slice(0, userCount)
             .map(u => u.id);
 
           return {
             id: `${foundService.id}_task_${index}`,
             title: taskTitle,
-            description: `Description for ${taskTitle}`,
+            description: `This is a detailed description for the task: "${taskTitle}". It can include notes, requirements, and other relevant information.`,
             type: 'one_time' as const,
             category_id: foundService.category_id,
             categories: [foundService.serviceCategory],
-            status: randomStatus,
+            status: status,
             assigned_to: assignedUsers,
-            priority: randomPriority,
+            priority: priority,
             order: index,
             created_at: new Date().toISOString(),
             start_date: startDate.toISOString(),
@@ -124,6 +130,9 @@ const ServiceTasksPage = () => {
             content_type: foundService.id,
             project_id: foundProject.id,
             platforms: [],
+            project_name: foundProject.name,
+            service_name: foundService.name,
+            subtask_count: Math.floor(Math.random() * 5),
           };
         });
         setTasks(serviceTasks);
