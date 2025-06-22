@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import servicesData from '@/data/services.json';
 import projectsData from '@/data/projects.json';
 import TasksBoardView from '@/components/TasksBoardView';
-import { FolderIcon, ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { FolderIcon, ChevronLeftIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
 
 type Task = {
   id: string;
@@ -33,6 +33,12 @@ type Task = {
   [key: string]: string | string[] | number | boolean | null | undefined;
 };
 
+type Project = {
+  id: string;
+  name: string;
+  // Define other project properties as needed
+};
+
 type Service = {
     id: string;
     name: string;
@@ -57,10 +63,10 @@ type Service = {
 
 const ServiceTasksPage = () => {
   const router = useRouter();
-  const params = useParams();
+  const params = useParams() as { projectId: string; serviceId: string };
   const { projectId, serviceId } = params;
 
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<Project | null>(null);
   const [service, setService] = useState<Service | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -133,8 +139,14 @@ const ServiceTasksPage = () => {
             </div>
           </div>
         </div>
-        <div>
-          {/* Add any header actions here, e.g., "Add Task" button */}
+        <div className="flex items-center gap-2">
+          <button
+            className="p-1.5 rounded-md hover:bg-gray-100 transition-colors flex items-center gap-2"
+            title="Planning"
+          >
+            <CalendarDaysIcon className="w-5 h-5 text-gray-600" />
+            <span className="text-sm font-medium text-gray-700">Plannings</span>
+          </button>
         </div>
       </header>
       

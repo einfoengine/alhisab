@@ -59,9 +59,9 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
           className="p-1 rounded hover:bg-gray-100"
         >
           {collapsed ? (
-            <ChevronRightIcon className="w-4 h-4 text-gray-600" />
+            <ChevronRightIcon className="w-5 h-5 text-gray-600" />
           ) : (
-            <ChevronDownIcon className="w-4 h-4 text-gray-600" />
+            <ChevronDownIcon className="w-5 h-5 text-gray-600" />
           )}
         </button>
       </div>
@@ -82,7 +82,7 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <DocumentTextIcon className="w-4 h-4 mr-3" />
+              <DocumentTextIcon className="w-5 h-5 mr-3" />
               {!collapsed && <span>Dashboard</span>}
             </Link>
             <Link
@@ -93,7 +93,7 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <CalendarIcon className="w-4 h-4 mr-3" />
+              <CalendarIcon className="w-5 h-5 mr-3" />
               {!collapsed && <span>Calendar</span>}
             </Link>
             <Link
@@ -104,7 +104,7 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <UserGroupIcon className="w-4 h-4 mr-3" />
+              <UserGroupIcon className="w-5 h-5 mr-3" />
               {!collapsed && <span>Team</span>}
             </Link>
             <Link
@@ -115,7 +115,7 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <ChartBarIcon className="w-4 h-4 mr-3" />
+              <ChartBarIcon className="w-5 h-5 mr-3" />
               {!collapsed && <span>Analytics</span>}
             </Link>
             <Link
@@ -126,7 +126,7 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <Cog6ToothIcon className="w-4 h-4 mr-3" />
+              <Cog6ToothIcon className="w-5 h-5 mr-3" />
               {!collapsed && <span>Settings</span>}
             </Link>
           </div>
@@ -139,7 +139,7 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
               Projects
             </div>
             <button className="p-1 rounded hover:bg-gray-100">
-              <PlusIcon className="w-4 h-4 text-gray-600" />
+              <PlusIcon className="w-5 h-5 text-gray-600" />
             </button>
           </div>
           
@@ -149,13 +149,13 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                 <button
                   onClick={() => toggleProject(project.id)}
                   className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    pathname.includes(`/chess/project/${project.id}`)
+                    pathname.includes(`/chess/${project.id}`)
                       ? 'bg-blue-100 text-blue-700'
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   <div className="flex items-center">
-                    <FolderIcon className="w-4 h-4 mr-3" />
+                    <FolderIcon className="w-5 h-5 mr-3" />
                     {!collapsed && (
                       <div className="text-left">
                         <div className="font-medium">{project.name}</div>
@@ -175,9 +175,9 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                   </div>
                   {!collapsed && (
                     expandedProjects.includes(project.id) ? (
-                      <ChevronDownIcon className="w-4 h-4" />
+                      <ChevronDownIcon className="w-5 h-5" />
                     ) : (
-                      <ChevronRightIcon className="w-4 h-4" />
+                      <ChevronRightIcon className="w-5 h-5" />
                     )
                   )}
                 </button>
@@ -192,9 +192,9 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                       return (
                         <Link
                           key={service.id}
-                          href={`/chess/project/${project.id}/service/${service.id}`}
+                          href={`/chess/${project.id}/${service.id}`}
                           className={`block px-3 py-1.5 text-xs rounded transition-colors ${
-                            pathname.includes(`/chess/project/${project.id}/service/${service.id}`)
+                            pathname.includes(`/chess/${project.id}/${service.id}`)
                               ? 'bg-blue-50 text-blue-600'
                               : 'text-gray-500 hover:bg-gray-50'
                           }`}
