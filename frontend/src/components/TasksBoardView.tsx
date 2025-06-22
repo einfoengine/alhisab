@@ -51,11 +51,6 @@ interface TasksBoardViewProps {
   tasks: Task[];
   onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
   onAddTask: () => void;
-  timelineInfo?: {
-    view: 'monthly' | 'weekly';
-    currentDate: Date;
-    totalTasks: number;
-  };
 }
 
 const STATUS_COLUMNS = [
@@ -225,7 +220,7 @@ function SortableTaskCard({ task }: { task: Task }) {
   );
 }
 
-const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, onAddTask, timelineInfo }) => {
+const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, onAddTask }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor)
@@ -248,40 +243,8 @@ const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, on
     return tasks.filter(task => task.status === status);
   };
 
-  const formatTimelineInfo = () => {
-    if (!timelineInfo) return null;
-    
-    const { view, currentDate, totalTasks } = timelineInfo;
-    
-    if (view === 'monthly') {
-      const monthYear = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      return `${monthYear} • ${totalTasks} tasks`;
-    } else {
-      const startOfWeek = new Date(currentDate);
-      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
-      
-      const startStr = startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      const endStr = endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      
-      return `${startStr} - ${endStr} • ${totalTasks} tasks`;
-    }
-  };
-
   return (
     <div className="h-full flex flex-col">
-      {/* Timeline Indicator */}
-      {timelineInfo && (
-        <div className="bg-blue-50 border-y border-blue-200 px-4 py-1.5 flex-shrink-0">
-          <div className="flex items-center gap-2 text-sm text-blue-700">
-            <CalendarIcon className="w-4 h-4" />
-            <span className="font-medium">Timeline View:</span>
-            <span>{formatTimelineInfo()}</span>
-          </div>
-        </div>
-      )}
-      
       {/* Kanban Board */}
       <div className="flex-1 overflow-x-auto">
         <DndContext

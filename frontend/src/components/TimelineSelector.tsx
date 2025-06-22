@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon, CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 export type TimelineView = 'monthly' | 'weekly';
@@ -10,6 +10,7 @@ export interface TimelineSelectorProps {
   view: TimelineView;
   onDateChange: (date: Date) => void;
   onViewChange: (view: TimelineView) => void;
+  taskCount: number;
 }
 
 const TimelineSelector: React.FC<TimelineSelectorProps> = ({
@@ -17,8 +18,13 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
   view,
   onDateChange,
   onViewChange,
+  taskCount,
 }) => {
-  const [selectedMonth, setSelectedMonth] = useState(currentDate);
+  const [selectedDate, setSelectedDate] = useState(currentDate);
+
+  useEffect(() => {
+    setSelectedDate(currentDate);
+  }, [currentDate]);
 
   const formatMonth = (date: Date) => {
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
@@ -26,49 +32,58 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
 
   const formatWeek = (date: Date) => {
     const startOfWeek = new Date(date);
-    startOfWeek.setDate(date.getDate() - date.getDay());
-    
+    startOfWeek.setDate(date.getDate() - (date.getDay() === 0 ? 6 : date.getDay() - 1)); // Monday
+    startOfWeek.setHours(0, 0, 0, 0);
+
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    const startMonth = startOfWeek.toLocaleDateString('en-US', { month: 'short' });
+    const startDay = startOfWeek.getDate();
+    const endMonth = endOfWeek.toLocaleDateString('en-US', { month: 'short' });
+    const endDay = endOfWeek.getDate();
+    const year = startOfWeek.getFullYear();
+
+    if (startMonth === endMonth) {
+      return `${startMonth} ${startDay} - ${endDay}, ${year}`;
+    }
     
-    const startStr = startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const endStr = endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    
-    return `${startStr} - ${endStr}`;
+    return `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${year}`;
   };
 
   const navigatePrevious = () => {
-    const newDate = new Date(selectedMonth);
+    const newDate = new Date(selectedDate);
     if (view === 'monthly') {
       newDate.setMonth(newDate.getMonth() - 1);
     } else {
       newDate.setDate(newDate.getDate() - 7);
     }
-    setSelectedMonth(newDate);
+    setSelectedDate(newDate);
     onDateChange(newDate);
   };
 
   const navigateNext = () => {
-    const newDate = new Date(selectedMonth);
+    const newDate = new Date(selectedDate);
     if (view === 'monthly') {
       newDate.setMonth(newDate.getMonth() + 1);
     } else {
       newDate.setDate(newDate.getDate() + 7);
     }
-    setSelectedMonth(newDate);
+    setSelectedDate(newDate);
     onDateChange(newDate);
   };
 
   const quickNavigate = (monthsOffset: number) => {
     const newDate = new Date();
     newDate.setMonth(newDate.getMonth() + monthsOffset);
-    setSelectedMonth(newDate);
+    setSelectedDate(newDate);
     onDateChange(newDate);
   };
 
   const goToToday = () => {
     const today = new Date();
-    setSelectedMonth(today);
+    setSelectedDate(today);
     onDateChange(today);
   };
 
@@ -87,8 +102,8 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
           
           <div className="flex items-center gap-2">
             <CalendarIcon className="w-5 h-5 text-gray-700" />
-            <span className="text-base font-semibold text-gray-800">
-              {view === 'monthly' ? formatMonth(selectedMonth) : formatWeek(selectedMonth)}
+            <span className="text-base font-semibold text-gray-800 w-48 text-center">
+              {view === 'monthly' ? formatMonth(selectedDate) : formatWeek(selectedDate)}
             </span>
           </div>
           
@@ -102,13 +117,13 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
         </div>
 
         {/* Quick Navigation */}
-        <div className="flex items-center gap-4">
+        <div className="flex-1 flex justify-center items-center gap-4">
           <div className="flex items-center gap-4 text-sm font-medium">
-            {[-2, -1, 0, 1, 2].map((offset) => {
+            {view === 'monthly' && [-2, -1, 0, 1, 2].map((offset) => {
               const date = new Date();
               date.setMonth(date.getMonth() + offset);
-              const isCurrent = selectedMonth.getMonth() === date.getMonth() && 
-                               selectedMonth.getFullYear() === date.getFullYear();
+              const isCurrent = selectedDate.getMonth() === date.getMonth() && 
+                               selectedDate.getFullYear() === date.getFullYear();
               
               if (isCurrent) {
                 return (
@@ -141,30 +156,35 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
           </button>
         </div>
 
-        {/* View Toggle */}
-        <div className="flex items-center bg-gray-100 rounded-lg p-1">
-          <button
-            onClick={() => onViewChange('monthly')}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              view === 'monthly'
-                ? 'bg-white text-blue-700 shadow-sm ring-1 ring-inset ring-blue-500'
-                : 'text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            <CalendarIcon className="w-4 h-4" />
-            Monthly
-          </button>
-          <button
-            onClick={() => onViewChange('weekly')}
-            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              view === 'weekly'
-                ? 'bg-white text-blue-700 shadow-sm ring-1 ring-inset ring-blue-500'
-                : 'text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            <ClockIcon className="w-4 h-4" />
-            Weekly
-          </button>
+        {/* View Toggle & Task Count */}
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-gray-500">
+            <span className="font-bold text-gray-700">{taskCount}</span> tasks
+          </div>
+          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => onViewChange('monthly')}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                view === 'monthly'
+                  ? 'bg-white text-blue-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              <CalendarIcon className="w-4 h-4" />
+              Monthly
+            </button>
+            <button
+              onClick={() => onViewChange('weekly')}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                view === 'weekly'
+                  ? 'bg-white text-blue-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              <ClockIcon className="w-4 h-4" />
+              Weekly
+            </button>
+          </div>
         </div>
       </div>
     </div>

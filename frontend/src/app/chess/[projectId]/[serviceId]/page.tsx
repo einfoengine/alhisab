@@ -224,6 +224,7 @@ const ServiceTasksPage = () => {
         view={timelineView}
         onDateChange={handleDateChange}
         onViewChange={handleViewChange}
+        taskCount={filteredTasks.length}
       />
       
       {/* Task Board */}
@@ -231,12 +232,7 @@ const ServiceTasksPage = () => {
         <TasksBoardView 
           tasks={filteredTasks} 
           onUpdateTask={handleUpdateTask} 
-          onAddTask={handleAddTask}
-          timelineInfo={{
-            view: timelineView,
-            currentDate: currentDate,
-            totalTasks: tasks.length
-          }}
+          onAddTask={handleAddTask} 
         />
       </main>
     </div>
