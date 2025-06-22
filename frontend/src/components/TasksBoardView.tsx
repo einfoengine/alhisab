@@ -273,7 +273,7 @@ const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, on
     <div className="h-full flex flex-col">
       {/* Timeline Indicator */}
       {timelineInfo && (
-        <div className="bg-blue-50 border-b border-blue-200 px-4 py-2 flex-shrink-0">
+        <div className="bg-blue-50 border-y border-blue-200 px-4 py-1.5 flex-shrink-0">
           <div className="flex items-center gap-2 text-sm text-blue-700">
             <CalendarIcon className="w-4 h-4" />
             <span className="font-medium">Timeline View:</span>

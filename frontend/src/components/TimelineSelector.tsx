@@ -73,52 +73,59 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 p-4 shadow-sm">
+    <div className="bg-white border-b border-gray-200 px-4 py-2">
       <div className="flex items-center justify-between">
         {/* Navigation Controls */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <button
             onClick={navigatePrevious}
-            className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+            className="p-1 rounded-md hover:bg-gray-100 transition-colors"
             title={`Previous ${view === 'monthly' ? 'month' : 'week'}`}
           >
-            <ChevronLeftIcon className="w-5 h-5 text-gray-600" />
+            <ChevronLeftIcon className="w-5 h-5 text-gray-500" />
           </button>
           
           <div className="flex items-center gap-2">
-            <CalendarIcon className="w-5 h-5 text-blue-600" />
-            <span className="text-lg font-semibold text-gray-900">
+            <CalendarIcon className="w-5 h-5 text-gray-700" />
+            <span className="text-base font-semibold text-gray-800">
               {view === 'monthly' ? formatMonth(selectedMonth) : formatWeek(selectedMonth)}
             </span>
           </div>
           
           <button
             onClick={navigateNext}
-            className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+            className="p-1 rounded-md hover:bg-gray-100 transition-colors"
             title={`Next ${view === 'monthly' ? 'month' : 'week'}`}
           >
-            <ChevronRightIcon className="w-5 h-5 text-gray-600" />
+            <ChevronRightIcon className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 
         {/* Quick Navigation */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 text-sm font-medium">
             {[-2, -1, 0, 1, 2].map((offset) => {
               const date = new Date();
               date.setMonth(date.getMonth() + offset);
               const isCurrent = selectedMonth.getMonth() === date.getMonth() && 
                                selectedMonth.getFullYear() === date.getFullYear();
               
+              if (isCurrent) {
+                return (
+                  <button
+                    key={offset}
+                    onClick={() => quickNavigate(offset)}
+                    className="px-3 py-1 rounded-lg text-sm font-medium bg-blue-50 text-blue-600 border border-blue-200"
+                  >
+                    {formatMonth(date)}
+                  </button>
+                );
+              }
               return (
                 <button
                   key={offset}
                   onClick={() => quickNavigate(offset)}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                    isCurrent
-                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                      : 'text-gray-600 hover:bg-gray-100 border border-transparent'
-                  }`}
+                  className="text-gray-500 hover:text-gray-900 transition-colors"
                 >
                   {formatMonth(date)}
                 </button>
@@ -128,20 +135,20 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
           
           <button
             onClick={goToToday}
-            className="px-3 py-1.5 bg-green-100 text-green-700 rounded-md text-sm font-medium hover:bg-green-200 transition-colors border border-green-200"
+            className="px-3 py-1 bg-green-50 text-green-700 rounded-lg text-sm font-medium border border-green-200 hover:bg-green-100 transition-colors"
           >
             Today
           </button>
         </div>
 
         {/* View Toggle */}
-        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+        <div className="flex items-center bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => onViewChange('monthly')}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1 ${
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
               view === 'monthly'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-blue-700 shadow-sm ring-1 ring-inset ring-blue-500'
+                : 'text-gray-500 hover:text-gray-900'
             }`}
           >
             <CalendarIcon className="w-4 h-4" />
@@ -149,10 +156,10 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({
           </button>
           <button
             onClick={() => onViewChange('weekly')}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1 ${
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
               view === 'weekly'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-blue-700 shadow-sm ring-1 ring-inset ring-blue-500'
+                : 'text-gray-500 hover:text-gray-900'
             }`}
           >
             <ClockIcon className="w-4 h-4" />
