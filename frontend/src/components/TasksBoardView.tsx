@@ -51,6 +51,11 @@ interface TasksBoardViewProps {
   tasks: Task[];
   onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
   onAddTask: () => void;
+  timelineInfo?: {
+    view: 'monthly' | 'weekly';
+    currentDate: Date;
+    totalTasks: number;
+  };
 }
 
 const STATUS_COLUMNS = [
@@ -220,7 +225,7 @@ function SortableTaskCard({ task }: { task: Task }) {
   );
 }
 
-const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, onAddTask }) => {
+const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, onAddTask, timelineInfo }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor)
@@ -243,66 +248,101 @@ const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, on
     return tasks.filter(task => task.status === status);
   };
 
+  const formatTimelineInfo = () => {
+    if (!timelineInfo) return null;
+    
+    const { view, currentDate, totalTasks } = timelineInfo;
+    
+    if (view === 'monthly') {
+      const monthYear = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      return `${monthYear} • ${totalTasks} tasks`;
+    } else {
+      const startOfWeek = new Date(currentDate);
+      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      
+      const startStr = startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const endStr = endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      
+      return `${startStr} - ${endStr} • ${totalTasks} tasks`;
+    }
+  };
+
   return (
-    <div className="h-full overflow-x-auto">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="flex gap-4 p-4 min-w-max">
-          {STATUS_COLUMNS.map((column) => {
-            const columnTasks = getTasksByStatus(column.id);
-            
-            return (
-              <div
-                key={column.id}
-                className={`flex-shrink-0 w-80 ${column.color} border rounded-lg p-4`}
-              >
-                {/* Column Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <h3 className={`font-semibold ${column.textColor}`}>
-                      {column.title}
-                    </h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${column.textColor} bg-white/50`}>
-                      {columnTasks.length}
-                    </span>
-                  </div>
-                  <button
-                    onClick={onAddTask}
-                    className="p-1 text-gray-400 hover:text-gray-600 rounded"
-                  >
-                    <PlusIcon className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* Column Tasks */}
-                <div className="space-y-2">
-                  <SortableContext
-                    items={columnTasks.map(task => task.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {columnTasks.map((task) => (
-                      <SortableTaskCard
-                        key={task.id}
-                        task={task}
-                      />
-                    ))}
-                  </SortableContext>
-                </div>
-
-                {/* Empty State */}
-                {columnTasks.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <p className="text-sm">No tasks</p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+    <div className="h-full flex flex-col">
+      {/* Timeline Indicator */}
+      {timelineInfo && (
+        <div className="bg-blue-50 border-b border-blue-200 px-4 py-2 flex-shrink-0">
+          <div className="flex items-center gap-2 text-sm text-blue-700">
+            <CalendarIcon className="w-4 h-4" />
+            <span className="font-medium">Timeline View:</span>
+            <span>{formatTimelineInfo()}</span>
+          </div>
         </div>
-      </DndContext>
+      )}
+      
+      {/* Kanban Board */}
+      <div className="flex-1 overflow-x-auto">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="flex gap-4 p-4 min-w-max">
+            {STATUS_COLUMNS.map((column) => {
+              const columnTasks = getTasksByStatus(column.id);
+              
+              return (
+                <div
+                  key={column.id}
+                  className={`flex-shrink-0 w-80 ${column.color} border rounded-lg p-4`}
+                >
+                  {/* Column Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <h3 className={`font-semibold ${column.textColor}`}>
+                        {column.title}
+                      </h3>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${column.textColor} bg-white/50`}>
+                        {columnTasks.length}
+                      </span>
+                    </div>
+                    <button
+                      onClick={onAddTask}
+                      className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                    >
+                      <PlusIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Column Tasks */}
+                  <div className="space-y-2">
+                    <SortableContext
+                      items={columnTasks.map(task => task.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {columnTasks.map((task) => (
+                        <SortableTaskCard
+                          key={task.id}
+                          task={task}
+                        />
+                      ))}
+                    </SortableContext>
+                  </div>
+
+                  {/* Empty State */}
+                  {columnTasks.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      <p className="text-sm">No tasks</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </DndContext>
+      </div>
     </div>
   );
 };

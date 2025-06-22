@@ -36,11 +36,11 @@ export default function ProductsList({ services, onProductClick }: ProductsListP
           >
             {service.image && (
               <div className="relative">
-                <img
-                  src={service.image}
-                  alt={service.name}
+              <img
+                src={service.image}
+                alt={service.name}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
-                />
+              />
                 <div className="absolute top-2 right-2">
                   <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                     service.service_type === 'repeatable' 
@@ -90,7 +90,7 @@ export default function ProductsList({ services, onProductClick }: ProductsListP
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-lg font-bold text-green-600">
-                      ${service.pricing.unit_price.toLocaleString()}
+                  ${service.pricing.unit_price.toLocaleString()}
                     </div>
                     <div className="text-xs text-gray-500">
                       Max discount: ${service.pricing.max_discount}

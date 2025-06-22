@@ -22,7 +22,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <TopMenu />
         <div className="pt-12">
-          {children}
+        {children}
         </div>
       </body>
     </html>

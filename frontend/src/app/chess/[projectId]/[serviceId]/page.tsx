@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import servicesData from '@/data/services.json';
 import projectsData from '@/data/projects.json';
 import TasksBoardView from '@/components/TasksBoardView';
+import TimelineSelector, { TimelineView } from '@/components/TimelineSelector';
 import { FolderIcon, ChevronLeftIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
 
 type Task = {
@@ -69,6 +70,8 @@ const ServiceTasksPage = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [service, setService] = useState<Service | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [timelineView, setTimelineView] = useState<TimelineView>('monthly');
 
   useEffect(() => {
     if (projectId && serviceId) {
@@ -79,29 +82,86 @@ const ServiceTasksPage = () => {
         setProject(foundProject);
         setService(foundService);
         
-        const serviceTasks = foundService.serviceTasks.map((taskTitle, index) => ({
-          id: `${foundService.id}_task_${index}`,
-          title: taskTitle,
-          description: `Description for ${taskTitle}`,
-          type: 'one_time' as const,
-          category_id: foundService.category_id,
-          categories: [foundService.serviceCategory],
-          status: 'planning' as const,
-          assigned_to: [],
-          priority: 'medium' as const,
-          order: index,
-          created_at: new Date().toISOString(),
-          start_date: new Date().toISOString(),
-          end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          tags: [],
-          content_type: foundService.id,
-          project_id: foundProject.id,
-          platforms: [],
-        }));
+        // Generate tasks with more realistic dates spanning multiple months
+        const serviceTasks = foundService.serviceTasks.map((taskTitle, index) => {
+          const baseDate = new Date();
+          
+          // Spread tasks across multiple months for better timeline demonstration
+          const monthOffset = Math.floor(index / 3); // 3 tasks per month
+          const weekOffset = index % 3; // Spread within the month
+          
+          const startDate = new Date(baseDate);
+          startDate.setMonth(baseDate.getMonth() + monthOffset);
+          startDate.setDate(baseDate.getDate() + (weekOffset * 7)); // Spread across weeks
+          
+          const endDate = new Date(startDate);
+          endDate.setDate(startDate.getDate() + 14); // 2 weeks duration
+          
+          // Randomize status for better visual demonstration
+          const statuses: Task['status'][] = ['planning', 'doing', 'qc', 'done', 'delivered'];
+          const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+          
+          // Randomize priority
+          const priorities: Task['priority'][] = ['low', 'medium', 'high'];
+          const randomPriority = priorities[Math.floor(Math.random() * priorities.length)];
+          
+          return {
+            id: `${foundService.id}_task_${index}`,
+            title: taskTitle,
+            description: `Description for ${taskTitle}`,
+            type: 'one_time' as const,
+            category_id: foundService.category_id,
+            categories: [foundService.serviceCategory],
+            status: randomStatus,
+            assigned_to: [],
+            priority: randomPriority,
+            order: index,
+            created_at: new Date().toISOString(),
+            start_date: startDate.toISOString(),
+            end_date: endDate.toISOString(),
+            tags: [],
+            content_type: foundService.id,
+            project_id: foundProject.id,
+            platforms: [],
+          };
+        });
         setTasks(serviceTasks);
       }
     }
   }, [projectId, serviceId]);
+
+  // Filter tasks based on timeline view and current date
+  const filteredTasks = useMemo(() => {
+    if (timelineView === 'monthly') {
+      const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      
+      return tasks.filter(task => {
+        const taskStartDate = new Date(task.start_date);
+        const taskEndDate = new Date(task.end_date);
+        
+        // Task overlaps with the selected month
+        return (taskStartDate <= endOfMonth && taskEndDate >= startOfMonth);
+      });
+    } else {
+      // Weekly view
+      const startOfWeek = new Date(currentDate);
+      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+      
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
+      
+      return tasks.filter(task => {
+        const taskStartDate = new Date(task.start_date);
+        const taskEndDate = new Date(task.end_date);
+        
+        // Task overlaps with the selected week
+        return (taskStartDate <= endOfWeek && taskEndDate >= startOfWeek);
+      });
+    }
+  }, [tasks, currentDate, timelineView]);
 
   const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
     setTasks(prevTasks =>
@@ -114,6 +174,14 @@ const ServiceTasksPage = () => {
   const handleAddTask = () => {
     // For demonstration, you might open a modal form here
     console.log('Add new task for service:', service?.name);
+  };
+
+  const handleDateChange = (date: Date) => {
+    setCurrentDate(date);
+  };
+
+  const handleViewChange = (view: TimelineView) => {
+    setTimelineView(view);
   };
 
   if (!project || !service) {
@@ -150,12 +218,25 @@ const ServiceTasksPage = () => {
         </div>
       </header>
       
+      {/* Timeline Selector */}
+      <TimelineSelector
+        currentDate={currentDate}
+        view={timelineView}
+        onDateChange={handleDateChange}
+        onViewChange={handleViewChange}
+      />
+      
       {/* Task Board */}
       <main className="flex-1 overflow-hidden">
         <TasksBoardView 
-          tasks={tasks} 
+          tasks={filteredTasks} 
           onUpdateTask={handleUpdateTask} 
-          onAddTask={handleAddTask} 
+          onAddTask={handleAddTask}
+          timelineInfo={{
+            view: timelineView,
+            currentDate: currentDate,
+            totalTasks: tasks.length
+          }}
         />
       </main>
     </div>
