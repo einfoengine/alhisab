@@ -13,6 +13,7 @@ import {
   Cog6ToothIcon,
   PlusIcon,
   FolderIcon,
+  EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
 import projectsData from '@/data/projects.json';
 import servicesData from '@/data/services.json';
@@ -40,6 +41,7 @@ const getServiceFromId = (serviceId: string) => {
 const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) => {
   const pathname = usePathname() || '';
   const [expandedProjects, setExpandedProjects] = useState<string[]>(['proj_001']);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const toggleProject = (projectId: string) => {
     setExpandedProjects(prev =>
@@ -145,7 +147,7 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
           
           <div className="space-y-1">
             {projectsData.projects.map((project) => (
-              <div key={project.id}>
+              <div key={project.id} className="relative">
                 <button
                   onClick={() => toggleProject(project.id)}
                   className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
@@ -174,14 +176,48 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                     )}
                   </div>
                   {!collapsed && (
-                    expandedProjects.includes(project.id) ? (
-                      <ChevronDownIcon className="w-5 h-5" />
-                    ) : (
-                      <ChevronRightIcon className="w-5 h-5" />
-                    )
+                    <div className="flex items-center">
+                      {expandedProjects.includes(project.id) ? (
+                        <ChevronDownIcon className="w-5 h-5" />
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenMenuId(openMenuId === project.id ? null : project.id);
+                          }}
+                          className="p-1 rounded-full hover:bg-gray-200"
+                        >
+                          <EllipsisVerticalIcon className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
                   )}
                 </button>
                 
+                {openMenuId === project.id && !collapsed && (
+                  <div
+                    className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-20 border border-gray-200"
+                    onMouseLeave={() => setOpenMenuId(null)}
+                  >
+                    <ul className="py-1">
+                      <li>
+                        <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          Add new service
+                        </button>
+                      </li>
+                      <li>
+                        <Link
+                          href={`/business-desk/projects/${project.id}`}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Project overview
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+
                 {/* Project Services */}
                 {expandedProjects.includes(project.id) && !collapsed && (
                   <div className="ml-6 mt-1 space-y-1">
