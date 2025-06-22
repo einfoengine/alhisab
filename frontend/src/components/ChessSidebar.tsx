@@ -14,6 +14,7 @@ import {
   PlusIcon,
   FolderIcon,
   EllipsisVerticalIcon,
+  FolderOpenIcon,
 } from '@heroicons/react/24/outline';
 import projectsData from '@/data/projects.json';
 import servicesData from '@/data/services.json';
@@ -157,7 +158,11 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                   }`}
                 >
                   <div className="flex items-center">
-                    <FolderIcon className="w-5 h-5 mr-3" />
+                    {expandedProjects.includes(project.id) ? (
+                        <FolderOpenIcon className="w-5 h-5 mr-3" />
+                    ) : (
+                        <FolderIcon className="w-5 h-5 mr-3" />
+                    )}
                     {!collapsed && (
                       <div className="text-left">
                         <div className="font-medium">{project.name}</div>
@@ -177,19 +182,15 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                   </div>
                   {!collapsed && (
                     <div className="flex items-center">
-                      {expandedProjects.includes(project.id) ? (
-                        <ChevronDownIcon className="w-5 h-5" />
-                      ) : (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenMenuId(openMenuId === project.id ? null : project.id);
-                          }}
-                          className="p-1 rounded-full hover:bg-gray-200"
-                        >
-                          <EllipsisVerticalIcon className="w-5 h-5" />
-                        </button>
-                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenuId(openMenuId === project.id ? null : project.id);
+                        }}
+                        className="p-1 rounded-full hover:bg-gray-200"
+                      >
+                        <EllipsisVerticalIcon className="w-5 h-5" />
+                      </button>
                     </div>
                   )}
                 </button>
