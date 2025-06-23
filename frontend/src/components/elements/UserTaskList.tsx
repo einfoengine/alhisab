@@ -444,10 +444,20 @@ const UserTaskList: React.FC<UserTaskListProps> = ({ tasks, allTasks, projects, 
                     <div className="flex items-center gap-2 mb-1">
                         <button
                             onClick={handleCheck}
-                            className={`w-5 h-5 flex items-center justify-center rounded-full border-2 ${isDone ? 'bg-green-500 border-green-500' : 'border-gray-300 bg-white hover:bg-green-100'} transition-colors focus:outline-none`}
+                            className={`w-5 h-5 flex items-center justify-center rounded-full border-2 ${
+                              isDone ? 'bg-green-500 border-green-500' :
+                              (taskStatusMap[task.id] === 'delivered' ? 'bg-green-500 border-green-500' :
+                              (taskStatusMap[task.id] === 'archived' ? 'bg-black border-black' : 'border-gray-300 bg-white hover:bg-green-100'))
+                            } transition-colors focus:outline-none`}
                             aria-label={isDone ? 'Revert to previous status' : 'Mark as done'}
                         >
-                            {isDone ? <CheckIcon className="w-3 h-3 text-white" /> : null}
+                            {isDone ? (
+                              <CheckIcon className="w-3 h-3 text-white" />
+                            ) : taskStatusMap[task.id] === 'delivered' ? (
+                              <CheckIcon className="w-3 h-3 text-white" />
+                            ) : taskStatusMap[task.id] === 'archived' ? (
+                              <span className="w-3 h-3 block rounded-full bg-white mx-auto" />
+                            ) : null}
                         </button>
                         <button onClick={() => setSelectedTask(task)} className={`font-semibold text-gray-800 hover:text-blue-600 text-left ${isDone ? 'line-through' : ''}`}>{task.title}</button>
                         <PriorityTag priority={task.priority} />
