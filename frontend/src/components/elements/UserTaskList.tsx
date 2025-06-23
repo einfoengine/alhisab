@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addMonths, addDays } from 'date-fns';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addMonths, addDays, getWeek, getYear, setWeek, setYear, isToday } from 'date-fns';
 import { BriefcaseIcon, CheckCircleIcon, ClockIcon, ExclamationTriangleIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 type Task = {
@@ -68,7 +68,7 @@ const StatusFilterDropdown = ({ value, onChange }: { value: string; onChange: (v
     return (
         <div ref={dropdownRef} className="relative">
             <button onClick={() => setIsOpen(p => !p)} className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors bg-white text-gray-600 border border-gray-200 hover:bg-gray-50">
-                <span>Status: <strong>{selectedLabel}</strong></span>
+                <span>{selectedLabel}</span>
                 <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
             {isOpen && (
@@ -88,25 +88,166 @@ const StatusFilterDropdown = ({ value, onChange }: { value: string; onChange: (v
     );
 };
 
+const MonthSelector = ({ value, onChange }: { value: Date; onChange: (date: Date) => void }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const currentYear = getYear(value);
+    const currentMonth = value.getMonth();
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    return (
+        <div ref={dropdownRef} className="relative">
+            <button 
+                onClick={() => setIsOpen(p => !p)} 
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 min-w-[140px]"
+            >
+                <span className="font-semibold">{months[currentMonth]} {currentYear}</span>
+                <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isOpen && (
+                <div className="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 border border-gray-200 max-h-60 overflow-y-auto">
+                    {Array.from({ length: 5 }, (_, yearOffset) => {
+                        const year = currentYear - 2 + yearOffset;
+                        return (
+                            <div key={year}>
+                                <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b">
+                                    {year}
+                                </div>
+                                {months.map((month, monthIndex) => (
+                                    <button
+                                        key={`${year}-${monthIndex}`}
+                                        onClick={() => { 
+                                            onChange(new Date(year, monthIndex, 1)); 
+                                            setIsOpen(false); 
+                                        }}
+                                        className={`w-full text-left block px-4 py-2 text-sm hover:bg-gray-100 ${
+                                            year === currentYear && monthIndex === currentMonth 
+                                                ? 'bg-blue-50 text-blue-600 font-medium' 
+                                                : 'text-gray-700'
+                                        }`}
+                                    >
+                                        {month}
+                                    </button>
+                                ))}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+};
+
+const WeekSelector = ({ value, onChange }: { value: Date; onChange: (date: Date) => void }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const currentYear = getYear(value);
+    const currentWeek = getWeek(value, { weekStartsOn: 1 });
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    return (
+        <div ref={dropdownRef} className="relative">
+            <button 
+                onClick={() => setIsOpen(p => !p)} 
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 min-w-[120px]"
+            >
+                <span className="font-semibold">Week {currentWeek}, {currentYear}</span>
+                <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isOpen && (
+                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200 max-h-60 overflow-y-auto">
+                    {Array.from({ length: 5 }, (_, yearOffset) => {
+                        const year = currentYear - 2 + yearOffset;
+                        return (
+                            <div key={year}>
+                                <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b">
+                                    {year}
+                                </div>
+                                {Array.from({ length: 52 }, (_, weekIndex) => {
+                                    const weekNumber = weekIndex + 1;
+                                    return (
+                                        <button
+                                            key={`${year}-${weekNumber}`}
+                                            onClick={() => { 
+                                                const newDate = setWeek(setYear(new Date(), year), weekNumber, { weekStartsOn: 1 });
+                                                onChange(newDate); 
+                                                setIsOpen(false); 
+                                            }}
+                                            className={`w-full text-left block px-4 py-2 text-sm hover:bg-gray-100 ${
+                                                year === currentYear && weekNumber === currentWeek 
+                                                    ? 'bg-blue-50 text-blue-600 font-medium' 
+                                                    : 'text-gray-700'
+                                            }`}
+                                        >
+                                            Week {weekNumber}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+};
+
 interface UserTaskListProps {
   tasks: Task[];
 }
 
 const UserTaskList: React.FC<UserTaskListProps> = ({ tasks }) => {
   const [statusFilter, setStatusFilter] = useState('todo');
-  const [timeView, setTimeView] = useState<'month' | 'week'>('month');
+  const [timeView, setTimeView] = useState<'all' | 'month' | 'week' | 'today'>('all');
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  useEffect(() => {
+    if (tasks.length > 0) {
+      setCurrentDate(new Date(tasks[0].end_date));
+    } else {
+      setCurrentDate(new Date());
+    }
+  }, [tasks]);
 
   const filteredTasks = useMemo(() => {
     let tempTasks = tasks;
     
-    let interval: { start: Date, end: Date };
-    if (timeView === 'week') {
-        interval = { start: startOfWeek(currentDate, { weekStartsOn: 1 }), end: endOfWeek(currentDate, { weekStartsOn: 1 }) };
-    } else { // month
-        interval = { start: startOfMonth(currentDate), end: endOfMonth(currentDate) };
+    if (timeView === 'today') {
+        tempTasks = tempTasks.filter(t => isToday(new Date(t.end_date)));
+    } else if (timeView !== 'all') {
+        let interval: { start: Date, end: Date };
+        if (timeView === 'week') {
+            interval = { start: startOfWeek(currentDate, { weekStartsOn: 1 }), end: endOfWeek(currentDate, { weekStartsOn: 1 }) };
+        } else { // month
+            interval = { start: startOfMonth(currentDate), end: endOfMonth(currentDate) };
+        }
+        tempTasks = tempTasks.filter(t => isWithinInterval(new Date(t.end_date), interval));
     }
-    tempTasks = tempTasks.filter(t => isWithinInterval(new Date(t.end_date), interval));
     
     if (statusFilter !== 'all') {
       if (statusFilter === 'todo') {
@@ -124,42 +265,32 @@ const UserTaskList: React.FC<UserTaskListProps> = ({ tasks }) => {
 
     return tempTasks;
   }, [tasks, statusFilter, timeView, currentDate]);
-  
-  const handleDateChange = (direction: 'next' | 'prev') => {
-    const change = direction === 'next' ? 1 : -1;
-    if (timeView === 'month') {
-        setCurrentDate(current => addMonths(current, change));
-    } else { // week
-        setCurrentDate(current => addDays(current, change * 7));
-    }
-  }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
         <div className="flex items-center gap-4">
             <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-lg">
-            {(['month', 'week'] as const).map(view => (
+            {(['all', 'today', 'week', 'month'] as const).map(view => (
                 <button
                 key={view}
-                onClick={() => setTimeView(view)}
-                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${timeView === view ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:bg-gray-200/50'}`}
+                onClick={() => {
+                  setTimeView(view);
+                  if (view === 'today') {
+                    setCurrentDate(new Date());
+                  }
+                }}
+                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors capitalize ${timeView === view ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:bg-gray-200/50'}`}
                 >
-                {view === 'month' ? 'Month' : 'Week'}
+                {view}
                 </button>
             ))}
             </div>
-            <div className="flex items-center gap-2">
-                <button onClick={() => handleDateChange('prev')} className="p-1.5 rounded-md hover:bg-gray-100">
-                    <ChevronLeftIcon className="w-5 h-5 text-gray-600"/>
-                </button>
-                <span className="font-semibold text-gray-700 text-lg">
-                    {format(currentDate, timeView === 'month' ? 'MMMM yyyy' : "'Week of' MMM d")}
-                </span>
-                <button onClick={() => handleDateChange('next')} className="p-1.5 rounded-md hover:bg-gray-100">
-                    <ChevronRightIcon className="w-5 h-5 text-gray-600"/>
-                </button>
-            </div>
+            {timeView === 'month' ? (
+                <MonthSelector value={currentDate} onChange={setCurrentDate} />
+            ) : timeView === 'week' ? (
+                <WeekSelector value={currentDate} onChange={setCurrentDate} />
+            ) : null}
         </div>
         <StatusFilterDropdown value={statusFilter} onChange={setStatusFilter} />
       </div>

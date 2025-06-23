@@ -50,6 +50,30 @@ const teamData: (User & { working_days: number; leave_taken: number; overtime_ho
   bonus: user.bonus || 5000,
 }));
 
+// Map task statuses from the data to the expected format
+const mapTaskStatus = (status: string): Task['status'] => {
+  switch (status) {
+    case 'pending':
+      return 'planning';
+    case 'in_progress':
+      return 'doing';
+    case 'active':
+      return 'doing';
+    case 'completed':
+      return 'done';
+    case 'qc':
+      return 'qc';
+    case 'redo':
+      return 'redo';
+    case 'delivered':
+      return 'delivered';
+    case 'archived':
+      return 'archived';
+    default:
+      return 'planning';
+  }
+};
+
 const TeamPage = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(teamData[0]?.id || null);
 
@@ -60,14 +84,21 @@ const TeamPage = () => {
     const user = teamData.find(u => u.id === userToSelect.id);
     if (!user) return null;
 
-    const userTasks = tasksData.tasks.filter(task => task.assigned_to.includes(user.id)) as Task[];
+    // Filter and map tasks for the selected user
+    const userTasks = tasksData.tasks
+      .filter(task => task.assigned_to.includes(user.id))
+      .map(task => ({
+        ...task,
+        status: mapTaskStatus(task.status)
+      })) as Task[];
+
     const doneWork = userTasks.filter(t => ['done', 'delivered'].includes(t.status)).length;
     const qcWork = userTasks.filter(t => t.status === 'qc').length;
     const redoWork = userTasks.filter(t => t.status === 'redo').length;
 
     return {
       ...user,
-      tasks: userTasks,
+      tasks: userTasks.sort((a, b) => new Date(b.end_date).getTime() - new Date(a.end_date).getTime()),
       stats: {
         assigned: userTasks.length,
         done: doneWork,
