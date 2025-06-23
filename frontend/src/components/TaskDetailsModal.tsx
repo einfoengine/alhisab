@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import { XMarkIcon, CalendarIcon, FlagIcon, LinkIcon, BriefcaseIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 
@@ -45,7 +46,18 @@ interface TaskDetailsModalProps {
   onClose: () => void;
 }
 
+const statusOptions = [
+  { value: 'planning', label: 'Planning' },
+  { value: 'doing', label: 'In Progress' },
+  { value: 'qc', label: 'Quality Check' },
+  { value: 'redo', label: 'Redo' },
+  { value: 'done', label: 'Done' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'archived', label: 'Archived' },
+];
+
 const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, project, motherTask, assignees, onClose }) => {
+  const [status, setStatus] = useState(task?.status || 'planning');
   if (!task) return null;
 
   return (
@@ -72,14 +84,28 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, project, moth
                             <BriefcaseIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
                             <div>
                                 <p className="font-semibold text-gray-700">Project</p>
-                                <p className="text-sm text-gray-500">{project?.name || 'N/A'}</p>
+                                {project ? (
+                                  <Link href={`/business-desk/projects/${project.id}`} className="text-blue-600 hover:underline">
+                                    {project.name}
+                                  </Link>
+                                ) : (
+                                  <span className="text-gray-500">N/A</span>
+                                )}
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
                             <FlagIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
                             <div>
                                 <p className="font-semibold text-gray-700">Status</p>
-                                <p className="text-sm text-gray-500 capitalize">{task.status.replace('_', ' ')}</p>
+                                <select
+                                  className="text-sm text-gray-700 border border-gray-200 rounded-md px-2 py-1 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                  value={status}
+                                  onChange={e => setStatus(e.target.value as Task['status'])}
+                                >
+                                  {statusOptions.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                  ))}
+                                </select>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -106,6 +132,13 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, project, moth
                                     {format(new Date(task.start_date), 'MMM d, yyyy')} - {format(new Date(task.end_date), 'MMM d, yyyy')}
                                 </p>
                                 <p className="text-xs text-gray-400">Assigned: {format(new Date(task.created_at), 'MMM d, yyyy')}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-3 col-span-2 sm:col-span-3">
+                            <CalendarIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
+                            <div>
+                                <p className="font-semibold text-gray-700">Assigned Date</p>
+                                <p className="text-sm text-gray-500">{format(new Date(task.created_at), 'MMM d, yyyy')}</p>
                             </div>
                         </div>
                     </div>
