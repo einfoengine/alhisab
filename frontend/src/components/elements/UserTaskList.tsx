@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { format, isThisWeek, isThisMonth } from 'date-fns';
-import { BriefcaseIcon, CheckCircleIcon, ClockIcon, ExclamationTriangleIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addMonths, addDays } from 'date-fns';
+import { BriefcaseIcon, CheckCircleIcon, ClockIcon, ExclamationTriangleIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 type Task = {
   id: string;
@@ -93,18 +93,21 @@ interface UserTaskListProps {
 }
 
 const UserTaskList: React.FC<UserTaskListProps> = ({ tasks }) => {
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [timeFilter, setTimeFilter] = useState('all'); // 'all', 'week', 'month'
+  const [statusFilter, setStatusFilter] = useState('todo');
+  const [timeView, setTimeView] = useState<'month' | 'week'>('month');
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const filteredTasks = useMemo(() => {
     let tempTasks = tasks;
     
-    if (timeFilter === 'week') {
-      tempTasks = tempTasks.filter(t => isThisWeek(new Date(t.end_date), { weekStartsOn: 1 }));
-    } else if (timeFilter === 'month') {
-      tempTasks = tempTasks.filter(t => isThisMonth(new Date(t.end_date)));
+    let interval: { start: Date, end: Date };
+    if (timeView === 'week') {
+        interval = { start: startOfWeek(currentDate, { weekStartsOn: 1 }), end: endOfWeek(currentDate, { weekStartsOn: 1 }) };
+    } else { // month
+        interval = { start: startOfMonth(currentDate), end: endOfMonth(currentDate) };
     }
-
+    tempTasks = tempTasks.filter(t => isWithinInterval(new Date(t.end_date), interval));
+    
     if (statusFilter !== 'all') {
       if (statusFilter === 'todo') {
         tempTasks = tempTasks.filter(t => t.status === 'planning');
@@ -120,21 +123,43 @@ const UserTaskList: React.FC<UserTaskListProps> = ({ tasks }) => {
     }
 
     return tempTasks;
-  }, [tasks, statusFilter, timeFilter]);
+  }, [tasks, statusFilter, timeView, currentDate]);
+  
+  const handleDateChange = (direction: 'next' | 'prev') => {
+    const change = direction === 'next' ? 1 : -1;
+    if (timeView === 'month') {
+        setCurrentDate(current => addMonths(current, change));
+    } else { // week
+        setCurrentDate(current => addDays(current, change * 7));
+    }
+  }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-        <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-lg">
-          {(['all', 'week', 'month'] as const).map(filter => (
-            <button
-              key={filter}
-              onClick={() => setTimeFilter(filter)}
-              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${timeFilter === filter ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:bg-gray-200/50'}`}
-            >
-              {filter === 'all' ? 'From the beginning' : filter === 'week' ? 'This Week' : 'This Month'}
-            </button>
-          ))}
+        <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-lg">
+            {(['month', 'week'] as const).map(view => (
+                <button
+                key={view}
+                onClick={() => setTimeView(view)}
+                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${timeView === view ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:bg-gray-200/50'}`}
+                >
+                {view === 'month' ? 'Month' : 'Week'}
+                </button>
+            ))}
+            </div>
+            <div className="flex items-center gap-2">
+                <button onClick={() => handleDateChange('prev')} className="p-1.5 rounded-md hover:bg-gray-100">
+                    <ChevronLeftIcon className="w-5 h-5 text-gray-600"/>
+                </button>
+                <span className="font-semibold text-gray-700 text-lg">
+                    {format(currentDate, timeView === 'month' ? 'MMMM yyyy' : "'Week of' MMM d")}
+                </span>
+                <button onClick={() => handleDateChange('next')} className="p-1.5 rounded-md hover:bg-gray-100">
+                    <ChevronRightIcon className="w-5 h-5 text-gray-600"/>
+                </button>
+            </div>
         </div>
         <StatusFilterDropdown value={statusFilter} onChange={setStatusFilter} />
       </div>
