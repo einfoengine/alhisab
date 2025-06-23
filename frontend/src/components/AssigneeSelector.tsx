@@ -11,6 +11,8 @@ interface AssigneeSelectorProps {
   trigger?: React.ReactNode;
   showSearch?: boolean;
   isCompact?: boolean; // New prop for subtask style
+  isOpen?: boolean;
+  onToggle?: () => void;
 }
 
 const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
@@ -19,15 +21,27 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
   trigger,
   showSearch = false,
   isCompact = false, // Default to the full version
+  isOpen: controlledIsOpen,
+  onToggle,
 }) => {
-  const [isOpen, setIsOpen] = useState(showSearch);
+  const [internalIsOpen, setInternalIsOpen] = useState(showSearch);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+
+  const handleToggle = () => {
+    if (onToggle) {
+      onToggle();
+    } else {
+      setInternalIsOpen(prev => !prev);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        setInternalIsOpen(false);
       }
     };
     if (isOpen) document.addEventListener('mousedown', handleClickOutside);
@@ -56,7 +70,7 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
   if (!isCompact) {
     return (
       <div className="relative" ref={dropdownRef}>
-        <div onClick={() => setIsOpen(true)} className="min-h-[40px] p-2 border border-gray-300 rounded-md bg-white flex flex-wrap gap-2 items-center cursor-pointer">
+        <div onClick={() => setInternalIsOpen(true)} className="min-h-[40px] p-2 border border-gray-300 rounded-md bg-white flex flex-wrap gap-2 items-center cursor-pointer">
           {getSelectedUsers().map(user => (
             <div key={user.id} className="flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-sm">
               <img src={user.avatar || ''} alt={user.name} className="w-5 h-5 rounded-full" />
@@ -103,7 +117,7 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
   // Compact version for subtasks
   return (
     <div className={`relative`} ref={dropdownRef}>
-        {trigger && <div onClick={() => setIsOpen(prev => !prev)}>{trigger}</div>}
+        {trigger && <div onClick={handleToggle}>{trigger}</div>}
         {isOpen && (
         <div className="absolute z-10 w-72 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl -translate-x-1/2 left-1/2">
           <div className="p-2 border-b border-gray-200">

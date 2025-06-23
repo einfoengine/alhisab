@@ -44,10 +44,12 @@ type TaskCardProps = {
     snapshot: DraggableStateSnapshot;
     onCardClick: (task: Task) => void;
     onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
+    onPopupToggle: (isOpen: boolean) => void;
 };
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, provided, snapshot, onCardClick, onUpdateTask }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, provided, snapshot, onCardClick, onUpdateTask, onPopupToggle }) => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [assigneePopupOpen, setAssigneePopupOpen] = useState(false);
     const [datePopupOpen, setDatePopupOpen] = useState(false);
     const [priorityPopupOpen, setPriorityPopupOpen] = useState(false);
     
@@ -60,8 +62,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, provided, snapshot, onCardCli
     const priorityRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        const isAnyPopupOpen = menuOpen || assigneePopupOpen || datePopupOpen || priorityPopupOpen;
+        onPopupToggle(isAnyPopupOpen);
+    }, [menuOpen, assigneePopupOpen, datePopupOpen, priorityPopupOpen, onPopupToggle]);
+
+    useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) setMenuOpen(false);
+            if (assigneeRef.current && !assigneeRef.current.contains(event.target as Node)) setAssigneePopupOpen(false);
             if (dateRef.current && !dateRef.current.contains(event.target as Node)) setDatePopupOpen(false);
             if (priorityRef.current && !priorityRef.current.contains(event.target as Node)) setPriorityPopupOpen(false);
         };
@@ -150,6 +158,8 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, provided, snapshot, onCardCli
                     
                     <div ref={assigneeRef} className="relative z-10" onClick={(e) => e.stopPropagation()}>
                         <AssigneeSelector
+                            isOpen={assigneePopupOpen}
+                            onToggle={() => setAssigneePopupOpen(p => !p)}
                             isCompact={true}
                             selectedAssignees={task.assigned_to}
                             onAssigneesChange={(assignees: string[]) => onUpdateTask(task.id, { assigned_to: assignees })}

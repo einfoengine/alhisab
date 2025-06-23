@@ -41,8 +41,10 @@ const columnConfig: Record<Task['status'], { name: string, color: string }> = {
 
 const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, onAddTask }) => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [cardWithOpenPopup, setCardWithOpenPopup] = useState<string | null>(null);
 
   const handleDragEnd = (result: DropResult) => {
+    setCardWithOpenPopup(null);
     const { source, destination } = result;
 
     if (!destination) {
@@ -109,6 +111,7 @@ const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, on
               const column = columnConfig[status];
               const columnTasks = tasks.filter(t => t.status === status).sort((a,b) => a.order - b.order);
               const isLastColumn = index === columnOrder.length - 1;
+              const isColumnActive = columnTasks.some(t => t.id === cardWithOpenPopup);
               return (
                 <Droppable key={status} droppableId={status}>
                   {(provided, snapshot) => (
@@ -134,18 +137,26 @@ const TasksBoardView: React.FC<TasksBoardViewProps> = ({ tasks, onUpdateTask, on
                           </div>
                         </div>
                       </div>
-                      <div className={`flex-1 overflow-y-auto p-2 space-y-3 rounded-lg ${snapshot.isDraggingOver ? 'bg-gray-100' : 'bg-transparent'} px-4`}>
+                      <div className={`flex-1 p-2 space-y-3 rounded-lg ${snapshot.isDraggingOver ? 'bg-gray-100' : 'bg-transparent'} px-4 ${isColumnActive ? 'overflow-visible' : 'overflow-y-auto'}`}>
                         {columnTasks.map((task, index) => {
                           return (
                             <Draggable key={task.id} draggableId={task.id} index={index}>
                               {(provided, snapshot) => (
-                                <TaskCard
-                                  task={task}
-                                  provided={provided}
-                                  snapshot={snapshot}
-                                  onCardClick={() => setSelectedTask(task)}
-                                  onUpdateTask={onUpdateTask}
-                                />
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  style={{...provided.draggableProps.style, zIndex: cardWithOpenPopup === task.id ? 50 : 'auto', position: 'relative' }}
+                                >
+                                  <TaskCard
+                                    task={task}
+                                    provided={provided}
+                                    snapshot={snapshot}
+                                    onCardClick={() => setSelectedTask(task)}
+                                    onUpdateTask={onUpdateTask}
+                                    onPopupToggle={(isOpen) => setCardWithOpenPopup(isOpen ? task.id : null)}
+                                  />
+                                </div>
                               )}
                             </Draggable>
                           )
