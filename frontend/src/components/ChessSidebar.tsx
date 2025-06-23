@@ -149,9 +149,9 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
           <div className="space-y-1">
             {projectsData.projects.map((project) => (
               <div key={project.id} className="relative">
-                <button
+                <div
                   onClick={() => toggleProject(project.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
                     pathname.includes(`/chess/${project.id}`)
                       ? 'bg-blue-100 text-blue-700'
                       : 'text-gray-600 hover:bg-gray-100'
@@ -193,7 +193,7 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                       </button>
                     </div>
                   )}
-                </button>
+                </div>
                 
                 {openMenuId === project.id && !collapsed && (
                   <div
