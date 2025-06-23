@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import usersData from '@/data/users.json';
 import tasksData from '@/data/tasks.json';
 import projectsData from '@/data/projects.json';
+import clientsData from '@/data/clients.json';
 import { UserIcon, PlusIcon } from '@heroicons/react/24/outline';
 import TeamMemberSidebar from '@/components/elements/TeamMemberSidebar';
 import UserTaskList from '@/components/elements/UserTaskList';
@@ -139,6 +140,8 @@ const TeamPage = () => {
               tasks={selectedUser.tasks} 
               allTasks={tasksData.tasks} 
               projects={projectsData.projects}
+              clients={clientsData}
+              users={usersData.users}
             />
           </div>
         ) : (

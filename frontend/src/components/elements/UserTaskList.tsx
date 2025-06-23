@@ -4,6 +4,8 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addMonths, addDays, getWeek, getYear, setWeek, setYear, isToday } from 'date-fns';
 import { BriefcaseIcon, CheckCircleIcon, ClockIcon, ExclamationTriangleIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { FireIcon } from '@heroicons/react/24/solid';
+import ProjectDetailsModal from '../ProjectDetailsModal';
+import TaskDetailsModal from '../TaskDetailsModal';
 
 type RawTask = {
     id: string;
@@ -16,11 +18,18 @@ type RawTask = {
     mother_task: string | null;
     project_id: string;
     assigned_to: string[];
+    company: string;
 };
 
 type Project = {
     id: string;
     name: string;
+};
+
+type User = {
+    id: string;
+    name: string;
+    avatar: string;
 };
 
 type Task = {
@@ -34,6 +43,8 @@ type Task = {
   mother_task: string | null;
   project_id: string;
   assigned_to: string[];
+  description: string;
+  platforms?: string[];
 };
 
 const statusConfig: Record<Task['status'], { name: string; color: string; icon: React.ElementType }> = {
@@ -283,12 +294,16 @@ interface UserTaskListProps {
   tasks: Task[];
   allTasks: RawTask[];
   projects: Project[];
+  clients: Client[];
+  users: User[];
 }
 
-const UserTaskList: React.FC<UserTaskListProps> = ({ tasks, allTasks, projects }) => {
+const UserTaskList: React.FC<UserTaskListProps> = ({ tasks, allTasks, projects, clients, users }) => {
   const [statusFilter, setStatusFilter] = useState('todo');
   const [timeView, setTimeView] = useState<'all' | 'month' | 'week' | 'today'>('all');
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   useEffect(() => {
     if (tasks.length > 0) {
@@ -297,6 +312,22 @@ const UserTaskList: React.FC<UserTaskListProps> = ({ tasks, allTasks, projects }
       setCurrentDate(new Date());
     }
   }, [tasks]);
+
+  const selectedProjectClient = useMemo(() => {
+    if (!selectedProject) return null;
+    const client = clients.find(c => c.id === selectedProject.client_id);
+    return client ? { id: client.id, name: (client as any).client_name, company: (client as any).company_names[0] } : null;
+  }, [selectedProject, clients]);
+
+  const selectedTaskData = useMemo(() => {
+    if (!selectedTask) return null;
+
+    const project = projects.find(p => p.id === selectedTask.project_id) || null;
+    const motherTask = allTasks.find(t => t.id === selectedTask.mother_task) || null;
+    const assignees = users.filter(u => selectedTask.assigned_to.includes(u.id));
+
+    return { project, motherTask, assignees };
+  }, [selectedTask, projects, allTasks, users]);
 
   const filteredTasks = useMemo(() => {
     let tempTasks = tasks;
@@ -356,7 +387,9 @@ const UserTaskList: React.FC<UserTaskListProps> = ({ tasks, allTasks, projects }
             <div className="p-4 flex flex-col md:flex-row gap-4 items-start justify-between">
                 <div className="flex-grow">
                     <div className="flex items-center gap-3 mb-1">
-                        <p className="font-semibold text-gray-800">{task.title}</p>
+                        <button onClick={() => setSelectedTask(task)} className="font-semibold text-gray-800 hover:text-blue-600 text-left">
+                            {task.title}
+                        </button>
                         <PriorityTag priority={task.priority} />
                     </div>
                     
@@ -448,6 +481,22 @@ const UserTaskList: React.FC<UserTaskListProps> = ({ tasks, allTasks, projects }
             ))}
           </div>
         </div>
+      )}
+      {selectedProject && (
+        <ProjectDetailsModal
+            project={selectedProject}
+            client={selectedProjectClient}
+            onClose={() => setSelectedProject(null)}
+        />
+      )}
+      {selectedTask && selectedTaskData && (
+        <TaskDetailsModal
+            task={selectedTask}
+            project={selectedTaskData.project}
+            motherTask={selectedTaskData.motherTask}
+            assignees={selectedTaskData.assignees}
+            onClose={() => setSelectedTask(null)}
+        />
       )}
     </div>
   );
