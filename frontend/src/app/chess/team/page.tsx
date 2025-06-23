@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import usersData from '@/data/users.json';
 import tasksData from '@/data/tasks.json';
+import projectsData from '@/data/projects.json';
 import { UserIcon, PlusIcon } from '@heroicons/react/24/outline';
 import TeamMemberSidebar from '@/components/elements/TeamMemberSidebar';
 import UserTaskList from '@/components/elements/UserTaskList';
@@ -14,6 +15,9 @@ type Task = {
   status: 'planning' | 'doing' | 'qc' | 'redo' | 'done' | 'delivered' | 'archived';
   priority: 'low' | 'medium' | 'high';
   end_date: string;
+  start_date: string;
+  created_at: string;
+  mother_task: string | null;
   assigned_to: string[];
 };
 
@@ -131,7 +135,11 @@ const TeamPage = () => {
                     <span>Create New Task</span>
                 </button>
             </div>
-            <UserTaskList tasks={selectedUser.tasks} />
+            <UserTaskList 
+              tasks={selectedUser.tasks} 
+              allTasks={tasksData.tasks} 
+              projects={projectsData.projects}
+            />
           </div>
         ) : (
           <div className="flex items-center justify-center h-full">

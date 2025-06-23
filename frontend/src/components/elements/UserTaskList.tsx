@@ -3,12 +3,37 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addMonths, addDays, getWeek, getYear, setWeek, setYear, isToday } from 'date-fns';
 import { BriefcaseIcon, CheckCircleIcon, ClockIcon, ExclamationTriangleIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { FireIcon } from '@heroicons/react/24/solid';
+
+type RawTask = {
+    id: string;
+    title: string;
+    status: string;
+    priority: 'low' | 'medium' | 'high' | string;
+    end_date: string;
+    start_date: string;
+    created_at: string;
+    mother_task: string | null;
+    project_id: string;
+    assigned_to: string[];
+};
+
+type Project = {
+    id: string;
+    name: string;
+};
 
 type Task = {
   id: string;
   title: string;
   status: 'planning' | 'doing' | 'qc' | 'redo' | 'done' | 'delivered' | 'archived';
+  priority: 'low' | 'medium' | 'high';
   end_date: string;
+  start_date: string;
+  created_at: string;
+  mother_task: string | null;
+  project_id: string;
+  assigned_to: string[];
 };
 
 const statusConfig: Record<Task['status'], { name: string; color: string; icon: React.ElementType }> = {
@@ -217,11 +242,50 @@ const WeekSelector = ({ value, onChange }: { value: Date; onChange: (date: Date)
     );
 };
 
+const PriorityTag = ({ priority }: { priority: 'low' | 'medium' | 'high' }) => {
+    const config = {
+        low: { text: 'Low', bg: 'bg-gray-100', textColor: 'text-gray-600' },
+        medium: { text: 'Medium', bg: 'bg-yellow-100', textColor: 'text-yellow-800' },
+        high: { text: 'High', bg: 'bg-red-100', textColor: 'text-red-800' },
+    };
+    const { text, bg, textColor } = config[priority] || config.low;
+    return (
+        <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${bg} ${textColor}`}>
+            {text}
+        </span>
+    );
+};
+
+const mapTaskStatus = (status: string): Task['status'] => {
+  switch (status) {
+    case 'pending':
+      return 'planning';
+    case 'in_progress':
+      return 'doing';
+    case 'active':
+      return 'doing';
+    case 'completed':
+      return 'done';
+    case 'qc':
+      return 'qc';
+    case 'redo':
+      return 'redo';
+    case 'delivered':
+      return 'delivered';
+    case 'archived':
+      return 'archived';
+    default:
+      return 'planning';
+  }
+};
+
 interface UserTaskListProps {
   tasks: Task[];
+  allTasks: RawTask[];
+  projects: Project[];
 }
 
-const UserTaskList: React.FC<UserTaskListProps> = ({ tasks }) => {
+const UserTaskList: React.FC<UserTaskListProps> = ({ tasks, allTasks, projects }) => {
   const [statusFilter, setStatusFilter] = useState('todo');
   const [timeView, setTimeView] = useState<'all' | 'month' | 'week' | 'today'>('all');
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -266,6 +330,82 @@ const UserTaskList: React.FC<UserTaskListProps> = ({ tasks }) => {
     return tempTasks;
   }, [tasks, statusFilter, timeView, currentDate]);
 
+  const TaskItem = ({ task }: { task: Task }) => {
+    const [subtasksOpen, setSubtasksOpen] = useState(false);
+
+    const motherTask = useMemo(() => {
+        if (!task.mother_task) return null;
+        return allTasks.find(t => t.id === task.mother_task);
+    }, [task.mother_task]);
+
+    const project = useMemo(() => {
+        return projects.find(p => p.id === task.project_id);
+    }, [task.project_id]);
+
+    const subtasks = useMemo(() => {
+        return allTasks
+            .filter(t => t.mother_task === task.id)
+            .map(subtask => ({
+                ...subtask,
+                status: mapTaskStatus(subtask.status)
+            } as Task));
+    }, [task.id]);
+
+    return (
+        <div className="bg-white border-b border-gray-200/80">
+            <div className="p-4 flex flex-col md:flex-row gap-4 items-start justify-between">
+                <div className="flex-grow">
+                    <div className="flex items-center gap-3 mb-1">
+                        <p className="font-semibold text-gray-800">{task.title}</p>
+                        <PriorityTag priority={task.priority} />
+                    </div>
+                    
+                    <p className="text-xs text-gray-500">
+                        {`Assigned: ${format(new Date(task.created_at), 'MMM d')} • Start: ${format(new Date(task.start_date), 'MMM d')} • End: ${format(new Date(task.end_date), 'MMM d, yyyy')}`}
+                    </p>
+
+                    <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                        {project && (
+                            <p>Project: <span className="font-medium text-gray-700">{project.name}</span></p>
+                        )}
+                        {motherTask && project && <span className="text-gray-300">|</span>}
+                        {motherTask && (
+                            <p>Mother task: <span className="font-medium text-gray-700">{motherTask.title}</span></p>
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-start md:justify-end gap-3 flex-shrink-0">
+                    <TaskStatus status={task.status} />
+                    {subtasks.length > 0 && (
+                        <button
+                            onClick={() => setSubtasksOpen(!subtasksOpen)}
+                            className="flex items-center justify-center w-6 h-6 bg-gray-200 text-gray-700 text-xs font-semibold rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                            title={`${subtasks.length} subtasks`}
+                        >
+                            {subtasks.length}
+                        </button>
+                    )}
+                </div>
+            </div>
+            {subtasksOpen && subtasks.length > 0 && (
+                <div className="pl-8 pr-4 pb-4 bg-gray-50/50">
+                    <div className="border-l-2 border-blue-200 pl-6 ml-1">
+                        <div className="divide-y divide-gray-200">
+                            {subtasks.map((subtask: Task) => (
+                                <div key={subtask.id} className="py-2 flex justify-between items-center">
+                                    <p className="text-sm text-gray-700">{subtask.title}</p>
+                                    <TaskStatus status={subtask.status} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
@@ -302,19 +442,9 @@ const UserTaskList: React.FC<UserTaskListProps> = ({ tasks }) => {
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200/80 overflow-hidden">
-          <div className="divide-y divide-gray-200/80">
+          <div className="divide-y-0">
             {filteredTasks.map((task) => (
-              <div key={task.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                <div>
-                  <p className="font-semibold text-gray-800">{task.title}</p>
-                  <p className="text-sm text-gray-500">
-                    Due: {format(new Date(task.end_date), 'MMM d, yyyy')}
-                  </p>
-                </div>
-                <div>
-                  <TaskStatus status={task.status} />
-                </div>
-              </div>
+              <TaskItem key={task.id} task={task} />
             ))}
           </div>
         </div>

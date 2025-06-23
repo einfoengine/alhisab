@@ -55,6 +55,8 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
   return (
     <div className={`fixed top-0 left-0 h-screen z-30 bg-white border-r border-gray-200 flex flex-col transition-all duration-200 ${collapsed ? 'w-16' : 'w-64'}`}>
       {/* Header */}
+      <br></br>
+      <br></br>
       <div className={`p-4 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
         {!collapsed && <h1 className="text-xl font-bold text-gray-800">Chess</h1>}
         <button
