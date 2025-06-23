@@ -459,7 +459,11 @@ const UserTaskList: React.FC<UserTaskListProps> = ({ tasks, allTasks, projects, 
                               <span className="w-3 h-3 block rounded-full bg-white mx-auto" />
                             ) : null}
                         </button>
-                        <button onClick={() => setSelectedTask(task)} className={`font-semibold text-gray-800 hover:text-blue-600 text-left ${isDone ? 'line-through' : ''}`}>{task.title}</button>
+                        <button onClick={() => setSelectedTask(task)} className={`font-semibold text-gray-800 hover:text-blue-600 text-left ${
+                          isDone || taskStatusMap[task.id] === 'delivered' || taskStatusMap[task.id] === 'archived' ? 'line-through' : ''
+                        }`}>
+                          {task.title}
+                        </button>
                         <PriorityTag priority={task.priority} />
                     </div>
                     <p className="text-xs text-gray-500">
