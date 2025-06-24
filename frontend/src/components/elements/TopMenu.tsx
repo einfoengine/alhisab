@@ -11,6 +11,7 @@ import {
   LightBulbIcon,
   Squares2X2Icon,
   UserGroupIcon,
+  PresentationChartLineIcon,
 } from '@heroicons/react/24/outline';
 
 const tools = [
@@ -18,9 +19,7 @@ const tools = [
   { name: 'Business Desk', href: '/business-desk', icon: UserGroupIcon },
   { name: 'Chess', href: '/chess', icon: Squares2X2Icon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
-  { name: 'Planner', href: '/planner', icon: ClipboardDocumentCheckIcon },
-  { name: 'Audit', href: '/business-desk/audit', icon: MagnifyingGlassCircleIcon },
-  { name: 'Strategy', href: '/business-desk/strategy', icon: LightBulbIcon },
+  { name: 'Strategic Planning', href: '/strategic-planning', icon: PresentationChartLineIcon },
   { name: 'Reports', href: '/reports', icon: ChartBarIcon },
   { name: 'Documents', href: '/documents', icon: DocumentTextIcon },
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
