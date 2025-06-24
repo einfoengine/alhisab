@@ -11,9 +11,7 @@ import {
   UserGroupIcon,
   ChartBarIcon,
   Cog6ToothIcon,
-  PlusIcon,
   FolderIcon,
-  EllipsisVerticalIcon,
   FolderOpenIcon,
 } from '@heroicons/react/24/outline';
 import projectsData from '@/data/projects.json';
@@ -42,7 +40,6 @@ const getServiceFromId = (serviceId: string) => {
 const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) => {
   const pathname = usePathname() || '';
   const [expandedProjects, setExpandedProjects] = useState<string[]>(['proj_001']);
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   // Independent open state for each section
   const [isNavigationOpen, setIsNavigationOpen] = useState(true);
   const [isProjectsOpen, setIsProjectsOpen] = useState(true);
@@ -164,115 +161,79 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
             )}
           </button>
           {isProjectsOpen && !collapsed && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <div></div>
-                <button className="p-1 rounded hover:bg-gray-100">
-                  <PlusIcon className="w-5 h-5 text-gray-600" />
-                </button>
-              </div>
-              <div className="space-y-1">
-                {projectsData.projects.map((project) => (
-                  <div key={project.id} className="relative">
-                    <div
-                      onClick={() => toggleProject(project.id)}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                        pathname.includes(`/chess/projects/${project.id}`)
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'text-gray-600 hover:bg-gray-100'
-                      }`}
-                    >
-                      <div className="flex items-center">
-                        {expandedProjects.includes(project.id) ? (
-                            <FolderOpenIcon className="w-5 h-5 mr-3" />
-                        ) : (
-                            <FolderIcon className="w-5 h-5 mr-3" />
-                        )}
-                        <div className="text-left">
-                          <div className="font-medium">{project.name}</div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(project.status)}`}>
-                              {project.status.replace('_', ' ')}
-                            </span>
-                            <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-blue-500 rounded-full transition-all duration-300"
-                                style={{ width: `50%` }} // Placeholder progress
-                              />
-                            </div>
+            <div className="space-y-1">
+              {projectsData.projects.map((project) => (
+                <div key={project.id} className="relative">
+                  <div
+                    onClick={() => toggleProject(project.id)}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
+                      pathname.includes(`/chess/projects/${project.id}`)
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      {expandedProjects.includes(project.id) ? (
+                        <FolderOpenIcon className="w-5 h-5 mr-3" />
+                      ) : (
+                        <FolderIcon className="w-5 h-5 mr-3" />
+                      )}
+                      <div className="text-left">
+                        <div className="font-medium">{project.name}</div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(project.status)}`}>
+                            {project.status.replace('_', ' ')}
+                          </span>
+                          <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                              style={{ width: `50%` }} // Placeholder progress
+                            />
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenMenuId(openMenuId === project.id ? null : project.id);
-                          }}
-                          className="p-1 rounded-full hover:bg-gray-200"
-                        >
-                          <EllipsisVerticalIcon className="w-5 h-5" />
-                        </button>
-                      </div>
                     </div>
-                    {openMenuId === project.id && (
-                      <div
-                        className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-20 border border-gray-200"
-                        onMouseLeave={() => setOpenMenuId(null)}
-                      >
-                        <ul className="py-1">
-                          <li>
-                            <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                              Add new service
-                            </button>
-                          </li>
-                          <li>
-                            <Link
-                              href={`/business-desk/projects/${project.id}`}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              Project overview
-                            </Link>
-                          </li>
-                          <li>
-                            <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                              Change status
-                            </button>
-                          </li>
-                          <li>
-                            <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                              Set a project master
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                    {/* Project Services */}
-                    {expandedProjects.includes(project.id) && (
-                      <div className="ml-6 mt-1 space-y-1">
-                        {project.services.map((service) => {
-                          const serviceInfo = getServiceFromId(service.id);
-                          if (!serviceInfo) return null;
-                          return (
-                            <Link
-                              key={service.id}
-                              href={`/chess/projects/${project.id}/${service.id}`}
-                              className={`block px-3 py-1.5 text-xs rounded transition-colors ${
-                                pathname.includes(`/chess/projects/${project.id}/${service.id}`)
-                                  ? 'bg-blue-50 text-blue-600'
-                                  : 'text-gray-500 hover:bg-gray-50'
-                              }`}
-                            >
-                              {serviceInfo.name}
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    )}
                   </div>
-                ))}
-              </div>
+                  {/* Project Overview, Deliverables, Add New Deliverable */}
+                  {expandedProjects.includes(project.id) && (
+                    <div className="ml-6 mt-1 space-y-1">
+                      <Link
+                        href={`/business-desk/projects/${project.id}`}
+                        className={`block px-3 py-1.5 text-xs rounded transition-colors ${
+                          pathname === `/business-desk/projects/${project.id}`
+                            ? 'bg-blue-50 text-blue-600 font-semibold'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        Project Overview
+                      </Link>
+                      {project.services.map((service) => {
+                        const serviceInfo = getServiceFromId(service.id);
+                        if (!serviceInfo) return null;
+                        return (
+                          <Link
+                            key={service.id}
+                            href={`/chess/projects/${project.id}/${service.id}`}
+                            className={`block px-3 py-1.5 text-xs rounded transition-colors ${
+                              pathname.includes(`/chess/projects/${project.id}/${service.id}`)
+                                ? 'bg-blue-50 text-blue-600'
+                                : 'text-gray-500 hover:bg-gray-50'
+                            }`}
+                          >
+                            {serviceInfo.name}
+                          </Link>
+                        );
+                      })}
+                      <Link
+                        href={`/chess/projects/${project.id}/new`}
+                        className="block px-3 py-1.5 text-xs rounded transition-colors text-gray-500 hover:bg-gray-50"
+                      >
+                        Add New Deliverable
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>
