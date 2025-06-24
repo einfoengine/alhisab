@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import ChessSidebar from '@/components/ChessSidebar';
+import ChessSidebar from '@/components/sidebars/ChessSidebar';
 
 export default function ChessLayout({
   children,

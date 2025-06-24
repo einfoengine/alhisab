@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Sidebar from '@/components/Sidebar';
+import Sidebar from '@/components/sidebars/Sidebar';
 
 const SIDEBAR_WIDTH = 256; // w-64
 const SIDEBAR_COLLAPSED_WIDTH = 80; // w-20

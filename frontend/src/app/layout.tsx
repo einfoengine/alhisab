@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "../styles/globals.css";
 import "../styles/globals.scss";
 import FontProvider from "../components/elements/FontProvider";
-import TopMenu from "../components/TopMenu";
+import Topbar from "../components/Topbar";
 
 export const metadata: Metadata = {
   title: "Alhisab - Business Management Platform",
@@ -20,7 +20,7 @@ export default function RootLayout({
         <FontProvider />
       </head>
       <body suppressHydrationWarning>
-        <TopMenu />
+        <Topbar />
         <div className="pt-12">
         {children}
         </div>

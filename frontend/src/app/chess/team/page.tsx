@@ -6,7 +6,7 @@ import tasksData from '@/data/tasks.json';
 import projectsData from '@/data/projects.json';
 import clientsData from '@/data/clients.json';
 import { UserIcon, PlusIcon } from '@heroicons/react/24/outline';
-import TeamMemberSidebar from '@/components/elements/TeamMemberSidebar';
+import TeamMemberSidebar from '@/components/sidebars/TeamMemberSidebar';
 import UserTaskList from '@/components/elements/UserTaskList';
 import UserInfoPanel from '@/components/elements/UserInfoPanel';
 
