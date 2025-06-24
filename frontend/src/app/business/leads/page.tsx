@@ -5,14 +5,9 @@ import {
   UserGroupIcon,
   PlusIcon,
   MagnifyingGlassIcon,
-  FunnelIcon,
   EyeIcon,
   PencilIcon,
   TrashIcon,
-  PhoneIcon,
-  EnvelopeIcon,
-  BuildingOfficeIcon,
-  CalendarIcon,
   ChartBarIcon,
 } from "@heroicons/react/24/outline";
 
