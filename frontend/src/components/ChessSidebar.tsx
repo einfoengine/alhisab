@@ -154,7 +154,7 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                 <div
                   onClick={() => toggleProject(project.id)}
                   className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                    pathname.includes(`/chess/${project.id}`)
+                    pathname.includes(`/chess/projects/${project.id}`)
                       ? 'bg-blue-100 text-blue-700'
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
@@ -241,9 +241,9 @@ const ChessSidebar: React.FC<ChessSidebarProps> = ({ collapsed, setCollapsed }) 
                       return (
                         <Link
                           key={service.id}
-                          href={`/chess/${project.id}/${service.id}`}
+                          href={`/chess/projects/${project.id}/${service.id}`}
                           className={`block px-3 py-1.5 text-xs rounded transition-colors ${
-                            pathname.includes(`/chess/${project.id}/${service.id}`)
+                            pathname.includes(`/chess/projects/${project.id}/${service.id}`)
                               ? 'bg-blue-50 text-blue-600'
                               : 'text-gray-500 hover:bg-gray-50'
                           }`}
