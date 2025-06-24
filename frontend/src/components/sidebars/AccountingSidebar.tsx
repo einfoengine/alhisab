@@ -21,7 +21,25 @@ import {
   CalculatorIcon,
   ChartBarIcon,
   DocumentDuplicateIcon,
-  CreditCardIcon
+  CreditCardIcon,
+  BuildingOfficeIcon,
+  TruckIcon,
+  ArchiveBoxIcon,
+  ClipboardDocumentListIcon,
+  UserGroupIcon,
+  CalendarDaysIcon,
+  ClockIcon,
+  ExclamationTriangleIcon,
+  DocumentMagnifyingGlassIcon,
+  ScaleIcon,
+  ShieldCheckIcon,
+  CogIcon,
+  ArchiveBoxXMarkIcon,
+  BanknotesIcon as BanknotesIcon2,
+  DocumentArrowUpIcon,
+  DocumentArrowDownIcon,
+  PlusIcon,
+  MinusIcon
 } from '@heroicons/react/24/outline';
 
 const menuGroups = [
@@ -30,16 +48,63 @@ const menuGroups = [
     icon: HomeIcon,
     items: [
       { name: 'Overview', href: '/accounting', icon: HomeIcon },
+      { name: 'Dashboard', href: '/accounting/dashboard', icon: ChartBarIcon },
+    ]
+  },
+  {
+    name: 'Sales & Revenue',
+    icon: CurrencyDollarIcon,
+    items: [
+      { name: 'Invoices', href: '/accounting/invoices', icon: DocumentTextIcon },
+      { name: 'Sales Orders', href: '/accounting/sales-orders', icon: ClipboardDocumentListIcon },
+      { name: 'Customer Payments', href: '/accounting/customer-payments', icon: BanknotesIcon2 },
+      { name: 'Credit Notes', href: '/accounting/credit-notes', icon: DocumentArrowDownIcon },
+      { name: 'Sales Returns', href: '/accounting/sales-returns', icon: ArchiveBoxXMarkIcon },
+    ]
+  },
+  {
+    name: 'Purchases & Expenses',
+    icon: ReceiptRefundIcon,
+    items: [
+      { name: 'Bills', href: '/accounting/bills', icon: DocumentTextIcon },
+      { name: 'Purchase Orders', href: '/accounting/purchase-orders', icon: ClipboardDocumentListIcon },
+      { name: 'Vendor Payments', href: '/accounting/vendor-payments', icon: BanknotesIcon2 },
+      { name: 'Expense Claims', href: '/accounting/expense-claims', icon: DocumentArrowUpIcon },
+      { name: 'Purchase Returns', href: '/accounting/purchase-returns', icon: ArchiveBoxXMarkIcon },
     ]
   },
   {
     name: 'Financial Records',
     icon: BanknotesIcon,
     items: [
-      { name: 'Income', href: '/accounting/income', icon: CurrencyDollarIcon },
-      { name: 'Expenses', href: '/accounting/expenses', icon: ReceiptRefundIcon },
+      { name: 'Income', href: '/accounting/income', icon: PlusIcon },
+      { name: 'Expenses', href: '/accounting/expenses', icon: MinusIcon },
       { name: 'Transactions', href: '/accounting/transactions', icon: DocumentTextIcon },
       { name: 'Bank Accounts', href: '/accounting/bank-accounts', icon: CreditCardIcon },
+      { name: 'Bank Reconciliation', href: '/accounting/bank-reconciliation', icon: DocumentMagnifyingGlassIcon },
+      { name: 'Journal Entries', href: '/accounting/journal-entries', icon: DocumentTextIcon },
+    ]
+  },
+  {
+    name: 'Assets & Inventory',
+    icon: BuildingOfficeIcon,
+    items: [
+      { name: 'Fixed Assets', href: '/accounting/fixed-assets', icon: BuildingOfficeIcon },
+      { name: 'Asset Depreciation', href: '/accounting/asset-depreciation', icon: CalculatorIcon },
+      { name: 'Inventory', href: '/accounting/inventory', icon: ArchiveBoxIcon },
+      { name: 'Stock Movements', href: '/accounting/stock-movements', icon: TruckIcon },
+      { name: 'Inventory Valuation', href: '/accounting/inventory-valuation', icon: CalculatorIcon },
+    ]
+  },
+  {
+    name: 'Payroll & HR',
+    icon: UserGroupIcon,
+    items: [
+      { name: 'Employee Records', href: '/accounting/employees', icon: UserIcon },
+      { name: 'Payroll', href: '/accounting/payroll', icon: CurrencyDollarIcon },
+      { name: 'Time Tracking', href: '/accounting/time-tracking', icon: ClockIcon },
+      { name: 'Leave Management', href: '/accounting/leave-management', icon: CalendarDaysIcon },
+      { name: 'Benefits', href: '/accounting/benefits', icon: ShieldCheckIcon },
     ]
   },
   {
@@ -50,6 +115,9 @@ const menuGroups = [
       { name: 'Cash Flow', href: '/accounting/cash-flow', icon: CalculatorIcon },
       { name: 'Profit & Loss', href: '/accounting/profit-loss', icon: ChartBarIcon },
       { name: 'Balance Sheet', href: '/accounting/balance-sheet', icon: DocumentTextIcon },
+      { name: 'Trial Balance', href: '/accounting/trial-balance', icon: ScaleIcon },
+      { name: 'Aging Reports', href: '/accounting/aging-reports', icon: ExclamationTriangleIcon },
+      { name: 'Budget vs Actual', href: '/accounting/budget-vs-actual', icon: ChartBarIcon },
     ]
   },
   {
@@ -59,14 +127,19 @@ const menuGroups = [
       { name: 'Tax Returns', href: '/accounting/tax-returns', icon: DocumentTextIcon },
       { name: 'Tax Planning', href: '/accounting/tax-planning', icon: CalculatorIcon },
       { name: 'Compliance', href: '/accounting/compliance', icon: CheckBadgeIcon },
+      { name: 'Audit Trail', href: '/accounting/audit-trail', icon: DocumentMagnifyingGlassIcon },
+      { name: 'Regulatory Reports', href: '/accounting/regulatory-reports', icon: DocumentDuplicateIcon },
     ]
   },
   {
     name: 'System',
     icon: WrenchScrewdriverIcon,
     items: [
+      { name: 'Chart of Accounts', href: '/accounting/chart-of-accounts', icon: DocumentTextIcon },
+      { name: 'Tax Codes', href: '/accounting/tax-codes', icon: CogIcon },
+      { name: 'Fiscal Periods', href: '/accounting/fiscal-periods', icon: CalendarDaysIcon },
+      { name: 'Users & Permissions', href: '/accounting/users', icon: UserIcon },
       { name: 'Settings', href: '/accounting/settings', icon: Cog6ToothIcon },
-      { name: 'Users', href: '/accounting/users', icon: UserIcon },
       { name: 'Messages', href: '/accounting/messages', icon: ChatBubbleLeftRightIcon },
     ]
   }
@@ -135,7 +208,7 @@ export default function AccountingSidebar({ collapsed, setCollapsed }: Accountin
       <div className={`p-4 flex items-center ${collapsed ? 'justify-center' : 'justify-between'}`}>
         {!collapsed && (
             <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-sm">A</span>
                 </div>
                 <h1 className="text-xl font-bold text-gray-800">Accounting</h1>
@@ -157,9 +230,9 @@ export default function AccountingSidebar({ collapsed, setCollapsed }: Accountin
               <button
                 onClick={() => handleGroupClick(group.name)}
                 className={`w-full flex items-center text-left p-2 text-sm font-medium rounded-lg transition-all duration-200 group
-                  ${isGroupActive && !isSlidingMenuOpen ? 'text-green-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}
+                  ${isGroupActive && !isSlidingMenuOpen ? 'text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}
                   ${collapsed ? 'justify-center' : 'justify-between'}
-                  ${isSlidingMenuOpen ? 'bg-green-600 text-white' : ''}
+                  ${isSlidingMenuOpen ? 'bg-blue-600 text-white' : ''}
                 `}
               >
                 <div className="flex items-center">
@@ -187,7 +260,7 @@ export default function AccountingSidebar({ collapsed, setCollapsed }: Accountin
                         href={item.href}
                         onClick={closeSlidingMenu}
                         className={`flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors mx-1
-                          ${pathname.startsWith(item.href) ? 'bg-green-50 text-green-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                          ${pathname.startsWith(item.href) ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
                         `}
                       >
                         <item.icon className="h-4 w-4 mr-3" />
@@ -205,10 +278,10 @@ export default function AccountingSidebar({ collapsed, setCollapsed }: Accountin
                       key={item.name}
                       href={item.href}
                       className={`flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-colors w-full
-                        ${pathname.startsWith(item.href) ? 'text-green-600 font-semibold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}
+                        ${pathname.startsWith(item.href) ? 'text-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}
                       `}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full mr-3 ${pathname.startsWith(item.href) ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                      <span className={`w-1.5 h-1.5 rounded-full mr-3 ${pathname.startsWith(item.href) ? 'bg-blue-500' : 'bg-gray-300'}`}></span>
                       {item.name}
                     </Link>
                   ))}

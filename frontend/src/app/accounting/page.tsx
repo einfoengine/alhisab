@@ -2,92 +2,209 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
-const mockData = {
-  totalRevenue: 120000,
-  totalExpenses: 85000,
-  netProfit: 35000,
-  outstandingInvoices: 7,
-  recentTransactions: [
-    { id: 1, date: "2024-06-01", description: "Invoice Payment - Client A", amount: 5000, type: "income" },
-    { id: 2, date: "2024-05-28", description: "Office Rent", amount: -2000, type: "expense" },
-    { id: 3, date: "2024-05-25", description: "Invoice Payment - Client B", amount: 8000, type: "income" },
-    { id: 4, date: "2024-05-20", description: "Software Subscription", amount: -300, type: "expense" },
-    { id: 5, date: "2024-05-18", description: "Invoice Payment - Client C", amount: 4000, type: "income" },
-  ],
+// Type definitions for chart data
+interface ChartDataPoint {
+  month: string;
+  revenue: number;
+  expenses: number;
+  profit: number;
+}
+
+interface PieDataPoint {
+  category?: string;
+  source?: string;
+  amount: number;
+}
+
+interface BarDataPoint {
+  month: string;
+  inflow: number;
+  outflow: number;
+  net: number;
+}
+
+interface Transaction {
+  id: number;
+  date: string;
+  description: string;
+  amount: number;
+  type: string;
+  status: string;
+  category: string;
+}
+
+interface Alert {
+  title: string;
+  description: string;
+}
+
+interface QuickAction {
+  title: string;
+  icon: React.ReactNode;
+}
+
+// Chart stubs (replace with real chart libs or keep as SVG for now)
+const MiniBar = ({ value, max, color }: { value: number; max: number; color: string }) => (
+  <div className="w-8 h-12 flex items-end">
+    <div style={{ height: `${(value / max) * 100}%`, background: color }} className="w-full rounded-t-md transition-all"></div>
+  </div>
+);
+
+const ModernLineChart = ({ data, color, height = 80 }: { data: number[]; color: string; height?: number }) => {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const width = 180;
+  const points = data.map((v, i) => `${(i / (data.length - 1)) * width},${height - ((v - min) / range) * height}`).join(" ");
+  const area = `0,${height} ${points} ${width},${height}`;
+  return (
+    <svg width={width} height={height} className="block">
+      <defs>
+        <linearGradient id="modernArea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.18" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.01" />
+        </linearGradient>
+      </defs>
+      <polygon fill="url(#modernArea)" points={area} />
+      <polyline fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" points={points} />
+    </svg>
+  );
 };
 
-export default function AccountingOverviewPage() {
-  const router = useRouter();
+const ModernBarChart = ({ data, color, height = 80 }: { data: number[]; color: string; height?: number }) => {
+  const max = Math.max(...data);
+  const width = data.length * 12;
+  return (
+    <svg width={width} height={height} className="block">
+      {data.map((v, i) => (
+        <rect
+          key={i}
+          x={i * 12}
+          y={height - (v / max) * height}
+          width={8}
+          height={(v / max) * height}
+          rx={3}
+          fill={color}
+          opacity={0.7}
+        />
+      ))}
+    </svg>
+  );
+};
+
+export default function AccountingPage() {
+  // Example data
+  const kpi = {
+    sales: 6390.8,
+    orders: 90,
+    avgOrder: 348,
+    salesChange: 2.5,
+    ordersChange: 2.5,
+    avgOrderChange: 2.5,
+  };
+  const lineData1 = [32000, 31000, 30000, 29500, 31000, 33000, 34000, 35000, 37000, 42000, 39000, 37000, 36000, 35000, 34000, 33000, 32000, 31000, 30000, 29500, 31000, 33000, 34000, 35000, 37000, 42000, 39000, 37000, 36000, 35000];
+  const barData = [12, 18, 22, 30, 25, 40, 55, 38, 44, 60, 80, 70, 60, 50, 40, 30, 20, 18, 22, 30, 25, 40, 55, 38, 44, 60, 80, 70, 60, 50];
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 w-full">
-        <div>
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
-            <span className="cursor-pointer hover:text-green-600" onClick={() => router.push("/")}>Home</span>
-            <ChevronRightIcon className="w-4 h-4" />
-            <span className="text-green-600 font-medium">Accounting</span>
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {/* Sales KPI */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-500 text-sm">Sales</span>
+            <ModernBarChart data={[4, 8, 12, 8, 16, 12, 18]} color="#6366f1" height={32} />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Accounting Overview</h1>
-          <div className="text-gray-500 text-sm mt-1">A snapshot of your business finances: revenue, expenses, profit, and more.</div>
+          <div className="text-2xl font-bold text-gray-900">${kpi.sales.toLocaleString()}</div>
+          <div className="text-xs text-blue-600 font-medium">+{kpi.salesChange}% <span className="text-gray-400 font-normal">vs. last month</span></div>
+        </div>
+        {/* Orders KPI */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-500 text-sm">Orders</span>
+            <ModernBarChart data={[2, 4, 8, 6, 10, 8, 12]} color="#6366f1" height={32} />
+          </div>
+          <div className="text-2xl font-bold text-gray-900">{kpi.orders}</div>
+          <div className="text-xs text-blue-600 font-medium">+{kpi.ordersChange}% <span className="text-gray-400 font-normal">vs. last month</span></div>
+        </div>
+        {/* Avg Order Value KPI */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-500 text-sm">Avg orders value</span>
+            <ModernBarChart data={[8, 12, 10, 14, 12, 16, 18]} color="#6366f1" height={32} />
+          </div>
+          <div className="text-2xl font-bold text-gray-900">${kpi.avgOrder}</div>
+          <div className="text-xs text-blue-600 font-medium">+{kpi.avgOrderChange}% <span className="text-gray-400 font-normal">vs. last month</span></div>
         </div>
       </div>
 
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col items-start shadow-sm">
-          <div className="text-xs text-gray-500 mb-1">Total Revenue</div>
-          <div className="text-2xl font-bold text-green-600">${mockData.totalRevenue.toLocaleString()}</div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {/* Performance Line Chart */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 md:col-span-2 flex flex-col gap-2">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <span className="text-gray-700 font-medium">Performance</span>
+              <span className="ml-2 text-xs text-gray-400">Real time updates</span>
+            </div>
+            <span className="text-gray-400 text-xs">This month</span>
+          </div>
+          <div className="text-2xl font-bold text-gray-900 mb-2">$6,390.80</div>
+          <ModernLineChart data={lineData1} color="#6366f1" height={80} />
+          <div className="flex gap-4 mt-2 text-xs">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-500 inline-block"></span> This month</span>
+            <span className="flex items-center gap-1 text-gray-400"><span className="w-2 h-2 rounded-full bg-indigo-200 inline-block"></span> Last month</span>
+          </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col items-start shadow-sm">
-          <div className="text-xs text-gray-500 mb-1">Total Expenses</div>
-          <div className="text-2xl font-bold text-red-600">${mockData.totalExpenses.toLocaleString()}</div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col items-start shadow-sm">
-          <div className="text-xs text-gray-500 mb-1">Net Profit</div>
-          <div className="text-2xl font-bold text-blue-600">${mockData.netProfit.toLocaleString()}</div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col items-start shadow-sm">
-          <div className="text-xs text-gray-500 mb-1">Outstanding Invoices</div>
-          <div className="text-2xl font-bold text-yellow-600">{mockData.outstandingInvoices}</div>
+        {/* Transactions Bar Chart */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-gray-700 font-medium">Transactions</span>
+            <span className="text-xs text-gray-400">153 previous period</span>
+          </div>
+          <div className="text-2xl font-bold text-gray-900 mb-2">168</div>
+          <ModernBarChart data={barData} color="#6366f1" height={80} />
+          <div className="flex gap-6 mt-2 text-xs text-gray-500">
+            <span><span className="text-gray-900 font-semibold">125</span> Succeeded</span>
+            <span><span className="text-gray-900 font-semibold">13</span> Failed</span>
+            <span><span className="text-gray-900 font-semibold">30</span> Refunded</span>
+          </div>
         </div>
       </div>
 
-      {/* Recent Transactions */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mb-8">
-        <div className="font-semibold text-lg text-gray-900 mb-4">Recent Transactions</div>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-50 text-gray-500 uppercase text-xs">
-              <th className="px-4 py-3 text-left font-semibold">Date</th>
-              <th className="px-4 py-3 text-left font-semibold">Description</th>
-              <th className="px-4 py-3 text-right font-semibold">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mockData.recentTransactions.map((tx) => (
-              <tr key={tx.id} className="align-top border-b border-gray-100 last:border-0 hover:bg-green-50 transition-colors">
-                <td className="px-4 py-3">{new Date(tx.date).toLocaleDateString()}</td>
-                <td className="px-4 py-3">{tx.description}</td>
-                <td className={`px-4 py-3 text-right font-semibold ${tx.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>{tx.amount > 0 ? '+' : ''}${Math.abs(tx.amount).toLocaleString()}</td>
-              </tr>
-            ))}
-            {mockData.recentTransactions.length === 0 && (
-              <tr>
-                <td colSpan={3} className="text-center text-gray-400 py-8">No transactions found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Placeholder for future charts or analytics */}
-      <div className="bg-white rounded-xl border border-dashed border-gray-300 p-8 text-center text-gray-400">
-        <div className="text-lg font-semibold mb-2">[Charts & Analytics Coming Soon]</div>
-        <div className="text-sm">Visualize your financial data with interactive charts and insights.</div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Market Channel (stub) */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
+          <span className="text-gray-700 font-medium mb-2">Market Channel</span>
+          <ModernLineChart data={[37, 40, 45, 60, 100]} color="#6366f1" height={60} />
+          <div className="flex gap-2 mt-2 text-xs text-gray-500">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-500 inline-block"></span> Instagram</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-200 inline-block"></span> Facebook</span>
+          </div>
+        </div>
+        {/* Amount (stub) */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2 items-center justify-center">
+          <span className="text-gray-700 font-medium mb-2">Amount</span>
+          <div className="relative flex items-center justify-center mb-2">
+            <svg width={120} height={120}>
+              <circle cx={60} cy={60} r={54} stroke="#e0e7ef" strokeWidth={8} fill="none" />
+              <circle cx={60} cy={60} r={54} stroke="#6366f1" strokeWidth={8} fill="none" strokeDasharray={339.292} strokeDashoffset={60} strokeLinecap="round" />
+            </svg>
+            <span className="absolute text-2xl font-bold text-gray-900">$16.8 M</span>
+          </div>
+          <div className="flex gap-4 text-xs text-gray-500">
+            <span><span className="text-gray-900 font-semibold">$13.8 M</span> Earned</span>
+            <span><span className="text-gray-900 font-semibold">$2.4 M</span> Converted</span>
+          </div>
+        </div>
+        {/* Net Volume (stub) */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
+          <span className="text-gray-700 font-medium mb-2">Net Volume</span>
+          <ModernLineChart data={[30, 40, 60, 80, 100, 90, 70]} color="#6366f1" height={60} />
+          <div className="flex gap-4 mt-2 text-xs text-gray-500">
+            <span><span className="text-gray-900 font-semibold">$6,390.80</span> Today</span>
+            <span><span className="text-gray-900 font-semibold">$2,340.23</span> Expected</span>
+          </div>
+        </div>
       </div>
     </div>
   );
