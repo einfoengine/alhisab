@@ -16,9 +16,6 @@ import {
   Squares2X2Icon,
   HomeIcon,
   UserGroupIcon,
-  FolderIcon,
-  BanknotesIcon,
-  WrenchScrewdriverIcon,
   ChevronDownIcon,
   UserIcon,
   CircleStackIcon,
@@ -27,7 +24,13 @@ import {
 import { useState } from 'react';
 import OffCanvasMenu from './OffCanvasMenu';
 
-const tools = [
+type NavigationItem = {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+const tools: NavigationItem[] = [
   { name: 'Accounting', href: '/accounting', icon: CalculatorIcon },
   { name: 'Business Desk', href: '/business-desk', icon: UserGroupIcon },
   { name: 'Chess', href: '/chess', icon: Squares2X2Icon },
@@ -122,7 +125,7 @@ export default function TopMenu() {
 
               {isAlhisabMenuOpen && (
                 <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  {navigation['Business Desk'].map((group) => {
+                  {navigation.main.map((group) => {
                     const GroupIcon = group.icon;
                     return (
                       <div key={group.name} className="px-3 py-2">
@@ -131,7 +134,7 @@ export default function TopMenu() {
                           <span>{group.name}</span>
                         </div>
                         <div className="space-y-1">
-                          {subNavigation['Business Desk'].map((item) => {
+                          {subNavigation.main.map((item: NavigationItem) => {
                             const ItemIcon = item.icon;
                             const isActive = pathname.startsWith(item.href);
                             return (

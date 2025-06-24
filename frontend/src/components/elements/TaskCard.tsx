@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { DraggableProvided, DraggableStateSnapshot } from 'react-beautiful-dnd';
 import { EllipsisVerticalIcon, CalendarIcon, FlagIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 import usersData from '@/data/users.json';
@@ -40,14 +39,13 @@ const columnConfig: Record<Task['status'], { name: string, color: string }> = {
 
 type TaskCardProps = {
     task: Task;
-    provided: DraggableProvided;
-    snapshot: DraggableStateSnapshot;
+    snapshot?: { isDragging?: boolean };
     onCardClick: (task: Task) => void;
     onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
     onPopupToggle: (isOpen: boolean) => void;
 };
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, provided, snapshot, onCardClick, onUpdateTask, onPopupToggle }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, snapshot, onCardClick, onUpdateTask, onPopupToggle }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [assigneePopupOpen, setAssigneePopupOpen] = useState(false);
     const [datePopupOpen, setDatePopupOpen] = useState(false);
@@ -97,10 +95,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, provided, snapshot, onCardCli
     
     return (
         <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            className={`bg-white p-3 rounded-lg shadow-sm border transition-shadow relative ${snapshot.isDragging ? 'shadow-md border-blue-500' : 'border-gray-200/80 hover:bg-gray-50 hover:border-gray-300'}`}
+            className={`bg-white p-3 rounded-lg shadow-sm border transition-shadow relative ${snapshot?.isDragging ? 'shadow-md border-blue-500' : 'border-gray-200/80 hover:bg-gray-50 hover:border-gray-300'}`}
         >
             <div
               onClick={() => onCardClick(task)}

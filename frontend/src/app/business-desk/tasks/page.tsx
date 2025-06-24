@@ -4,24 +4,8 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import PageHeader from '@/components/elements/PageHeader';
 import tasks from '@/data/tasks.json';
 import users from '@/data/users.json';
+import categoriesData from '@/data/services_categories.json';
 import Link from 'next/link';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import projectsData from '@/data/projects.json';
 import { ChevronUpIcon, ChevronDownIcon, FunnelIcon, PlusIcon, TableCellsIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 import servicesData from '@/data/services.json';
@@ -73,6 +57,8 @@ type Task = {
   mother_task?: string | null;
   project_id: string;
   platforms: string[];
+  project_name: string;
+  service_name: string;
   [key: string]: string | string[] | number | boolean | null | undefined;
 };
 
@@ -134,24 +120,6 @@ const TasksPage = () => {
   const [filterServiceType, setFilterServiceType] = useState<string>('');
   const [openFilter, setOpenFilter] = useState<FilterableColumn | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('table');
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      setTaskList((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  };
 
   const handleUpdateTask = (taskId: string, updates: Partial<Task>) => {
     setTaskList(prevTasks =>
@@ -438,20 +406,9 @@ const TasksPage = () => {
                     </th>
                   </tr>
                 </thead>
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext
-                    items={taskList.map(task => task.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <tbody className="divide-y divide-gray-200">
-                      {renderTaskRows(filteredAndSortedTasks, null, expandedTasks, toggleExpand, handleUpdateTask)}
-                    </tbody>
-                  </SortableContext>
-                </DndContext>
+                <tbody className="divide-y divide-gray-200">
+                  {renderTaskRows(filteredAndSortedTasks, null, expandedTasks, toggleExpand, handleUpdateTask)}
+                </tbody>
               </table>
             </div>
           </div>
@@ -481,7 +438,7 @@ function renderTaskRows(
   return tasks
     .filter(task => (task.mother_task ?? null) === parentId)
     .map(task => [
-      <SortableTaskRow
+      <TaskRow
         key={task.id}
         task={task}
         onUpdateTask={onUpdateTask}
@@ -496,7 +453,7 @@ function renderTaskRows(
     ]).flat();
 }
 
-function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubtask, indentLevel = 0, hasSubtasks = false, serviceOptions }: { 
+function TaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubtask, indentLevel = 0, hasSubtasks = false, serviceOptions }: { 
   task: Task; 
   onUpdateTask: (id: string, updates: Partial<Task>) => void; 
   expanded?: boolean; 
@@ -506,22 +463,6 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
   hasSubtasks?: boolean; 
   serviceOptions: Service[] 
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: task.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    background: isDragging ? '#f3f4f6' : undefined,
-  };
-
   // --- Assignee Dropdown with Search and Outside Click ---
   const [assigneeOpen, setAssigneeOpen] = useState(false);
   const [assigneeSearch, setAssigneeSearch] = useState('');
@@ -614,7 +555,7 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
     onUpdateTask(task.id, { status: e.target.value as Task['status'] });
   };
 
-  // In SortableTaskRow, add state for dropdowns
+  // In TaskRow, add state for dropdowns
   const [projectOpen, setProjectOpen] = useState(false);
   const [priorityOpen, setPriorityOpen] = useState(false);
   const [platformsOpen, setPlatformsOpen] = useState(false);
@@ -675,8 +616,6 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
 
   return (
     <tr
-      ref={setNodeRef}
-      style={{ ...style, background: isSubtask ? '#f9fafb' : style.background }}
       className={`hover:bg-gray-100 transition-colors cursor-pointer h-12 ${isSubtask ? 'subtask-row' : ''}`}
     >
       <td style={{ width: COLUMN_WIDTHS.drag }} className={`pl-2 pr-1 align-middle`}>
@@ -688,7 +627,7 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
               </svg>
             </button>
           )}
-          <span {...attributes} {...listeners} className="cursor-move text-gray-400 hover:text-gray-600">
+          <span className="text-gray-400">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
             </svg>
@@ -856,7 +795,7 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
           <div className="flex flex-wrap gap-1 items-center cursor-pointer" onClick={() => setCategoriesOpen(v => !v)}>
             {Array.isArray(task.categories) && task.categories.length > 0 ? (
               task.categories.map((catId: string) => {
-                const category = categories.find((c: Category) => c.id === catId);
+                const category = categoriesData.categories.find((c: Category) => c.id === catId);
                 return category ? (
                   <span key={catId} className="inline-block px-2 py-1 rounded text-xs bg-blue-100 text-blue-800 font-medium mr-1">
                     {category.name}
@@ -869,7 +808,7 @@ function SortableTaskRow({ task, onUpdateTask, expanded, onToggleExpand, isSubta
           </div>
           {categoriesOpen && (
             <div className="absolute z-10 mt-2 w-56 bg-white border border-gray-200 rounded shadow-lg p-2">
-              {categories.map((cat: Category) => {
+              {categoriesData.categories.map((cat: Category) => {
                 const isSelected = Array.isArray(task.categories) && task.categories.includes(cat.id);
                 return (
                   <button

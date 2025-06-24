@@ -1,49 +1,33 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { XMarkIcon, CalendarIcon, FlagIcon, LinkIcon, BriefcaseIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, CalendarIcon, FlagIcon, CheckCircleIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
+import AssigneeSelector from './AssigneeSelector';
 
 type Task = {
   id: string;
   title: string;
   description: string;
   status: 'planning' | 'doing' | 'qc' | 'redo' | 'done' | 'delivered' | 'archived';
-  priority: 'low' | 'medium' | 'high';
-  end_date: string;
-  start_date: string;
-  created_at: string;
-  mother_task: string | null;
-  project_id: string;
   assigned_to: string[];
-  platforms?: string[];
-  content_type?: string;
-  tags?: string[];
+  priority: 'low' | 'medium' | 'high';
+  order: number;
+  start_date: string;
+  end_date: string;
+  project_name: string;
+  service_name: string;
+  subtask_count?: number;
 };
 
-type User = {
-    id: string;
-    name: string;
-    avatar: string;
-};
-
-type Project = {
-    id: string;
-    name: string;
-};
-
-type RawTask = {
-    id: string;
-    title: string;
-};
+type ColumnConfig = Record<Task['status'], { name: string, color: string }>;
 
 interface TaskDetailsModalProps {
+  isOpen: boolean;
   task: Task | null;
-  project: Project | null;
-  motherTask: RawTask | null;
-  assignees: User[];
+  columnConfig: ColumnConfig;
   onClose: () => void;
+  onSave: (taskId: string, updates: Partial<Task>) => void;
 }
 
 const statusOptions = [
@@ -56,120 +40,217 @@ const statusOptions = [
   { value: 'archived', label: 'Archived' },
 ];
 
-const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, project, motherTask, assignees, onClose }) => {
-  const [status, setStatus] = useState(task?.status || 'planning');
-  if (!task) return null;
+const priorityOptions = [
+  { value: 'low', label: 'Low', color: 'text-yellow-500' },
+  { value: 'medium', label: 'Medium', color: 'text-orange-500' },
+  { value: 'high', label: 'High', color: 'text-red-600' },
+];
+
+const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, task, columnConfig, onClose, onSave }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTask, setEditedTask] = useState<Task | null>(null);
+
+  React.useEffect(() => {
+    if (task) {
+      setEditedTask(task);
+      setIsEditing(false);
+    }
+  }, [task]);
+
+  if (!isOpen || !task || !editedTask) return null;
+
+  const handleSave = () => {
+    if (editedTask) {
+      onSave(editedTask.id, editedTask);
+      setIsEditing(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditedTask(task);
+    setIsEditing(false);
+  };
+
+  const updateField = (field: keyof Task, value: string | string[]) => {
+    if (editedTask) {
+      setEditedTask({ ...editedTask, [field]: value });
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">{task.title}</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-gray-800">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editedTask.title}
+                  onChange={(e) => updateField('title', e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-1 text-2xl font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              ) : (
+                task.title
+              )}
+            </h2>
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="p-2 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-100"
+            >
+              <PencilIcon className="w-5 h-5" />
+            </button>
+          </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100">
             <XMarkIcon className="w-6 h-6 text-gray-600" />
           </button>
         </div>
 
         <div className="p-6 overflow-y-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6">
-                
-                <div className="md:col-span-3">
-                    <p className="text-gray-600">{task.description || 'No description provided.'}</p>
-                </div>
-
-                <div className="md:col-span-3 border-t border-gray-200 pt-6">
-                    <h3 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Details</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-                        <div className="flex items-start gap-3">
-                            <BriefcaseIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
-                            <div>
-                                <p className="font-semibold text-gray-700">Project</p>
-                                {project ? (
-                                  <Link href={`/business-desk/projects/${project.id}`} className="text-blue-600 hover:underline">
-                                    {project.name}
-                                  </Link>
-                                ) : (
-                                  <span className="text-gray-500">N/A</span>
-                                )}
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <FlagIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
-                            <div>
-                                <p className="font-semibold text-gray-700">Status</p>
-                                <select
-                                  className="text-sm text-gray-700 border border-gray-200 rounded-md px-2 py-1 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                  value={status}
-                                  onChange={e => setStatus(e.target.value as Task['status'])}
-                                >
-                                  {statusOptions.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                  ))}
-                                </select>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <CheckCircleIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
-                            <div>
-                                <p className="font-semibold text-gray-700">Priority</p>
-                                <p className="text-sm text-gray-500 capitalize">{task.priority}</p>
-                            </div>
-                        </div>
-                        {motherTask && (
-                            <div className="flex items-start gap-3">
-                                <LinkIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
-                                <div>
-                                    <p className="font-semibold text-gray-700">Mother Task</p>
-                                    <p className="text-sm text-gray-500">{motherTask.title}</p>
-                                </div>
-                            </div>
-                        )}
-                        <div className="flex items-start gap-3 col-span-2 sm:col-span-3">
-                             <CalendarIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
-                            <div>
-                                <p className="font-semibold text-gray-700">Timeline</p>
-                                <p className="text-sm text-gray-500">
-                                    {format(new Date(task.start_date), 'MMM d, yyyy')} - {format(new Date(task.end_date), 'MMM d, yyyy')}
-                                </p>
-                                <p className="text-xs text-gray-400">Assigned: {format(new Date(task.created_at), 'MMM d, yyyy')}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3 col-span-2 sm:col-span-3">
-                            <CalendarIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
-                            <div>
-                                <p className="font-semibold text-gray-700">Assigned Date</p>
-                                <p className="text-sm text-gray-500">{format(new Date(task.created_at), 'MMM d, yyyy')}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="md:col-span-3 border-t border-gray-200 pt-6">
-                    <h3 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Assignees</h3>
-                    <div className="flex flex-wrap gap-3">
-                        {assignees.map(user => (
-                            <div key={user.id} className="flex items-center gap-2" title={user.name}>
-                                <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full" />
-                                <span className="text-sm font-medium text-gray-700 hidden sm:block">{user.name}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                
-                 {(task.platforms && task.platforms.length > 0) && (
-                    <div className="md:col-span-3 border-t border-gray-200 pt-6">
-                        <h3 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Platforms</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {task.platforms.map((platform, index) => (
-                                <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
-                                    {platform}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                 )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6">
+            
+            <div className="md:col-span-3">
+              {isEditing ? (
+                <textarea
+                  value={editedTask.description}
+                  onChange={(e) => updateField('description', e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  rows={3}
+                  placeholder="Task description..."
+                />
+              ) : (
+                <p className="text-gray-600">{task.description || 'No description provided.'}</p>
+              )}
             </div>
+
+            <div className="md:col-span-3 border-t border-gray-200 pt-6">
+              <h3 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Details</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                <div className="flex items-start gap-3">
+                  <CheckCircleIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
+                  <div>
+                    <p className="font-semibold text-gray-700">Project</p>
+                    <p className="text-sm text-gray-500">{task.project_name}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <FlagIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
+                  <div>
+                    <p className="font-semibold text-gray-700">Status</p>
+                    {isEditing ? (
+                      <select
+                        className="text-sm text-gray-700 border border-gray-200 rounded-md px-2 py-1 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        value={editedTask.status}
+                        onChange={e => updateField('status', e.target.value as Task['status'])}
+                      >
+                        {statusOptions.map(opt => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <p className="text-sm text-gray-500">{columnConfig[task.status].name}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircleIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
+                  <div>
+                    <p className="font-semibold text-gray-700">Priority</p>
+                    {isEditing ? (
+                      <select
+                        className="text-sm text-gray-700 border border-gray-200 rounded-md px-2 py-1 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        value={editedTask.priority}
+                        onChange={e => updateField('priority', e.target.value as Task['priority'])}
+                      >
+                        {priorityOptions.map(opt => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <p className="text-sm text-gray-500 capitalize">{task.priority}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 col-span-2 sm:col-span-3">
+                  <CalendarIcon className="w-6 h-6 text-gray-400 mt-0.5"/>
+                  <div>
+                    <p className="font-semibold text-gray-700">Timeline</p>
+                    {isEditing ? (
+                      <div className="flex gap-2 mt-1">
+                        <input
+                          type="date"
+                          value={editedTask.start_date.split('T')[0]}
+                          onChange={(e) => updateField('start_date', e.target.value)}
+                          className="text-sm border border-gray-200 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                        <span className="text-gray-400">to</span>
+                        <input
+                          type="date"
+                          value={editedTask.end_date.split('T')[0]}
+                          onChange={(e) => updateField('end_date', e.target.value)}
+                          className="text-sm border border-gray-200 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500">
+                        {format(new Date(task.start_date), 'MMM d, yyyy')} - {format(new Date(task.end_date), 'MMM d, yyyy')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="md:col-span-3 border-t border-gray-200 pt-6">
+              <h3 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Assignees</h3>
+              {isEditing ? (
+                <AssigneeSelector
+                  isOpen={false}
+                  onToggle={() => {}}
+                  selectedAssignees={editedTask.assigned_to}
+                  onAssigneesChange={(assignees: string[]) => updateField('assigned_to', assignees)}
+                  trigger={
+                    <button className="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50">
+                      Manage Assignees
+                    </button>
+                  }
+                />
+              ) : (
+                <div className="flex flex-wrap gap-3">
+                  {task.assigned_to.length > 0 ? (
+                    task.assigned_to.map((assigneeId) => (
+                      <div key={assigneeId} className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold text-white">
+                          {assigneeId.substring(0, 2).toUpperCase()}
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">{assigneeId}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500">No assignees</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
+
+        {isEditing && (
+          <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+            <button
+              onClick={handleCancel}
+              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Save Changes
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
