@@ -93,116 +93,216 @@ const ModernBarChart = ({ data, color, height = 80 }: { data: number[]; color: s
   );
 };
 
-export default function AccountingPage() {
-  // Example data
-  const kpi = {
-    sales: 6390.8,
-    orders: 90,
-    avgOrder: 348,
-    salesChange: 2.5,
-    ordersChange: 2.5,
-    avgOrderChange: 2.5,
-  };
-  const lineData1 = [32000, 31000, 30000, 29500, 31000, 33000, 34000, 35000, 37000, 42000, 39000, 37000, 36000, 35000, 34000, 33000, 32000, 31000, 30000, 29500, 31000, 33000, 34000, 35000, 37000, 42000, 39000, 37000, 36000, 35000];
-  const barData = [12, 18, 22, 30, 25, 40, 55, 38, 44, 60, 80, 70, 60, 50, 40, 30, 20, 18, 22, 30, 25, 40, 55, 38, 44, 60, 80, 70, 60, 50];
+// --- Mock Data ---
+const cashflow = {
+  income: 10345,
+  incomeChange: 5.37,
+  expenses: 3526,
+  expensesChange: -5.69,
+  months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+  incomeData: [5000, 4200, 3900, 4100, 5200, 6100],
+  expensesData: [3200, 2800, 2500, 3000, 3400, 3500],
+};
+const expenses = {
+  total: 5301,
+  categories: [
+    { label: "Food & Groceries", value: 1800, color: "#60a5fa" },
+    { label: "Housing", value: 1200, color: "#818cf8" },
+    { label: "Utilities", value: 900, color: "#6366f1" },
+    { label: "Transportation", value: 800, color: "#38bdf8" },
+    { label: "Healthcare", value: 601, color: "#5eead4" },
+  ],
+};
+const goals = [
+  { icon: "🏖️", label: "Vacation", percent: 56, saved: 6100 },
+  { icon: "🎓", label: "Education", percent: 28, saved: 2250 },
+  { icon: "💻", label: "New Laptop", percent: 24, saved: 1500 },
+  { icon: "🎫", label: "Concert DAY6", percent: 50, saved: 2500 },
+];
+const transactions = [
+  { date: "Jan 18, 2025", category: "Transport", amount: -24, status: "Completed", merchant: "Gojek" },
+  { date: "Jan 14, 2025", category: "Entertainment", amount: -59, status: "Pending", merchant: "Crunchyroll" },
+  { date: "Jan 17, 2025", category: "Shopping", amount: -73, status: "Completed", merchant: "Tokopedia" },
+  { date: "Jan 16, 2025", category: "Transport", amount: -12.99, status: "Completed", merchant: "Gojek" },
+  { date: "Jan 13, 2025", category: "Entertainment", amount: -48, status: "Failed", merchant: "Youtube" },
+];
 
+// --- Chart Components ---
+const LineChart = ({ income, expenses, months }: { income: number[]; expenses: number[]; months: string[] }) => {
+  const width = 420, height = 180, pad = 32;
+  const max = Math.max(...income, ...expenses, 8000);
+  const min = 0;
+  const getPoints = (data: number[]) =>
+    data.map((v, i) => `${pad + (i / (data.length - 1)) * (width - 2 * pad)},${height - pad - ((v - min) / (max - min)) * (height - 2 * pad)}`).join(" ");
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        {/* Sales KPI */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500 text-sm">Sales</span>
-            <ModernBarChart data={[4, 8, 12, 8, 16, 12, 18]} color="#6366f1" height={32} />
+    <svg width={width} height={height} className="w-full h-44">
+      {/* Grid */}
+      {[0, 0.25, 0.5, 0.75, 1].map((p, i) => (
+        <line key={i} x1={pad} x2={width - pad} y1={pad + p * (height - 2 * pad)} y2={pad + p * (height - 2 * pad)} stroke="#e5e7eb" strokeWidth={1} />
+      ))}
+      {/* Income line */}
+      <polyline points={getPoints(income)} fill="none" stroke="#38bdf8" strokeWidth={2} />
+      {/* Expenses line */}
+      <polyline points={getPoints(expenses)} fill="none" stroke="#6366f1" strokeWidth={2} />
+      {/* Dots */}
+      {income.map((v, i) => (
+        <circle key={i} cx={pad + (i / (income.length - 1)) * (width - 2 * pad)} cy={height - pad - ((v - min) / (max - min)) * (height - 2 * pad)} r={4} fill="#38bdf8" stroke="#fff" strokeWidth={2} />
+      ))}
+      {expenses.map((v, i) => (
+        <circle key={i} cx={pad + (i / (expenses.length - 1)) * (width - 2 * pad)} cy={height - pad - ((v - min) / (max - min)) * (height - 2 * pad)} r={4} fill="#6366f1" stroke="#fff" strokeWidth={2} />
+      ))}
+    </svg>
+  );
+};
+
+const DonutChart = ({ data, total }: { data: { value: number; color: string }[]; total: number }) => {
+  const radius = 54, stroke = 18, C = 2 * Math.PI * radius;
+  let offset = 0;
+  return (
+    <svg width={140} height={140} className="block mx-auto">
+      {data.map((d, i) => {
+        const val = d.value / total;
+        const dash = val * C;
+        const el = (
+          <circle
+            key={i}
+            cx={70}
+            cy={70}
+            r={radius}
+            fill="none"
+            stroke={d.color}
+            strokeWidth={stroke}
+            strokeDasharray={`${dash} ${C - dash}`}
+            strokeDashoffset={-offset}
+            strokeLinecap="round"
+          />
+        );
+        offset += dash;
+        return el;
+      })}
+      <circle cx={70} cy={70} r={radius - stroke / 2} fill="#fff" />
+      <text x={70} y={76} textAnchor="middle" fontSize={22} fontWeight={700} fill="#334155">${total.toLocaleString()}</text>
+    </svg>
+  );
+};
+
+// --- Main Page ---
+export default function AccountingPage() {
+  return (
+    <div className="min-h-screen bg-[#f6fafe] p-4 md:p-8">
+      {/* Header Card */}
+      <div className="bg-gradient-to-r from-blue-100 to-blue-50 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between mb-8 shadow-sm">
+        <div className="flex items-center gap-4 mb-4 md:mb-0">
+          <div className="bg-white rounded-xl px-4 py-2 flex flex-col items-center shadow">
+            <span className="text-xs text-gray-400">Apple</span>
+            <span className="font-bold text-blue-700">$180.50</span>
+            <span className="text-xs text-green-500">+2.30 (1.3%)</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">${kpi.sales.toLocaleString()}</div>
-          <div className="text-xs text-blue-600 font-medium">+{kpi.salesChange}% <span className="text-gray-400 font-normal">vs. last month</span></div>
-        </div>
-        {/* Orders KPI */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500 text-sm">Orders</span>
-            <ModernBarChart data={[2, 4, 8, 6, 10, 8, 12]} color="#6366f1" height={32} />
+          <div>
+            <div className="text-lg font-semibold text-blue-900 mb-1">Now your account isn't just for saving</div>
+            <div className="text-gray-500 text-sm">Start growing your wealth by investing directly from your balance. <a href="#" className="text-blue-600 font-medium hover:underline">Start Investing →</a></div>
           </div>
-          <div className="text-2xl font-bold text-gray-900">{kpi.orders}</div>
-          <div className="text-xs text-blue-600 font-medium">+{kpi.ordersChange}% <span className="text-gray-400 font-normal">vs. last month</span></div>
-        </div>
-        {/* Avg Order Value KPI */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500 text-sm">Avg orders value</span>
-            <ModernBarChart data={[8, 12, 10, 14, 12, 16, 18]} color="#6366f1" height={32} />
-          </div>
-          <div className="text-2xl font-bold text-gray-900">${kpi.avgOrder}</div>
-          <div className="text-xs text-blue-600 font-medium">+{kpi.avgOrderChange}% <span className="text-gray-400 font-normal">vs. last month</span></div>
         </div>
       </div>
 
+      {/* Main Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        {/* Performance Line Chart */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 md:col-span-2 flex flex-col gap-2">
+        {/* Money Cashflow Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm md:col-span-2 flex flex-col gap-4">
           <div className="flex items-center justify-between mb-2">
+            <span className="font-semibold text-gray-800">Money Cashflow</span>
+            <select className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-500">
+              <option>Last 6 months</option>
+            </select>
+          </div>
+          <div className="flex gap-8 mb-2">
             <div>
-              <span className="text-gray-700 font-medium">Performance</span>
-              <span className="ml-2 text-xs text-gray-400">Real time updates</span>
+              <div className="text-gray-400 text-xs">Income</div>
+              <div className="text-2xl font-bold text-gray-900">${cashflow.income.toLocaleString()}</div>
+              <div className="text-xs text-green-500 font-medium flex items-center gap-1">{cashflow.incomeChange > 0 ? '▲' : '▼'} {Math.abs(cashflow.incomeChange)}%</div>
             </div>
-            <span className="text-gray-400 text-xs">This month</span>
+            <div>
+              <div className="text-gray-400 text-xs">Expenses</div>
+              <div className="text-2xl font-bold text-gray-900">${cashflow.expenses.toLocaleString()}</div>
+              <div className="text-xs text-red-500 font-medium flex items-center gap-1">{cashflow.expensesChange < 0 ? '▼' : '▲'} {Math.abs(cashflow.expensesChange)}%</div>
+            </div>
           </div>
-          <div className="text-2xl font-bold text-gray-900 mb-2">$6,390.80</div>
-          <ModernLineChart data={lineData1} color="#6366f1" height={80} />
-          <div className="flex gap-4 mt-2 text-xs">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-500 inline-block"></span> This month</span>
-            <span className="flex items-center gap-1 text-gray-400"><span className="w-2 h-2 rounded-full bg-indigo-200 inline-block"></span> Last month</span>
-          </div>
+          <LineChart income={cashflow.incomeData} expenses={cashflow.expensesData} months={cashflow.months} />
         </div>
-        {/* Transactions Bar Chart */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
+        {/* Expenses Donut Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col gap-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-700 font-medium">Transactions</span>
-            <span className="text-xs text-gray-400">153 previous period</span>
+            <span className="font-semibold text-gray-800">Expenses</span>
+            <select className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-500">
+              <option>Last 6 months</option>
+            </select>
           </div>
-          <div className="text-2xl font-bold text-gray-900 mb-2">168</div>
-          <ModernBarChart data={barData} color="#6366f1" height={80} />
-          <div className="flex gap-6 mt-2 text-xs text-gray-500">
-            <span><span className="text-gray-900 font-semibold">125</span> Succeeded</span>
-            <span><span className="text-gray-900 font-semibold">13</span> Failed</span>
-            <span><span className="text-gray-900 font-semibold">30</span> Refunded</span>
+          <DonutChart data={expenses.categories} total={expenses.total} />
+          <div className="flex flex-wrap gap-2 justify-center mt-2">
+            {expenses.categories.map((cat, i) => (
+              <span key={i} className="flex items-center gap-1 text-xs text-gray-600">
+                <span className="w-3 h-3 rounded-full" style={{ background: cat.color }}></span>
+                {cat.label}
+              </span>
+            ))}
           </div>
         </div>
       </div>
 
+      {/* Lower Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Market Channel (stub) */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
-          <span className="text-gray-700 font-medium mb-2">Market Channel</span>
-          <ModernLineChart data={[37, 40, 45, 60, 100]} color="#6366f1" height={60} />
-          <div className="flex gap-2 mt-2 text-xs text-gray-500">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-500 inline-block"></span> Instagram</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-200 inline-block"></span> Facebook</span>
+        {/* Saving Goals */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+          <div className="font-semibold text-gray-800 mb-2">Saving Goals</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {goals.map((goal, i) => (
+              <div key={i} className="flex flex-col gap-1 bg-blue-50 rounded-xl p-3">
+                <span className="text-lg">{goal.icon}</span>
+                <span className="font-medium text-gray-700">{goal.label}</span>
+                <div className="w-full bg-blue-100 rounded-full h-2 mt-1 mb-1">
+                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${goal.percent}%` }}></div>
+                </div>
+                <span className="text-xs text-gray-500">{goal.percent}%</span>
+                <span className="text-xs text-gray-500">${goal.saved.toLocaleString()} saved so far</span>
+              </div>
+            ))}
           </div>
+          <a href="#" className="text-blue-600 text-xs font-medium mt-2 hover:underline">Show all →</a>
         </div>
-        {/* Amount (stub) */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2 items-center justify-center">
-          <span className="text-gray-700 font-medium mb-2">Amount</span>
-          <div className="relative flex items-center justify-center mb-2">
-            <svg width={120} height={120}>
-              <circle cx={60} cy={60} r={54} stroke="#e0e7ef" strokeWidth={8} fill="none" />
-              <circle cx={60} cy={60} r={54} stroke="#6366f1" strokeWidth={8} fill="none" strokeDasharray={339.292} strokeDashoffset={60} strokeLinecap="round" />
-            </svg>
-            <span className="absolute text-2xl font-bold text-gray-900">$16.8 M</span>
+        {/* Transactions Table */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm md:col-span-2 flex flex-col gap-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-semibold text-gray-800">Transactions</span>
+            <div className="flex gap-2 items-center">
+              <input type="text" placeholder="Search..." className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs text-gray-500" />
+              <button className="text-xs text-gray-500 border border-gray-200 rounded-lg px-2 py-1">Filter</button>
+            </div>
           </div>
-          <div className="flex gap-4 text-xs text-gray-500">
-            <span><span className="text-gray-900 font-semibold">$13.8 M</span> Earned</span>
-            <span><span className="text-gray-900 font-semibold">$2.4 M</span> Converted</span>
-          </div>
-        </div>
-        {/* Net Volume (stub) */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-2">
-          <span className="text-gray-700 font-medium mb-2">Net Volume</span>
-          <ModernLineChart data={[30, 40, 60, 80, 100, 90, 70]} color="#6366f1" height={60} />
-          <div className="flex gap-4 mt-2 text-xs text-gray-500">
-            <span><span className="text-gray-900 font-semibold">$6,390.80</span> Today</span>
-            <span><span className="text-gray-900 font-semibold">$2,340.23</span> Expected</span>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-xs">
+              <thead>
+                <tr className="text-gray-400 text-left">
+                  <th className="py-2 px-2 font-medium">DATE</th>
+                  <th className="py-2 px-2 font-medium">CATEGORY</th>
+                  <th className="py-2 px-2 font-medium">AMOUNT</th>
+                  <th className="py-2 px-2 font-medium">STATUS</th>
+                  <th className="py-2 px-2 font-medium">MERCHANT</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((tx, i) => (
+                  <tr key={i} className="border-t border-gray-100 hover:bg-blue-50">
+                    <td className="py-2 px-2 whitespace-nowrap">{tx.date}</td>
+                    <td className="py-2 px-2 whitespace-nowrap">{tx.category}</td>
+                    <td className="py-2 px-2 whitespace-nowrap">{tx.amount < 0 ? '-' : ''}${Math.abs(tx.amount).toLocaleString()}</td>
+                    <td className="py-2 px-2 whitespace-nowrap">
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${tx.status === 'Completed' ? 'bg-green-100 text-green-700' : tx.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>{tx.status}</span>
+                    </td>
+                    <td className="py-2 px-2 whitespace-nowrap">{tx.merchant}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
