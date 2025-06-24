@@ -3,19 +3,18 @@ import { usePathname } from 'next/navigation';
 import {
   CalculatorIcon,
   CalendarIcon,
-  ClipboardDocumentCheckIcon,
   ChartBarIcon,
   DocumentTextIcon,
   Cog6ToothIcon,
-  MagnifyingGlassCircleIcon,
-  LightBulbIcon,
   Squares2X2Icon,
   UserGroupIcon,
   PresentationChartLineIcon,
+  BriefcaseIcon,
 } from '@heroicons/react/24/outline';
 
 const tools = [
   { name: 'Accounting', href: '/accounting', icon: CalculatorIcon },
+  { name: 'Business', href: '/business', icon: BriefcaseIcon },
   { name: 'Business Desk', href: '/business-desk', icon: UserGroupIcon },
   { name: 'Chess', href: '/chess', icon: Squares2X2Icon },
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
