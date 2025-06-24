@@ -9,21 +9,11 @@ import {
   PencilIcon,
   TrashIcon,
   CurrencyDollarIcon,
-  CalendarIcon,
   BuildingOfficeIcon,
   PhoneIcon,
   EnvelopeIcon,
-  GlobeAltIcon,
   CheckCircleIcon,
-  ClockIcon,
-  ExclamationTriangleIcon,
-  ChartBarIcon,
-  DocumentTextIcon,
-  CogIcon,
   StarIcon,
-  ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
-  MinusIcon,
 } from "@heroicons/react/24/outline";
 
 // Mock data for client profiles
@@ -262,7 +252,6 @@ export default function ClientProfilesPage() {
   const totalClients = filteredClients.length;
   const activeClients = filteredClients.filter(client => client.status === "Active").length;
   const totalMonthlyRevenue = filteredClients.reduce((sum, client) => sum + client.monthlyRevenue, 0);
-  const totalLifetimeValue = filteredClients.reduce((sum, client) => sum + client.lifetimeValue, 0);
   const avgSatisfaction = filteredClients.reduce((sum, client) => sum + client.performance.satisfaction, 0) / filteredClients.length;
 
   const handleClientClick = (client: typeof clientProfilesData[0]) => {
