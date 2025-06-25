@@ -5,7 +5,6 @@ import {
   MagnifyingGlassCircleIcon,
   LightBulbIcon,
   PlusIcon,
-  CheckCircleIcon,
   ChartBarIcon,
   UserGroupIcon,
   CurrencyDollarIcon,
@@ -131,9 +130,9 @@ const marketingPlans = [
 
 const tabs = [
   { id: "dashboard", name: "Dashboard", icon: PresentationChartLineIcon },
-  { id: "campaigns", name: "Campaigns", icon: RocketLaunchIcon },
   { id: "audit", name: "Audit", icon: MagnifyingGlassCircleIcon },
   { id: "strategy", name: "Strategy", icon: LightBulbIcon },
+  { id: "campaigns", name: "Campaigns", icon: RocketLaunchIcon },
   { id: "team", name: "Team", icon: UserGroupIcon },
   { id: "budget", name: "Budget", icon: CurrencyDollarIcon },
 ];
@@ -175,7 +174,6 @@ export default function StrategicPlanningPage() {
   const allProjects: Project[] = projectsData.projects;
   const selectedClient = clients.find((c) => c.id === selectedClientId);
   const clientProjects = selectedClient ? allProjects.filter((p) => p.client_id === selectedClient.id) : allProjects;
-  const selectedProject = selectedProjectId ? allProjects.find((p) => p.id === selectedProjectId) : undefined;
 
   // Modern filter UI in header
   const renderHeaderWithFilters = () => (
