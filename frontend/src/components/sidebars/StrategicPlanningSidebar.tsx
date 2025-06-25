@@ -37,17 +37,6 @@ const menuGroups = [
     ]
   },
   {
-    name: 'Campaign Management',
-    icon: RocketLaunchIcon,
-    items: [
-      { name: 'Campaigns', href: '/strategic-planning/campaigns', icon: RocketLaunchIcon },
-      { name: 'Social Media', href: '/strategic-planning/social-media', icon: ChatBubbleLeftRightIcon },
-      { name: 'Email Marketing', href: '/strategic-planning/email-marketing', icon: DocumentTextIcon },
-      { name: 'SEO & PPC', href: '/strategic-planning/seo-ppc', icon: TagIcon },
-      { name: 'New Campaign', href: '/strategic-planning/campaigns/new', icon: PlusIcon, isAction: true },
-    ]
-  },
-  {
     name: 'Performance & Audit',
     icon: MagnifyingGlassCircleIcon,
     items: [
@@ -65,6 +54,17 @@ const menuGroups = [
       { name: 'Content Strategy', href: '/strategic-planning/content-strategy', icon: DocumentTextIcon },
       { name: 'Brand Strategy', href: '/strategic-planning/brand-strategy', icon: TagIcon },
       { name: 'Market Research', href: '/strategic-planning/market-research', icon: MagnifyingGlassCircleIcon },
+    ]
+  },
+  {
+    name: 'Campaign Management',
+    icon: RocketLaunchIcon,
+    items: [
+      { name: 'Campaigns', href: '/strategic-planning/campaigns', icon: RocketLaunchIcon },
+      { name: 'Social Media', href: '/strategic-planning/social-media', icon: ChatBubbleLeftRightIcon },
+      { name: 'Email Marketing', href: '/strategic-planning/email-marketing', icon: DocumentTextIcon },
+      { name: 'SEO & PPC', href: '/strategic-planning/seo-ppc', icon: TagIcon },
+      { name: 'New Campaign', href: '/strategic-planning/campaigns/new', icon: PlusIcon, isAction: true },
     ]
   },
   {
