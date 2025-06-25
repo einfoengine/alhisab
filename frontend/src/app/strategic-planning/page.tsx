@@ -16,6 +16,71 @@ import {
   ArrowUpIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
+import clientsData from "@/data/clients.json";
+import projectsData from "@/data/projects.json";
+
+// Add types for Client and Project
+interface Client {
+  id: string;
+  client_name: string;
+  company_names: string[];
+  status: string;
+  email: string;
+  address?: string;
+  phone: {
+    country_code: string;
+    number: string;
+    whatsapp: boolean;
+  };
+  preferred_contact_method: string;
+  alternate_contacts: Array<{
+    name: string;
+    relation: string;
+    email: string;
+    phone: {
+      country_code: string;
+      number: string;
+      whatsapp: boolean;
+    };
+  }>;
+  social_media: Record<string, string | null>;
+  country: {
+    name: string;
+    iso_code: string;
+    currency: string;
+    timezone: string;
+    language: string;
+    continent: string;
+    phone_code: string;
+    flag: string;
+  };
+  projects: Array<{ id: string; name: string }>;
+  notes?: string;
+  last_payment?: string | null;
+  dues?: number | null;
+  created?: string;
+  avatar?: string;
+}
+
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  client_id: string;
+  project_master: string;
+  project_type: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  key_deliverables: string[];
+  services: Array<{ id: string; discount: number }>;
+  packages: Array<{ id: string; discount: number }>;
+  payment_methods: string[];
+  payment_security: string;
+  agreement_number: string;
+  project_value: number;
+  milestones: Array<{ name: string; release_amount: number }>;
+}
 
 // Mock data for digital marketing planning
 const marketingPlans = [
@@ -102,6 +167,51 @@ const getTypeColor = (type: string) => {
 
 export default function StrategicPlanningPage() {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [selectedClientId, setSelectedClientId] = useState<string>("");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+
+  // Load clients and projects
+  const clients: Client[] = clientsData;
+  const allProjects: Project[] = projectsData.projects;
+  const selectedClient = clients.find((c) => c.id === selectedClientId);
+  const clientProjects = selectedClient ? allProjects.filter((p) => p.client_id === selectedClient.id) : [];
+  const selectedProject = clientProjects.find((p) => p.id === selectedProjectId);
+
+  // UI for selecting client and project
+  const renderSelectors = () => (
+    <div className="flex flex-col md:flex-row gap-4 mb-8">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Select Client</label>
+        <select
+          className="block w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          value={selectedClientId}
+          onChange={e => {
+            setSelectedClientId(e.target.value);
+            setSelectedProjectId(""); // Reset project when client changes
+          }}
+        >
+          <option value="">-- Choose Client --</option>
+          {clients.map((client) => (
+            <option key={client.id} value={client.id}>{client.client_name}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Select Project</label>
+        <select
+          className="block w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          value={selectedProjectId}
+          onChange={e => setSelectedProjectId(e.target.value)}
+          disabled={!selectedClientId}
+        >
+          <option value="">-- Choose Project --</option>
+          {clientProjects.map((project) => (
+            <option key={project.id} value={project.id}>{project.name}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
 
   const renderDashboard = () => (
     <div className="space-y-6">
@@ -662,42 +772,49 @@ export default function StrategicPlanningPage() {
   );
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Strategic Planning</h1>
-        <p className="text-gray-600 mt-2">Digital Marketing Planning & Management Platform</p>
-      </div>
+    <div className="p-4 md:p-8">
+      {renderSelectors()}
+      {selectedProject ? (
+        <div>
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Strategic Planning</h1>
+            <p className="text-gray-600 mt-2">Digital Marketing Planning & Management Platform</p>
+          </div>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200 mb-8">
-        <nav className="-mb-px flex space-x-8 overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                activeTab === tab.id
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              <tab.icon className="h-5 w-5" />
-              {tab.name}
-            </button>
-          ))}
-        </nav>
-      </div>
+          {/* Tabs */}
+          <div className="border-b border-gray-200 mb-8">
+            <nav className="-mb-px flex space-x-8 overflow-x-auto">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? "border-blue-500 text-blue-600"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  <tab.icon className="h-5 w-5" />
+                  {tab.name}
+                </button>
+              ))}
+            </nav>
+          </div>
 
-      {/* Tab Content */}
-      <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
-        {activeTab === "dashboard" && renderDashboard()}
-        {activeTab === "campaigns" && renderCampaigns()}
-        {activeTab === "audit" && renderAudit()}
-        {activeTab === "strategy" && renderStrategy()}
-        {activeTab === "team" && renderTeam()}
-        {activeTab === "budget" && renderBudget()}
-      </div>
+          {/* Tab Content */}
+          <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
+            {activeTab === "dashboard" && renderDashboard()}
+            {activeTab === "campaigns" && renderCampaigns()}
+            {activeTab === "audit" && renderAudit()}
+            {activeTab === "strategy" && renderStrategy()}
+            {activeTab === "team" && renderTeam()}
+            {activeTab === "budget" && renderBudget()}
+          </div>
+        </div>
+      ) : (
+        <div className="text-gray-500 mt-8">Please select a client and project to view strategic planning details.</div>
+      )}
     </div>
   );
 }
