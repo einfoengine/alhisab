@@ -18,6 +18,8 @@ import {
   GlobeAltIcon,
   ComputerDesktopIcon,
   FunnelIcon,
+  DocumentMagnifyingGlassIcon,
+  TagIcon,
 } from "@heroicons/react/24/outline";
 import clientsData from "@/data/clients.json";
 import projectsData from "@/data/projects.json";
@@ -212,6 +214,62 @@ const competitorAnalysis = [
   }
 ];
 
+// Mock content quality data
+const contentQualityData = {
+  overallScore: 8.2,
+  totalContent: 156,
+  analyzedContent: 142,
+  contentTypes: {
+    blog: { count: 45, avgScore: 8.5, issues: 3 },
+    social: { count: 67, avgScore: 7.8, issues: 8 },
+    email: { count: 23, avgScore: 8.9, issues: 1 },
+    landing: { count: 7, avgScore: 9.1, issues: 0 },
+    video: { count: 14, avgScore: 7.2, issues: 5 }
+  },
+  qualityMetrics: {
+    readability: { score: 8.7, status: "excellent" },
+    grammar: { score: 9.1, status: "excellent" },
+    originality: { score: 8.3, status: "good" },
+    engagement: { score: 7.8, status: "good" },
+    seoOptimization: { score: 8.5, status: "excellent" },
+    brandConsistency: { score: 9.0, status: "excellent" }
+  },
+  recentIssues: [
+    { id: 1, type: "grammar", content: "Q4 Marketing Campaign Email", severity: "low", status: "fixed" },
+    { id: 2, type: "readability", content: "Product Launch Blog Post", severity: "medium", status: "in_progress" },
+    { id: 3, type: "branding", content: "Social Media Post #156", severity: "high", status: "pending" },
+    { id: 4, type: "seo", content: "Service Page Content", severity: "medium", status: "fixed" }
+  ]
+};
+
+// Mock strategic relevance data
+const strategicRelevanceData = {
+  overallAlignment: 7.8,
+  strategicGoals: [
+    { id: 1, name: "Increase Market Share", alignment: 8.5, contentCount: 23, priority: "high" },
+    { id: 2, name: "Improve Customer Retention", alignment: 7.2, contentCount: 18, priority: "high" },
+    { id: 3, name: "Expand to New Markets", alignment: 6.8, contentCount: 12, priority: "medium" },
+    { id: 4, name: "Enhance Brand Awareness", alignment: 8.9, contentCount: 31, priority: "high" },
+    { id: 5, name: "Drive Product Innovation", alignment: 7.5, contentCount: 15, priority: "medium" }
+  ],
+  contentAlignment: {
+    highlyRelevant: { count: 45, percentage: 32 },
+    moderatelyRelevant: { count: 67, percentage: 47 },
+    lowRelevance: { count: 30, percentage: 21 }
+  },
+  gaps: [
+    { goal: "Expand to New Markets", gap: "Limited content targeting new geographic regions", impact: "medium" },
+    { goal: "Drive Product Innovation", gap: "Missing thought leadership content on industry trends", impact: "high" },
+    { goal: "Improve Customer Retention", gap: "Insufficient educational content for existing customers", impact: "medium" }
+  ],
+  recommendations: [
+    "Create region-specific content for target markets",
+    "Develop thought leadership series on industry innovation",
+    "Increase customer education and support content",
+    "Align content calendar with strategic milestones"
+  ]
+};
+
 const getStatusColor = (status: string) => {
   switch (status) {
     case "completed":
@@ -303,6 +361,8 @@ export default function PerformanceAuditsPage() {
     { id: "overview", name: "Overview", icon: ChartBarIcon },
     { id: "reports", name: "Audit Reports", icon: DocumentTextIcon },
     { id: "competitors", name: "Competitor Analysis", icon: EyeIcon },
+    { id: "content-quality", name: "Content Quality", icon: DocumentMagnifyingGlassIcon },
+    { id: "strategic-relevance", name: "Strategic Relevance", icon: TagIcon },
     { id: "recommendations", name: "Recommendations", icon: InformationCircleIcon },
   ];
 
@@ -649,6 +709,315 @@ export default function PerformanceAuditsPage() {
     </div>
   );
 
+  const renderContentQualityReport = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Content Quality Report</h2>
+          <p className="text-gray-600 mt-1">Comprehensive analysis of content quality across all channels</p>
+        </div>
+        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <PlusIcon className="h-5 w-5" />
+          New Quality Check
+        </button>
+      </div>
+
+      {/* Quality Scorecards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Overall Quality Score</p>
+              <p className="text-2xl font-bold text-gray-900">{contentQualityData.overallScore}/10</p>
+            </div>
+            <div className="p-3 bg-blue-100 rounded-lg">
+              <DocumentMagnifyingGlassIcon className="h-6 w-6 text-blue-600" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
+            <span className="text-green-600">+0.3 from last month</span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Content Analyzed</p>
+              <p className="text-2xl font-bold text-gray-900">{contentQualityData.analyzedContent}</p>
+            </div>
+            <div className="p-3 bg-green-100 rounded-lg">
+              <CheckCircleIcon className="h-6 w-6 text-green-600" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <span className="text-gray-600">of {contentQualityData.totalContent} total pieces</span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Issues Found</p>
+              <p className="text-2xl font-bold text-gray-900">17</p>
+            </div>
+            <div className="p-3 bg-yellow-100 rounded-lg">
+              <ExclamationTriangleIcon className="h-6 w-6 text-yellow-600" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <ArrowDownIcon className="h-4 w-4 text-green-500 mr-1" />
+            <span className="text-green-600">-5 from last audit</span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Next Review</p>
+              <p className="text-2xl font-bold text-gray-900">Jan 20</p>
+            </div>
+            <div className="p-3 bg-purple-100 rounded-lg">
+              <CalendarIcon className="h-6 w-6 text-purple-600" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <ClockIcon className="h-4 w-4 text-gray-500 mr-1" />
+            <span className="text-gray-600">20 days remaining</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Type Analysis */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Content Type Performance</h3>
+          <div className="space-y-4">
+            {Object.entries(contentQualityData.contentTypes).map(([type, data]) => (
+              <div key={type} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <span className="font-medium text-gray-900 capitalize">{type}</span>
+                  <p className="text-sm text-gray-600">{data.count} pieces</p>
+                </div>
+                <div className="text-right">
+                  <span className="font-bold text-gray-900">{data.avgScore}/10</span>
+                  <p className="text-sm text-gray-600">{data.issues} issues</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quality Metrics</h3>
+          <div className="space-y-4">
+            {Object.entries(contentQualityData.qualityMetrics).map(([metric, data]) => (
+              <div key={metric} className="flex justify-between items-center">
+                <span className="text-sm text-gray-600 capitalize">
+                  {metric.replace(/([A-Z])/g, ' $1').trim()}
+                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="font-medium text-gray-900">{data.score}/10</span>
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    data.status === 'excellent' ? 'bg-green-100 text-green-800' :
+                    data.status === 'good' ? 'bg-blue-100 text-blue-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {data.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Issues */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Quality Issues</h3>
+        <div className="space-y-3">
+          {contentQualityData.recentIssues.map((issue) => (
+            <div key={issue.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className={`w-3 h-3 rounded-full ${
+                  issue.severity === 'high' ? 'bg-red-500' :
+                  issue.severity === 'medium' ? 'bg-yellow-500' :
+                  'bg-green-500'
+                }`}></div>
+                <div>
+                  <p className="font-medium text-gray-900">{issue.content}</p>
+                  <p className="text-sm text-gray-600 capitalize">{issue.type} issue</p>
+                </div>
+              </div>
+              <span className={`px-2 py-1 text-xs rounded-full ${
+                issue.status === 'fixed' ? 'bg-green-100 text-green-800' :
+                issue.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-red-100 text-red-800'
+              }`}>
+                {issue.status.replace('_', ' ')}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStrategicRelevance = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Content Relevance to Strategic Plan</h2>
+          <p className="text-gray-600 mt-1">Analysis of how well content aligns with strategic objectives</p>
+        </div>
+        <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+          <PlusIcon className="h-5 w-5" />
+          Update Strategic Goals
+        </button>
+      </div>
+
+      {/* Strategic Alignment Scorecard */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Overall Alignment</p>
+              <p className="text-2xl font-bold text-gray-900">{strategicRelevanceData.overallAlignment}/10</p>
+            </div>
+            <div className="p-3 bg-green-100 rounded-lg">
+              <TagIcon className="h-6 w-6 text-green-600" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
+            <span className="text-green-600">+0.5 from last quarter</span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Highly Relevant</p>
+              <p className="text-2xl font-bold text-gray-900">{strategicRelevanceData.contentAlignment.highlyRelevant.percentage}%</p>
+            </div>
+            <div className="p-3 bg-blue-100 rounded-lg">
+              <CheckCircleIcon className="h-6 w-6 text-blue-600" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <span className="text-gray-600">{strategicRelevanceData.contentAlignment.highlyRelevant.count} pieces</span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Strategic Gaps</p>
+              <p className="text-2xl font-bold text-gray-900">{strategicRelevanceData.gaps.length}</p>
+            </div>
+            <div className="p-3 bg-yellow-100 rounded-lg">
+              <ExclamationTriangleIcon className="h-6 w-6 text-yellow-600" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <span className="text-gray-600">Identified areas</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Strategic Goals Alignment */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Strategic Goals Alignment</h3>
+        <div className="space-y-4">
+          {strategicRelevanceData.strategicGoals.map((goal) => (
+            <div key={goal.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className={`w-3 h-3 rounded-full ${
+                  goal.priority === 'high' ? 'bg-red-500' :
+                  goal.priority === 'medium' ? 'bg-yellow-500' :
+                  'bg-green-500'
+                }`}></div>
+                <div>
+                  <p className="font-medium text-gray-900">{goal.name}</p>
+                  <p className="text-sm text-gray-600">{goal.contentCount} content pieces</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="font-bold text-gray-900">{goal.alignment}/10</span>
+                <p className="text-sm text-gray-600 capitalize">{goal.priority} priority</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Content Distribution */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Content Relevance Distribution</h3>
+          <div className="space-y-4">
+            {Object.entries(strategicRelevanceData.contentAlignment).map(([level, data]) => (
+              <div key={level} className="flex justify-between items-center">
+                <span className="text-sm text-gray-600 capitalize">
+                  {level.replace(/([A-Z])/g, ' $1').trim()}
+                </span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-32 bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full" 
+                      style={{ width: `${data.percentage}%` }}
+                    ></div>
+                  </div>
+                  <span className="font-medium text-gray-900">{data.percentage}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Strategic Gaps</h3>
+          <div className="space-y-3">
+            {strategicRelevanceData.gaps.map((gap, index) => (
+              <div key={index} className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                <div className="flex items-start space-x-2">
+                  <ExclamationTriangleIcon className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-gray-900">{gap.goal}</p>
+                    <p className="text-sm text-gray-600">{gap.gap}</p>
+                    <span className={`inline-block mt-1 px-2 py-1 text-xs rounded-full ${
+                      gap.impact === 'high' ? 'bg-red-100 text-red-800' :
+                      gap.impact === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-green-100 text-green-800'
+                    }`}>
+                      {gap.impact} impact
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Strategic Recommendations */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Strategic Content Recommendations</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {strategicRelevanceData.recommendations.map((rec, index) => (
+            <div key={index} className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <TagIcon className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-gray-900">{rec}</p>
+                <p className="text-xs text-gray-600 mt-1">Strategic alignment improvement</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderRecommendations = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -766,6 +1135,8 @@ export default function PerformanceAuditsPage() {
         {activeTab === "overview" && renderOverview()}
         {activeTab === "reports" && renderAuditReports()}
         {activeTab === "competitors" && renderCompetitorAnalysis()}
+        {activeTab === "content-quality" && renderContentQualityReport()}
+        {activeTab === "strategic-relevance" && renderStrategicRelevance()}
         {activeTab === "recommendations" && renderRecommendations()}
       </div>
     </div>
