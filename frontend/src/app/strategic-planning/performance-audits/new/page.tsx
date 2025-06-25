@@ -154,6 +154,8 @@ export default function NewAuditPage() {
   const [auditName, setAuditName] = useState("");
   const [step, setStep] = useState(1);
   const [activeTab, setActiveTab] = useState<string>("");
+  const [showBrandingForm, setShowBrandingForm] = useState(true);
+  const [showContentStrategyForm, setShowContentStrategyForm] = useState(false);
 
   const selectedAudits = auditTypes.filter(type => selectedAuditTypes.includes(type.id));
 
@@ -318,8 +320,8 @@ export default function NewAuditPage() {
         {step === 2 && (
           <div className="space-y-4">
             <div>
-              <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-1">Select Platforms</h2>
-              <p className="text-gray-600 text-sm">Choose platforms for each audit type</p>
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-1">Select Platforms & Forms</h2>
+              <p className="text-gray-600 text-sm">Choose platforms and complete audit forms</p>
             </div>
 
             {/* Tabs for selected audit types */}
@@ -348,10 +350,422 @@ export default function NewAuditPage() {
               </div>
             )}
 
-            {/* Platform selection for active tab */}
+            {/* Content for active tab */}
             <div className="space-y-4">
               {(() => {
                 const currentAuditType = activeTab || selectedAuditTypes[0];
+                
+                // Show branding form for comprehensive audit
+                if (currentAuditType === "comprehensive") {
+                  return (
+                    <div className="space-y-6">
+                      {/* Collapsible Branding Audit Form */}
+                      <div className="bg-purple-50 border border-purple-200 rounded-lg">
+                        <button
+                          type="button"
+                          className="w-full flex items-center justify-between px-4 py-3 focus:outline-none"
+                          onClick={() => setShowBrandingForm((prev) => !prev)}
+                        >
+                          <span className="flex items-center">
+                            <TagIcon className="h-6 w-6 text-purple-600 mr-2" />
+                            <span className="text-lg font-semibold text-purple-900">Branding Audit Form</span>
+                          </span>
+                          <span className="text-purple-700">{showBrandingForm ? "▲" : "▼"}</span>
+                        </button>
+                        {showBrandingForm && (
+                          <div className="p-4 md:p-6 pt-0">
+                            <p className="text-sm text-purple-700 mb-4">
+                              Complete this form during your client office investigation to assess branding across all touchpoints.
+                            </p>
+                            {/* Brand Strategy Section */}
+                            <div className="bg-white rounded-lg p-4 border border-purple-100 mb-6">
+                              <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                                <TagIcon className="h-5 w-5 mr-2 text-purple-600" />
+                                Brand Strategy
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Unique Sales Propositions
+                                  </label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                                    placeholder="What makes this brand unique in the market?"
+                                  ></textarea>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Target Audience
+                                  </label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                                    placeholder="Describe the ideal customer or audience."
+                                  ></textarea>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Brand Persona
+                                  </label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                                    placeholder="Describe the brand&#39;s personality, tone, and style."
+                                  ></textarea>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Brand Archetype
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select archetype</option>
+                                    <option value="innocent">Innocent</option>
+                                    <option value="everyman">Everyman</option>
+                                    <option value="hero">Hero</option>
+                                    <option value="outlaw">Outlaw</option>
+                                    <option value="explorer">Explorer</option>
+                                    <option value="creator">Creator</option>
+                                    <option value="ruler">Ruler</option>
+                                    <option value="magician">Magician</option>
+                                    <option value="lover">Lover</option>
+                                    <option value="caregiver">Caregiver</option>
+                                    <option value="jester">Jester</option>
+                                    <option value="sage">Sage</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Branding Documentation Section */}
+                            <div className="bg-white rounded-lg p-4 border border-purple-100">
+                              <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                                <DocumentTextIcon className="h-5 w-5 mr-2 text-purple-600" />
+                                Branding Documentation
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Brand Guidelines Available?
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="yes">Yes, comprehensive</option>
+                                    <option value="partial">Yes, but incomplete</option>
+                                    <option value="no">No, missing</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Logo Usage Guidelines
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="clear">Clear and documented</option>
+                                    <option value="unclear">Unclear guidelines</option>
+                                    <option value="none">No guidelines</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Color Palette Documentation
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="complete">Complete with codes</option>
+                                    <option value="partial">Partial documentation</option>
+                                    <option value="missing">Missing</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Typography Guidelines
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="defined">Well defined</option>
+                                    <option value="basic">Basic guidelines</option>
+                                    <option value="none">No guidelines</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Additional Documentation Notes
+                                </label>
+                                <textarea 
+                                  rows={3}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                                  placeholder="Notes about brand documentation, style guides, etc."
+                                ></textarea>
+                              </div>
+                            </div>
+
+                            {/* Internal Branding Section */}
+                            <div className="bg-white rounded-lg p-4 border border-purple-100">
+                              <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                                <UserGroupIcon className="h-5 w-5 mr-2 text-purple-600" />
+                                Internal Branding
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Office Environment Branding
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="excellent">Excellent - Consistent throughout</option>
+                                    <option value="good">Good - Mostly consistent</option>
+                                    <option value="fair">Fair - Some inconsistencies</option>
+                                    <option value="poor">Poor - Inconsistent</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Employee Brand Awareness
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="high">High - Employees understand brand</option>
+                                    <option value="medium">Medium - Some understanding</option>
+                                    <option value="low">Low - Limited understanding</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Internal Communications
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="branded">Well branded</option>
+                                    <option value="partial">Partially branded</option>
+                                    <option value="generic">Generic</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Brand Training Programs
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="regular">Regular training</option>
+                                    <option value="occasional">Occasional training</option>
+                                    <option value="none">No training</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Internal Branding Observations
+                                </label>
+                                <textarea 
+                                  rows={3}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                                  placeholder="Observations about office branding, employee interactions, internal materials, etc."
+                                ></textarea>
+                              </div>
+                            </div>
+
+                            {/* External Branding Section */}
+                            <div className="bg-white rounded-lg p-4 border border-purple-100">
+                              <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                                <GlobeAltIcon className="h-5 w-5 mr-2 text-purple-600" />
+                                External Branding
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Website Brand Consistency
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="excellent">Excellent - Fully consistent</option>
+                                    <option value="good">Good - Mostly consistent</option>
+                                    <option value="fair">Fair - Some inconsistencies</option>
+                                    <option value="poor">Poor - Inconsistent</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Social Media Branding
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="consistent">Consistent across platforms</option>
+                                    <option value="mixed">Mixed consistency</option>
+                                    <option value="inconsistent">Inconsistent</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Marketing Materials
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="branded">Well branded</option>
+                                    <option value="partial">Partially branded</option>
+                                    <option value="generic">Generic</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Customer Touchpoints
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select option</option>
+                                    <option value="consistent">Consistent experience</option>
+                                    <option value="mixed">Mixed experience</option>
+                                    <option value="inconsistent">Inconsistent experience</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  External Branding Observations
+                                </label>
+                                <textarea 
+                                  rows={3}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                                  placeholder="Observations about external communications, customer-facing materials, online presence, etc."
+                                ></textarea>
+                              </div>
+                            </div>
+
+                            {/* Overall Brand Assessment */}
+                            <div className="bg-white rounded-lg p-4 border border-purple-100">
+                              <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                                <MagnifyingGlassIcon className="h-5 w-5 mr-2 text-purple-600" />
+                                Overall Brand Assessment
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Brand Strength Score (1-10)
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select score</option>
+                                    {[1,2,3,4,5,6,7,8,9,10].map(score => (
+                                      <option key={score} value={score}>{score} - {score <= 3 ? 'Weak' : score <= 6 ? 'Fair' : score <= 8 ? 'Good' : 'Excellent'}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Priority Areas for Improvement
+                                  </label>
+                                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+                                    <option value="">Select priority</option>
+                                    <option value="documentation">Brand Documentation</option>
+                                    <option value="internal">Internal Branding</option>
+                                    <option value="external">External Branding</option>
+                                    <option value="training">Employee Training</option>
+                                    <option value="consistency">Brand Consistency</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Key Recommendations
+                                </label>
+                                <textarea 
+                                  rows={3}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                                  placeholder="Key recommendations for brand improvement based on your investigation..."
+                                ></textarea>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Collapsible Content Strategy Form */}
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg">
+                        <button
+                          type="button"
+                          className="w-full flex items-center justify-between px-4 py-3 focus:outline-none"
+                          onClick={() => setShowContentStrategyForm((prev) => !prev)}
+                        >
+                          <span className="flex items-center">
+                            <DocumentTextIcon className="h-6 w-6 text-blue-600 mr-2" />
+                            <span className="text-lg font-semibold text-blue-900">Content Strategy & Quality Form</span>
+                          </span>
+                          <span className="text-blue-700">{showContentStrategyForm ? "▲" : "▼"}</span>
+                        </button>
+                        {showContentStrategyForm && (
+                          <div className="p-4 md:p-6 pt-0">
+                            <p className="text-sm text-blue-700 mb-4">
+                              Investigate the client's content strategy, planning, and content quality.
+                            </p>
+                            <div className="space-y-6">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Content Strategy Overview
+                                </label>
+                                <textarea
+                                  rows={3}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  placeholder="Describe the overall content strategy, goals, and planning."
+                                ></textarea>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Content Calendar & Planning
+                                </label>
+                                <textarea
+                                  rows={2}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  placeholder="How is content planned, scheduled, and managed?"
+                                ></textarea>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Content Quality Assessment
+                                </label>
+                                <textarea
+                                  rows={2}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  placeholder="Evaluate the quality, consistency, and relevance of content."
+                                ></textarea>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Content Distribution Channels
+                                </label>
+                                <textarea
+                                  rows={2}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  placeholder="List and assess the main channels used for content distribution."
+                                ></textarea>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Content Performance Metrics
+                                </label>
+                                <textarea
+                                  rows={2}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  placeholder="What metrics are tracked? How is performance measured?"
+                                ></textarea>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Recommendations for Content Improvement
+                                </label>
+                                <textarea
+                                  rows={2}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  placeholder="List actionable recommendations for improving content strategy and quality."
+                                ></textarea>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+                
+                // Show platform selection for other audit types
                 const platforms = platformOptions[currentAuditType as keyof typeof platformOptions] || [];
                 
                 return (
