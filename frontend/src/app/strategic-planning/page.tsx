@@ -15,6 +15,7 @@ import {
   PencilIcon,
   ArrowUpIcon,
   ClockIcon,
+  FunnelIcon,
 } from "@heroicons/react/24/outline";
 import clientsData from "@/data/clients.json";
 import projectsData from "@/data/projects.json";
@@ -170,45 +171,54 @@ export default function StrategicPlanningPage() {
   const [selectedClientId, setSelectedClientId] = useState<string>("");
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
 
-  // Load clients and projects
   const clients: Client[] = clientsData;
   const allProjects: Project[] = projectsData.projects;
   const selectedClient = clients.find((c) => c.id === selectedClientId);
-  const clientProjects = selectedClient ? allProjects.filter((p) => p.client_id === selectedClient.id) : [];
-  const selectedProject = clientProjects.find((p) => p.id === selectedProjectId);
+  const clientProjects = selectedClient ? allProjects.filter((p) => p.client_id === selectedClient.id) : allProjects;
+  const selectedProject = selectedProjectId ? allProjects.find((p) => p.id === selectedProjectId) : undefined;
 
-  // UI for selecting client and project
-  const renderSelectors = () => (
-    <div className="flex flex-col md:flex-row gap-4 mb-8">
+  // Modern filter UI in header
+  const renderHeaderWithFilters = () => (
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Select Client</label>
+        <h1 className="text-2xl font-bold text-gray-900">Strategic Planning</h1>
+        <p className="text-gray-500 mt-1">Digital marketing strategy and campaign management</p>
+      </div>
+      <div className="flex gap-2 items-center bg-white rounded-lg shadow-sm px-4 py-2 border border-gray-200">
+        <FunnelIcon className="h-4 w-4 text-gray-400" />
         <select
-          className="block w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="block w-44 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 transition"
           value={selectedClientId}
           onChange={e => {
             setSelectedClientId(e.target.value);
-            setSelectedProjectId(""); // Reset project when client changes
+            setSelectedProjectId("");
           }}
         >
-          <option value="">-- Choose Client --</option>
+          <option value="">All Clients</option>
           {clients.map((client) => (
             <option key={client.id} value={client.id}>{client.client_name}</option>
           ))}
         </select>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Select Project</label>
         <select
-          className="block w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="block w-44 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 transition"
           value={selectedProjectId}
           onChange={e => setSelectedProjectId(e.target.value)}
-          disabled={!selectedClientId}
+          disabled={clientProjects.length === 0}
         >
-          <option value="">-- Choose Project --</option>
+          <option value="">All Projects</option>
           {clientProjects.map((project) => (
             <option key={project.id} value={project.id}>{project.name}</option>
           ))}
         </select>
+        {(selectedClientId || selectedProjectId) && (
+          <button
+            className="ml-2 px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-200 transition"
+            onClick={() => { setSelectedClientId(""); setSelectedProjectId(""); }}
+            title="Clear filters"
+          >
+            Clear
+          </button>
+        )}
       </div>
     </div>
   );
@@ -409,7 +419,7 @@ export default function StrategicPlanningPage() {
                 )}
               </div>
               
-              <div className="flex space-x-2">
+              <div className="flex gap-2">
                 <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
                   <EyeIcon className="h-4 w-4" />
                 </button>
@@ -428,90 +438,71 @@ export default function StrategicPlanningPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Performance Audits</h2>
-          <p className="text-gray-600 mt-1">Review and analyze marketing performance</p>
+          <h2 className="text-xl font-semibold text-gray-900">Marketing Audit</h2>
+          <p className="text-gray-600 mt-1">Comprehensive analysis of your marketing performance</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
           <PlusIcon className="h-5 w-5" />
           New Audit
         </button>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="font-semibold text-gray-900">Q3 Marketing Performance Audit</h3>
-            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor("completed")}`}>
-              COMPLETED
-            </span>
-          </div>
-          
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">SEO Performance</h3>
           <div className="space-y-4">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Date</span>
-              <span className="font-medium">10/15/2024</span>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Organic Traffic</span>
+              <span className="font-medium text-green-600">+23%</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Auditor</span>
-              <span className="font-medium">Marketing Analytics Team</span>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Keyword Rankings</span>
+              <span className="font-medium text-blue-600">+15</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Score</span>
-              <span className="font-medium">8.7/10</span>
-            </div>
-            
-            <div className="border-t pt-4">
-              <h4 className="font-medium text-gray-700 mb-2">Key Insights</h4>
-              <ul className="space-y-1">
-                <li className="text-sm text-gray-600 flex items-start">
-                  <CheckCircleIcon className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  Social media engagement increased by 35%
-                </li>
-                <li className="text-sm text-gray-600 flex items-start">
-                  <CheckCircleIcon className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  Email campaigns performing above industry average
-                </li>
-              </ul>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Backlinks</span>
+              <span className="font-medium text-purple-600">+8%</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="font-semibold text-gray-900">Competitor Analysis Report</h3>
-            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor("in_progress")}`}>
-              IN PROGRESS
-            </span>
-          </div>
-          
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Social Media Metrics</h3>
           <div className="space-y-4">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Date</span>
-              <span className="font-medium">10/10/2024</span>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Engagement Rate</span>
+              <span className="font-medium text-green-600">4.2%</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Auditor</span>
-              <span className="font-medium">Competitive Intelligence</span>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Follower Growth</span>
+              <span className="font-medium text-blue-600">+12%</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Score</span>
-              <span className="font-medium">7.2/10</span>
-            </div>
-            
-            <div className="border-t pt-4">
-              <h4 className="font-medium text-gray-700 mb-2">Key Insights</h4>
-              <ul className="space-y-1">
-                <li className="text-sm text-gray-600 flex items-start">
-                  <CheckCircleIcon className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  Competitors are investing heavily in video content
-                </li>
-                <li className="text-sm text-gray-600 flex items-start">
-                  <CheckCircleIcon className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  Gap identified in influencer marketing strategy
-                </li>
-              </ul>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Reach</span>
+              <span className="font-medium text-purple-600">+18%</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Audit Reports</h3>
+        <div className="space-y-4">
+          {[
+            { title: "Q4 2024 Marketing Audit", date: "2024-12-15", status: "completed" },
+            { title: "Website Performance Review", date: "2024-11-30", status: "in_progress" },
+            { title: "Social Media Strategy Analysis", date: "2024-11-15", status: "completed" }
+          ].map((audit, index) => (
+            <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <p className="font-medium text-gray-900">{audit.title}</p>
+                <p className="text-sm text-gray-600">{new Date(audit.date).toLocaleDateString()}</p>
+              </div>
+              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(audit.status)}`}>
+                {audit.status.toUpperCase()}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -521,138 +512,99 @@ export default function StrategicPlanningPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Strategic Goals</h2>
-          <p className="text-gray-600 mt-1">Track progress towards strategic objectives</p>
+          <h2 className="text-xl font-semibold text-gray-900">Strategic Planning</h2>
+          <p className="text-gray-600 mt-1">Define and track your marketing strategy goals</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
           <PlusIcon className="h-5 w-5" />
-          New Goal
+          New Strategy
         </button>
       </div>
-      
-      <div className="space-y-6">
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h3 className="font-semibold text-gray-900 text-lg">Brand Awareness Campaign</h3>
-              <p className="text-gray-600 mt-1">Phase 1: Foundation • Q1 2024</p>
-            </div>
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor("completed")}`}>
-              COMPLETED
-            </span>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-medium text-gray-700 mb-3">KPIs & Progress</h4>
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Brand Mentions</span>
-                    <span className="font-medium">450 / 500 mentions</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: "90%" }}></div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Social Reach</span>
-                    <span className="font-medium">85,000 / 100,000 reach</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: "85%" }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-gray-700 mb-3">Tasks & Budget</h4>
-              <div className="space-y-3">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Short-term Goals</h3>
+          <div className="space-y-3">
+            {[
+              { goal: "Increase website traffic by 25%", progress: 60 },
+              { goal: "Launch email automation", progress: 100 },
+              { goal: "Optimize landing pages", progress: 80 }
+            ].map((item, index) => (
+              <div key={index} className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Budget</span>
-                  <span className="font-medium">$15,000</span>
+                  <span className="text-gray-700">{item.goal}</span>
+                  <span className="font-medium">{item.progress}%</span>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-gray-600">Brand guidelines development</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-gray-600">Social media presence establishment</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-gray-600">Content calendar creation</span>
-                  </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-green-500 h-2 rounded-full" style={{ width: `${item.progress}%` }}></div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h3 className="font-semibold text-gray-900 text-lg">Lead Generation Strategy</h3>
-              <p className="text-gray-600 mt-1">Phase 2: Growth • Q2-Q3 2024</p>
-            </div>
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor("active")}`}>
-              ACTIVE
-            </span>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-medium text-gray-700 mb-3">KPIs & Progress</h4>
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Monthly Leads</span>
-                    <span className="font-medium">180 / 250 leads</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: "72%" }}></div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Conversion Rate</span>
-                    <span className="font-medium">3.2 / 4.0 %</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: "80%" }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-gray-700 mb-3">Tasks & Budget</h4>
-              <div className="space-y-3">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Medium-term Goals</h3>
+          <div className="space-y-3">
+            {[
+              { goal: "Build brand awareness", progress: 45 },
+              { goal: "Increase conversion rate", progress: 30 },
+              { goal: "Expand to new markets", progress: 20 }
+            ].map((item, index) => (
+              <div key={index} className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Budget</span>
-                  <span className="font-medium">$25,000</span>
+                  <span className="text-gray-700">{item.goal}</span>
+                  <span className="font-medium">{item.progress}%</span>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-gray-600">Landing page optimization</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-gray-600">Lead magnet development</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-gray-600">Email automation setup</span>
-                  </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${item.progress}%` }}></div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Long-term Goals</h3>
+          <div className="space-y-3">
+            {[
+              { goal: "Market leadership", progress: 15 },
+              { goal: "Global expansion", progress: 10 },
+              { goal: "Revenue growth 3x", progress: 25 }
+            ].map((item, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-700">{item.goal}</span>
+                  <span className="font-medium">{item.progress}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${item.progress}%` }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Strategic Initiatives</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { title: "Content Marketing Strategy", description: "Develop comprehensive content plan", status: "active" },
+            { title: "Social Media Expansion", description: "Launch on new platforms", status: "planning" },
+            { title: "Influencer Partnerships", description: "Build relationships with key influencers", status: "active" },
+            { title: "Data Analytics Implementation", description: "Set up advanced tracking", status: "completed" }
+          ].map((initiative, index) => (
+            <div key={index} className="p-4 border border-gray-200 rounded-lg">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-medium text-gray-900">{initiative.title}</h4>
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(initiative.status)}`}>
+                  {initiative.status.toUpperCase()}
+                </span>
+              </div>
+              <p className="text-sm text-gray-600">{initiative.description}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -663,43 +615,64 @@ export default function StrategicPlanningPage() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">Team Management</h2>
-          <p className="text-gray-600 mt-1">Manage your marketing team and assignments</p>
+          <p className="text-gray-600 mt-1">Manage your marketing team and their responsibilities</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
           <PlusIcon className="h-5 w-5" />
           Add Member
         </button>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {marketingPlans.flatMap(plan => plan.team).filter((member, index, arr) => arr.indexOf(member) === index).map((member, index) => (
+        {[
+          { name: "Sarah Johnson", role: "Marketing Manager", avatar: "SJ", status: "online" },
+          { name: "Mike Chen", role: "SEO Specialist", avatar: "MC", status: "online" },
+          { name: "Emma Davis", role: "Content Creator", avatar: "ED", status: "away" },
+          { name: "Alex Rodriguez", role: "Social Media Manager", avatar: "AR", status: "offline" },
+          { name: "Lisa Wang", role: "Analytics Specialist", avatar: "LW", status: "online" },
+          { name: "David Wilson", role: "PPC Manager", avatar: "DW", status: "online" }
+        ].map((member, index) => (
           <div key={index} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-lg font-semibold text-blue-600">{member.split(' ').map(n => n[0]).join('')}</span>
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-gray-700">{member.avatar}</span>
+                </div>
+                <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+                  member.status === 'online' ? 'bg-green-400' : 
+                  member.status === 'away' ? 'bg-yellow-400' : 'bg-gray-400'
+                }`}></div>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">{member}</h3>
-                <p className="text-sm text-gray-600">Marketing Specialist</p>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Active Campaigns</span>
-                <span className="font-medium">{marketingPlans.filter(plan => plan.team.includes(member)).length}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Performance</span>
-                <span className="font-medium">8.5/10</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Availability</span>
-                <span className="font-medium text-green-600">Available</span>
+              <div className="flex-1">
+                <h3 className="font-medium text-gray-900">{member.name}</h3>
+                <p className="text-sm text-gray-600">{member.role}</p>
+                <p className="text-xs text-gray-500 capitalize">{member.status}</p>
               </div>
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Team Performance</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="text-center">
+            <p className="text-2xl font-bold text-green-600">95%</p>
+            <p className="text-sm text-gray-600">Task Completion</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-blue-600">4.8/5</p>
+            <p className="text-sm text-gray-600">Team Satisfaction</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-purple-600">+15%</p>
+            <p className="text-sm text-gray-600">Productivity</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-orange-600">8</p>
+            <p className="text-sm text-gray-600">Active Projects</p>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -709,63 +682,93 @@ export default function StrategicPlanningPage() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">Budget Management</h2>
-          <p className="text-gray-600 mt-1">Track and manage marketing budgets</p>
+          <p className="text-gray-600 mt-1">Track and manage your marketing budget</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
           <PlusIcon className="h-5 w-5" />
-          Add Budget
+          Add Budget Item
         </button>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget Overview</h3>
           <div className="space-y-4">
-            {marketingPlans.map((plan) => (
-              <div key={plan.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <div>
-                    <p className="font-medium text-gray-900">{plan.title}</p>
-                    <p className="text-sm text-gray-600">{plan.type} campaign</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium text-gray-900">${plan.spent.toLocaleString()} / ${plan.budget.toLocaleString()}</p>
-                  <p className="text-sm text-gray-600">{Math.round((plan.spent / plan.budget) * 100)}% used</p>
-                </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Total Budget</span>
+              <span className="font-medium text-gray-900">$125,000</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Spent</span>
+              <span className="font-medium text-red-600">$89,500</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Remaining</span>
+              <span className="font-medium text-green-600">$35,500</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-blue-600 h-2 rounded-full" style={{ width: '71.6%' }}></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget by Category</h3>
+          <div className="space-y-3">
+            {[
+              { category: "Paid Advertising", amount: 45000, percentage: 36 },
+              { category: "Content Creation", amount: 25000, percentage: 20 },
+              { category: "Tools & Software", amount: 15000, percentage: 12 },
+              { category: "Events & PR", amount: 20000, percentage: 16 },
+              { category: "Other", amount: 20000, percentage: 16 }
+            ].map((item, index) => (
+              <div key={index} className="flex justify-between items-center">
+                <span className="text-sm text-gray-700">{item.category}</span>
+                <span className="font-medium">${item.amount.toLocaleString()}</span>
               </div>
             ))}
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget Summary</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Total Budget</span>
-              <span className="font-semibold text-gray-900">${marketingPlans.reduce((sum, plan) => sum + plan.budget, 0).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Total Spent</span>
-              <span className="font-semibold text-gray-900">${marketingPlans.reduce((sum, plan) => sum + plan.spent, 0).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Remaining</span>
-              <span className="font-semibold text-green-600">${(marketingPlans.reduce((sum, plan) => sum + plan.budget, 0) - marketingPlans.reduce((sum, plan) => sum + plan.spent, 0)).toLocaleString()}</span>
-            </div>
-            <div className="pt-4 border-t">
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-blue-600 h-2 rounded-full" 
-                  style={{ width: `${(marketingPlans.reduce((sum, plan) => sum + plan.spent, 0) / marketingPlans.reduce((sum, plan) => sum + plan.budget, 0)) * 100}%` }}
-                ></div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Spending</h3>
+          <div className="space-y-3">
+            {[
+              { month: "Jan", spent: 8500 },
+              { month: "Feb", spent: 9200 },
+              { month: "Mar", spent: 7800 },
+              { month: "Apr", spent: 10500 },
+              { month: "May", spent: 8900 },
+              { month: "Jun", spent: 9500 }
+            ].map((item, index) => (
+              <div key={index} className="flex justify-between items-center">
+                <span className="text-sm text-gray-700">{item.month}</span>
+                <span className="font-medium">${item.spent.toLocaleString()}</span>
               </div>
-              <p className="text-sm text-gray-600 mt-2 text-center">
-                {Math.round((marketingPlans.reduce((sum, plan) => sum + plan.spent, 0) / marketingPlans.reduce((sum, plan) => sum + plan.budget, 0)) * 100)}% of budget used
-              </p>
-            </div>
+            ))}
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Transactions</h3>
+        <div className="space-y-4">
+          {[
+            { description: "Facebook Ads Campaign", amount: 2500, date: "2024-12-15", type: "expense" },
+            { description: "Content Creation Services", amount: 1800, date: "2024-12-14", type: "expense" },
+            { description: "SEO Tools Subscription", amount: 500, date: "2024-12-13", type: "expense" },
+            { description: "Budget Allocation", amount: 10000, date: "2024-12-10", type: "income" }
+          ].map((transaction, index) => (
+            <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <p className="font-medium text-gray-900">{transaction.description}</p>
+                <p className="text-sm text-gray-600">{new Date(transaction.date).toLocaleDateString()}</p>
+              </div>
+              <span className={`font-medium ${transaction.type === 'expense' ? 'text-red-600' : 'text-green-600'}`}>
+                {transaction.type === 'expense' ? '-' : '+'}${transaction.amount.toLocaleString()}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -773,48 +776,37 @@ export default function StrategicPlanningPage() {
 
   return (
     <div className="p-4 md:p-8">
-      {renderSelectors()}
-      {selectedProject ? (
-        <div>
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Strategic Planning</h1>
-            <p className="text-gray-600 mt-2">Digital Marketing Planning & Management Platform</p>
-          </div>
-
-          {/* Tabs */}
-          <div className="border-b border-gray-200 mb-8">
-            <nav className="-mb-px flex space-x-8 overflow-x-auto">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  }`}
-                >
-                  <tab.icon className="h-5 w-5" />
-                  {tab.name}
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          {/* Tab Content */}
-          <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
-            {activeTab === "dashboard" && renderDashboard()}
-            {activeTab === "campaigns" && renderCampaigns()}
-            {activeTab === "audit" && renderAudit()}
-            {activeTab === "strategy" && renderStrategy()}
-            {activeTab === "team" && renderTeam()}
-            {activeTab === "budget" && renderBudget()}
-          </div>
+      {renderHeaderWithFilters()}
+      
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.name}
+            </button>
+          ))}
         </div>
-      ) : (
-        <div className="text-gray-500 mt-8">Please select a client and project to view strategic planning details.</div>
-      )}
+      </div>
+
+      {/* Content */}
+      <div>
+        {activeTab === "dashboard" && renderDashboard()}
+        {activeTab === "campaigns" && renderCampaigns()}
+        {activeTab === "audit" && renderAudit()}
+        {activeTab === "strategy" && renderStrategy()}
+        {activeTab === "team" && renderTeam()}
+        {activeTab === "budget" && renderBudget()}
+      </div>
     </div>
   );
 }
