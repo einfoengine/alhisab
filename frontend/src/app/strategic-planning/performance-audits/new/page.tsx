@@ -88,6 +88,14 @@ const auditTypes = [
     color: "teal"
   },
   {
+    id: "campaigns",
+    name: "Campaigns Audit",
+    description: "Analysis of marketing campaigns, objectives, and results",
+    icon: ChartBarIcon,
+    duration: "1-2 hours",
+    color: "teal"
+  },
+  {
     id: "internal",
     name: "Internal Audit",
     description: "Internal processes, compliance, and operational analysis",
