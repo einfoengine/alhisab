@@ -17,6 +17,8 @@ import {
   ClockIcon,
   DocumentTextIcon,
   UserGroupIcon,
+  ChartBarIcon,
+  MegaphoneIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
@@ -225,6 +227,48 @@ export default function NewAuditPage() {
   const [nonDigitalActivities, setNonDigitalActivities] = useState([
     { activityType: '', description: '', targetAudience: '', frequency: '', effectiveness: '', notes: '' }
   ]);
+
+  const [showOrganicForm, setShowOrganicForm] = useState(false);
+  const [organicActivities, setOrganicActivities] = useState([
+    { name: '', description: '', channel: '', frequency: '', effectiveness: '', notes: '' }
+  ]);
+  const handleOrganicChange = (idx: number, field: string, value: string) => {
+    setOrganicActivities((prev) => {
+      const copy = [...prev];
+      copy[idx] = { ...copy[idx], [field]: value };
+      return copy;
+    });
+  };
+  const addOrganicActivity = () => {
+    setOrganicActivities((prev) => [
+      ...prev,
+      { name: '', description: '', channel: '', frequency: '', effectiveness: '', notes: '' }
+    ]);
+  };
+  const removeOrganicActivity = (idx: number) => {
+    setOrganicActivities((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const [showCampaignForm, setShowCampaignForm] = useState(false);
+  const [campaigns, setCampaigns] = useState([
+    { name: '', objective: '', channels: '', duration: '', budget: '', results: '', lessons: '' }
+  ]);
+  const handleCampaignChange = (idx: number, field: string, value: string) => {
+    setCampaigns((prev) => {
+      const copy = [...prev];
+      copy[idx] = { ...copy[idx], [field]: value };
+      return copy;
+    });
+  };
+  const addCampaign = () => {
+    setCampaigns((prev) => [
+      ...prev,
+      { name: '', objective: '', channels: '', duration: '', budget: '', results: '', lessons: '' }
+    ]);
+  };
+  const removeCampaign = (idx: number) => {
+    setCampaigns((prev) => prev.filter((_, i) => i !== idx));
+  };
 
   const selectedAudits = auditTypes.filter(type => selectedAuditTypes.includes(type.id));
 
@@ -1008,6 +1052,222 @@ export default function NewAuditPage() {
                               >
                                 <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                                 Add Activity
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Collapsible Other Activities for Organic Reach Form */}
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg mt-6">
+                        <button
+                          type="button"
+                          className="w-full flex items-center justify-between px-4 py-3 focus:outline-none"
+                          onClick={() => setShowOrganicForm((v) => !v)}
+                        >
+                          <span className="flex items-center">
+                            <MegaphoneIcon className="h-6 w-6 text-orange-600 mr-2" />
+                            <span className="text-lg font-semibold text-orange-900">Other Activities for Organic Reach</span>
+                          </span>
+                          <span className="text-orange-700">{showOrganicForm ? "▲" : "▼"}</span>
+                        </button>
+                        {showOrganicForm && (
+                          <div className="p-4 md:p-6 pt-0">
+                            {organicActivities.map((activity, idx) => (
+                              <div key={idx} className="bg-white rounded-lg shadow-sm border border-orange-100 p-4 mt-4 relative">
+                                {organicActivities.length > 1 && (
+                                  <button
+                                    type="button"
+                                    className="absolute top-3 right-3 text-red-500 hover:text-red-700"
+                                    onClick={() => removeOrganicActivity(idx)}
+                                    title="Remove activity"
+                                  >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                  </button>
+                                )}
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Activity Name</label>
+                                  <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-orange-200 rounded-md focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-sm"
+                                    placeholder="e.g. Community Building, SEO, Partnerships"
+                                    value={activity.name}
+                                    onChange={e => handleOrganicChange(idx, 'name', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-orange-200 rounded-md focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-sm"
+                                    placeholder="Describe the activity."
+                                    value={activity.description}
+                                    onChange={e => handleOrganicChange(idx, 'description', e.target.value)}
+                                  ></textarea>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Channel/Platform</label>
+                                  <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-orange-200 rounded-md focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-sm"
+                                    placeholder="e.g. Facebook Groups, Forums, Events"
+                                    value={activity.channel}
+                                    onChange={e => handleOrganicChange(idx, 'channel', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                                  <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-orange-200 rounded-md focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-sm"
+                                    placeholder="e.g. Weekly, Monthly, Ongoing"
+                                    value={activity.frequency}
+                                    onChange={e => handleOrganicChange(idx, 'frequency', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Effectiveness</label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-orange-200 rounded-md focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-sm"
+                                    placeholder="How effective is this activity? Any measurable outcomes?"
+                                    value={activity.effectiveness}
+                                    onChange={e => handleOrganicChange(idx, 'effectiveness', e.target.value)}
+                                  ></textarea>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Additional Notes</label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-orange-200 rounded-md focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-sm"
+                                    placeholder="Any other relevant information."
+                                    value={activity.notes}
+                                    onChange={e => handleOrganicChange(idx, 'notes', e.target.value)}
+                                  ></textarea>
+                                </div>
+                              </div>
+                            ))}
+                            <div className="flex justify-end pt-4">
+                              <button
+                                type="button"
+                                className="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded shadow font-semibold transition"
+                                onClick={addOrganicActivity}
+                              >
+                                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                                Add Activity
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Collapsible Campaigns Overview Form */}
+                      <div className="bg-teal-50 border border-teal-200 rounded-lg mt-6">
+                        <button
+                          type="button"
+                          className="w-full flex items-center justify-between px-4 py-3 focus:outline-none"
+                          onClick={() => setShowCampaignForm((v) => !v)}
+                        >
+                          <span className="flex items-center">
+                            <ChartBarIcon className="h-6 w-6 text-teal-600 mr-2" />
+                            <span className="text-lg font-semibold text-teal-900">Campaigns Overview</span>
+                          </span>
+                          <span className="text-teal-700">{showCampaignForm ? "▲" : "▼"}</span>
+                        </button>
+                        {showCampaignForm && (
+                          <div className="p-4 md:p-6 pt-0">
+                            {campaigns.map((campaign, idx) => (
+                              <div key={idx} className="bg-white rounded-lg shadow-sm border border-teal-100 p-4 mt-4 relative">
+                                {campaigns.length > 1 && (
+                                  <button
+                                    type="button"
+                                    className="absolute top-3 right-3 text-red-500 hover:text-red-700"
+                                    onClick={() => removeCampaign(idx)}
+                                    title="Remove campaign"
+                                  >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                  </button>
+                                )}
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Campaign Name</label>
+                                  <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-teal-200 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-teal-400 text-sm"
+                                    placeholder="e.g. Summer Sale, Brand Awareness Push"
+                                    value={campaign.name}
+                                    onChange={e => handleCampaignChange(idx, 'name', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Objective</label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-teal-200 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-teal-400 text-sm"
+                                    placeholder="What was the main goal of this campaign?"
+                                    value={campaign.objective}
+                                    onChange={e => handleCampaignChange(idx, 'objective', e.target.value)}
+                                  ></textarea>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Channels Used</label>
+                                  <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-teal-200 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-teal-400 text-sm"
+                                    placeholder="e.g. Facebook, Email, Events"
+                                    value={campaign.channels}
+                                    onChange={e => handleCampaignChange(idx, 'channels', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+                                  <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-teal-200 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-teal-400 text-sm"
+                                    placeholder="e.g. June 1 - July 15, 2024"
+                                    value={campaign.duration}
+                                    onChange={e => handleCampaignChange(idx, 'duration', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Budget</label>
+                                  <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-teal-200 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-teal-400 text-sm"
+                                    placeholder="e.g. $5,000"
+                                    value={campaign.budget}
+                                    onChange={e => handleCampaignChange(idx, 'budget', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Key Results</label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-teal-200 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-teal-400 text-sm"
+                                    placeholder="What were the main outcomes?"
+                                    value={campaign.results}
+                                    onChange={e => handleCampaignChange(idx, 'results', e.target.value)}
+                                  ></textarea>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Lessons Learned</label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-teal-200 rounded-md focus:ring-2 focus:ring-teal-400 focus:border-teal-400 text-sm"
+                                    placeholder="What did you learn from this campaign?"
+                                    value={campaign.lessons}
+                                    onChange={e => handleCampaignChange(idx, 'lessons', e.target.value)}
+                                  ></textarea>
+                                </div>
+                              </div>
+                            ))}
+                            <div className="flex justify-end pt-4">
+                              <button
+                                type="button"
+                                className="inline-flex items-center px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded shadow font-semibold transition"
+                                onClick={addCampaign}
+                              >
+                                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                                Add Campaign
                               </button>
                             </div>
                           </div>
