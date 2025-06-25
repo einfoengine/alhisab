@@ -148,6 +148,69 @@ const platformOptions = {
   ],
 };
 
+const CONTENT_DISTRIBUTION_CHANNELS = [
+  "Website",
+  "Blog",
+  "Email Newsletter",
+  "Facebook",
+  "Instagram",
+  "LinkedIn",
+  "YouTube",
+  "Twitter/X",
+  "TikTok",
+  "Podcast",
+  "SMS",
+  "Non-Digital/Offline Marketing",
+  "Other"
+];
+const CONTENT_TYPES = [
+  "Blog Posts",
+  "Case Studies",
+  "Whitepapers",
+  "Ebooks",
+  "Videos",
+  "Podcasts",
+  "Infographics",
+  "Social Media Posts",
+  "Webinars",
+  "Newsletters",
+  "Press Releases",
+  "Landing Pages",
+  "Other"
+];
+
+// Add icon mapping for channels and types
+const CHANNEL_ICONS: Record<string, React.ReactNode> = {
+  Website: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" stroke="currentColor" strokeWidth="2" /></svg>,
+  Blog: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M8 8h8M8 12h8M8 16h4" stroke="currentColor" strokeWidth="2" /></svg>,
+  'Email Newsletter': <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M3 7l9 6 9-6" stroke="currentColor" strokeWidth="2" /></svg>,
+  Facebook: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="2" /><path d="M15 8h-2c-.7 0-1 .3-1 1v2h3l-.3 2h-2.7v6h-2v-6H8v-2h2V9c0-1.2.7-2 2-2h2v2z" stroke="currentColor" strokeWidth="2" /></svg>,
+  Instagram: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="2" /><circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2" /><circle cx="17" cy="7" r="1.5" stroke="currentColor" strokeWidth="2" /></svg>,
+  LinkedIn: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="2" /><path d="M8 17v-6M8 7v.01M12 17v-3a2 2 0 1 1 4 0v3" stroke="currentColor" strokeWidth="2" /></svg>,
+  YouTube: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4" stroke="currentColor" strokeWidth="2" /><polygon points="10,9 16,12 10,15" stroke="currentColor" strokeWidth="2" fill="none" /></svg>,
+  'Twitter/X': <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4 20L20 4M4 4l16 16" stroke="currentColor" strokeWidth="2" /></svg>,
+  TikTok: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M15 8a3 3 0 0 0 3 3" stroke="currentColor" strokeWidth="2" /><circle cx="10" cy="14" r="3" stroke="currentColor" strokeWidth="2" /></svg>,
+  Podcast: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" /><path d="M12 15v2" stroke="currentColor" strokeWidth="2" /></svg>,
+  SMS: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M2 7l10 6 10-6" stroke="currentColor" strokeWidth="2" /></svg>,
+  Other: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M12 8v4l3 3" stroke="currentColor" strokeWidth="2" /></svg>,
+  'Non-Digital/Offline Marketing': <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8" stroke="currentColor" strokeWidth="2" /><path d="M7 20h10" stroke="currentColor" strokeWidth="2" /></svg>
+};
+const TYPE_ICONS: Record<string, React.ReactNode> = {
+  'Blog Posts': <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M8 8h8M8 12h8M8 16h4" stroke="currentColor" strokeWidth="2" /></svg>,
+  'Case Studies': <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M7 9h10M7 13h6" stroke="currentColor" strokeWidth="2" /></svg>,
+  Whitepapers: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M8 8h8M8 12h8M8 16h4" stroke="currentColor" strokeWidth="2" /></svg>,
+  Ebooks: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M8 8h8M8 12h8M8 16h4" stroke="currentColor" strokeWidth="2" /></svg>,
+  Videos: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><polygon points="10,9 16,12 10,15" stroke="currentColor" strokeWidth="2" fill="none" /></svg>,
+  Podcasts: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" /><path d="M12 15v2" stroke="currentColor" strokeWidth="2" /></svg>,
+  Infographics: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M8 8h8M8 12h8M8 16h4" stroke="currentColor" strokeWidth="2" /></svg>,
+  'Social Media Posts': <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="2" /><path d="M15 8h-2c-.7 0-1 .3-1 1v2h3l-.3 2h-2.7v6h-2v-6H8v-2h2V9c0-1.2.7-2 2-2h2v2z" stroke="currentColor" strokeWidth="2" /></svg>,
+  Webinars: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M8 8h8M8 12h8M8 16h4" stroke="currentColor" strokeWidth="2" /></svg>,
+  Newsletters: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M3 7l9 6 9-6" stroke="currentColor" strokeWidth="2" /></svg>,
+  'Press Releases': <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M8 8h8M8 12h8M8 16h4" stroke="currentColor" strokeWidth="2" /></svg>,
+  'Landing Pages': <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M8 8h8M8 12h8M8 16h4" stroke="currentColor" strokeWidth="2" /></svg>,
+  Other: <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M12 8v4l3 3" stroke="currentColor" strokeWidth="2" /></svg>
+};
+
 export default function NewAuditPage() {
   const [selectedAuditTypes, setSelectedAuditTypes] = useState<string[]>([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -156,6 +219,12 @@ export default function NewAuditPage() {
   const [activeTab, setActiveTab] = useState<string>("");
   const [showBrandingForm, setShowBrandingForm] = useState(true);
   const [showContentStrategyForm, setShowContentStrategyForm] = useState(false);
+  const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
+  const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>([]);
+  const [showNonDigitalForm, setShowNonDigitalForm] = useState(false);
+  const [nonDigitalActivities, setNonDigitalActivities] = useState([
+    { activityType: '', description: '', targetAudience: '', frequency: '', effectiveness: '', notes: '' }
+  ]);
 
   const selectedAudits = auditTypes.filter(type => selectedAuditTypes.includes(type.id));
 
@@ -172,6 +241,21 @@ export default function NewAuditPage() {
       prev.includes(platformId) 
         ? prev.filter(id => id !== platformId)
         : [...prev, platformId]
+    );
+  };
+
+  const toggleChannel = (channel: string) => {
+    setSelectedChannels((prev) =>
+      prev.includes(channel)
+        ? prev.filter((c) => c !== channel)
+        : [...prev, channel]
+    );
+  };
+  const toggleContentType = (type: string) => {
+    setSelectedContentTypes((prev) =>
+      prev.includes(type)
+        ? prev.filter((t) => t !== type)
+        : [...prev, type]
     );
   };
 
@@ -219,6 +303,23 @@ export default function NewAuditPage() {
       const duration = audit.duration.split('-')[1]?.split(' ')[0] || '2';
       return total + parseInt(duration);
     }, 0);
+  };
+
+  const handleNonDigitalChange = (idx: number, field: string, value: string) => {
+    setNonDigitalActivities((prev) => {
+      const copy = [...prev];
+      copy[idx] = { ...copy[idx], [field]: value };
+      return copy;
+    });
+  };
+  const addNonDigitalActivity = () => {
+    setNonDigitalActivities((prev) => [
+      ...prev,
+      { activityType: '', description: '', targetAudience: '', frequency: '', effectiveness: '', notes: '' }
+    ]);
+  };
+  const removeNonDigitalActivity = (idx: number) => {
+    setNonDigitalActivities((prev) => prev.filter((_, i) => i !== idx));
   };
 
   return (
@@ -411,7 +512,7 @@ export default function NewAuditPage() {
                                   <textarea
                                     rows={2}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
-                                    placeholder="Describe the brand&#39;s personality, tone, and style."
+                                    placeholder="Describe the brand&apos;s personality, tone, and style."
                                   ></textarea>
                                 </div>
                                 <div>
@@ -678,23 +779,23 @@ export default function NewAuditPage() {
                         )}
                       </div>
 
-                      {/* Collapsible Content Strategy Form */}
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg">
+                      {/* Collapsible Content Strategy & Quality Form */}
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg mt-6">
                         <button
                           type="button"
                           className="w-full flex items-center justify-between px-4 py-3 focus:outline-none"
                           onClick={() => setShowContentStrategyForm((prev) => !prev)}
                         >
                           <span className="flex items-center">
-                            <DocumentTextIcon className="h-6 w-6 text-blue-600 mr-2" />
-                            <span className="text-lg font-semibold text-blue-900">Content Strategy & Quality Form</span>
+                            <DocumentTextIcon className="h-6 w-6 text-yellow-600 mr-2" />
+                            <span className="text-lg font-semibold text-yellow-900">Content Strategy & Quality Form</span>
                           </span>
-                          <span className="text-blue-700">{showContentStrategyForm ? "▲" : "▼"}</span>
+                          <span className="text-yellow-700">{showContentStrategyForm ? "▲" : "▼"}</span>
                         </button>
                         {showContentStrategyForm && (
                           <div className="p-4 md:p-6 pt-0">
-                            <p className="text-sm text-blue-700 mb-4">
-                              Investigate the client's content strategy, planning, and content quality.
+                            <p className="text-sm text-yellow-700 mb-4">
+                              Investigate the client&apos;s content strategy, planning, and content quality.
                             </p>
                             <div className="space-y-6">
                               <div>
@@ -703,7 +804,7 @@ export default function NewAuditPage() {
                                 </label>
                                 <textarea
                                   rows={3}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-sm"
                                   placeholder="Describe the overall content strategy, goals, and planning."
                                 ></textarea>
                               </div>
@@ -713,7 +814,7 @@ export default function NewAuditPage() {
                                 </label>
                                 <textarea
                                   rows={2}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-sm"
                                   placeholder="How is content planned, scheduled, and managed?"
                                 ></textarea>
                               </div>
@@ -723,7 +824,7 @@ export default function NewAuditPage() {
                                 </label>
                                 <textarea
                                   rows={2}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-sm"
                                   placeholder="Evaluate the quality, consistency, and relevance of content."
                                 ></textarea>
                               </div>
@@ -731,11 +832,59 @@ export default function NewAuditPage() {
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                   Content Distribution Channels
                                 </label>
-                                <textarea
-                                  rows={2}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                  placeholder="List and assess the main channels used for content distribution."
-                                ></textarea>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                  {CONTENT_DISTRIBUTION_CHANNELS.map((channel) => {
+                                    const selected = selectedChannels.includes(channel);
+                                    return (
+                                      <button
+                                        type="button"
+                                        key={channel}
+                                        onClick={() => toggleChannel(channel)}
+                                        className={`flex items-center justify-between px-3 py-2 rounded-lg border transition-all duration-150 text-sm font-medium shadow-sm focus:outline-none w-full
+                                          ${selected ? 'bg-yellow-100 border-yellow-600 text-yellow-800 ring-2 ring-yellow-200' : 'bg-white border-gray-300 text-gray-700 hover:bg-yellow-50'}`}
+                                      >
+                                        <span className="flex items-center">
+                                          {CHANNEL_ICONS[channel] || CHANNEL_ICONS['Other']}
+                                          {channel}
+                                        </span>
+                                        {selected && (
+                                          <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                          </svg>
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  Content Types
+                                </label>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                  {CONTENT_TYPES.map((type) => {
+                                    const selected = selectedContentTypes.includes(type);
+                                    return (
+                                      <button
+                                        type="button"
+                                        key={type}
+                                        onClick={() => toggleContentType(type)}
+                                        className={`flex items-center justify-between px-3 py-2 rounded-lg border transition-all duration-150 text-sm font-medium shadow-sm focus:outline-none w-full
+                                          ${selected ? 'bg-yellow-100 border-yellow-600 text-yellow-800 ring-2 ring-yellow-200' : 'bg-white border-gray-300 text-gray-700 hover:bg-yellow-50'}`}
+                                      >
+                                        <span className="flex items-center">
+                                          {TYPE_ICONS[type] || TYPE_ICONS['Other']}
+                                          {type}
+                                        </span>
+                                        {selected && (
+                                          <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                          </svg>
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
                               </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -743,7 +892,7 @@ export default function NewAuditPage() {
                                 </label>
                                 <textarea
                                   rows={2}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-sm"
                                   placeholder="What metrics are tracked? How is performance measured?"
                                 ></textarea>
                               </div>
@@ -753,10 +902,113 @@ export default function NewAuditPage() {
                                 </label>
                                 <textarea
                                   rows={2}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-sm"
                                   placeholder="List actionable recommendations for improving content strategy and quality."
                                 ></textarea>
                               </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Collapsible Non-Digital/Offline Marketing Activities Form */}
+                      <div className="bg-green-50 border border-green-200 rounded-lg mt-6">
+                        <button
+                          type="button"
+                          className="w-full flex items-center justify-between px-4 py-3 focus:outline-none"
+                          onClick={() => setShowNonDigitalForm((v) => !v)}
+                        >
+                          <span className="flex items-center">
+                            <svg className="h-6 w-6 text-green-600 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8" stroke="currentColor" strokeWidth="2" /><path d="M7 20h10" stroke="currentColor" strokeWidth="2" /></svg>
+                            <span className="text-lg font-semibold text-green-900">Non-Digital/Offline Marketing Activities</span>
+                          </span>
+                          <span className="text-green-700">{showNonDigitalForm ? "▲" : "▼"}</span>
+                        </button>
+                        {showNonDigitalForm && (
+                          <div className="p-4 md:p-6 pt-0">
+                            {nonDigitalActivities.map((activity, idx) => (
+                              <div key={idx} className="space-y-4 relative">
+                                {nonDigitalActivities.length > 1 && (
+                                  <button
+                                    type="button"
+                                    className="absolute top-0 right-0 text-red-500 hover:text-red-700"
+                                    onClick={() => removeNonDigitalActivity(idx)}
+                                    title="Remove activity"
+                                  >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                  </button>
+                                )}
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Activity Type</label>
+                                  <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm"
+                                    placeholder="e.g. Print Ads, Events, Billboards, Sponsorships"
+                                    value={activity.activityType}
+                                    onChange={e => handleNonDigitalChange(idx, 'activityType', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm"
+                                    placeholder="Describe the non-digital marketing activity."
+                                    value={activity.description}
+                                    onChange={e => handleNonDigitalChange(idx, 'description', e.target.value)}
+                                  ></textarea>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
+                                  <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm"
+                                    placeholder="Who is this activity aimed at?"
+                                    value={activity.targetAudience}
+                                    onChange={e => handleNonDigitalChange(idx, 'targetAudience', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                                  <input
+                                    type="text"
+                                    className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm"
+                                    placeholder="e.g. Monthly, Quarterly, Annually, One-off"
+                                    value={activity.frequency}
+                                    onChange={e => handleNonDigitalChange(idx, 'frequency', e.target.value)}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Effectiveness Assessment</label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm"
+                                    placeholder="How effective is this activity? Any measurable outcomes?"
+                                    value={activity.effectiveness}
+                                    onChange={e => handleNonDigitalChange(idx, 'effectiveness', e.target.value)}
+                                  ></textarea>
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">Additional Notes</label>
+                                  <textarea
+                                    rows={2}
+                                    className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm"
+                                    placeholder="Any other relevant information."
+                                    value={activity.notes}
+                                    onChange={e => handleNonDigitalChange(idx, 'notes', e.target.value)}
+                                  ></textarea>
+                                </div>
+                              </div>
+                            ))}
+                            <div className="flex justify-end pt-4">
+                              <button
+                                type="button"
+                                className="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded shadow font-semibold transition"
+                                onClick={addNonDigitalActivity}
+                              >
+                                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                                Add Activity
+                              </button>
                             </div>
                           </div>
                         )}
@@ -784,7 +1036,7 @@ export default function NewAuditPage() {
                             onClick={() => handlePlatformToggle(platform.id)}
                             className={`w-full p-3 rounded-lg border-2 transition-all duration-200 text-left ${
                               isSelected 
-                                ? 'border-blue-500 bg-blue-50' 
+                                ? 'border-green-500 bg-green-50' 
                                 : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50'
                             }`}
                           >
@@ -793,7 +1045,7 @@ export default function NewAuditPage() {
                                 <Icon className="h-4 w-4 md:h-5 md:w-5 text-gray-600 mr-2" />
                                 <span className="font-medium text-gray-900 text-sm">{platform.name}</span>
                               </div>
-                              {isSelected && <CheckCircleIcon className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />}
+                              {isSelected && <CheckCircleIcon className="h-4 w-4 md:h-5 md:w-5 text-green-600" />}
                             </div>
                           </button>
                         );
