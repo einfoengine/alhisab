@@ -40,7 +40,7 @@ const menuGroups = [
     name: 'Performance & Audit',
     icon: MagnifyingGlassCircleIcon,
     items: [
-      { name: 'Performance Audits', href: '/strategic-planning/audits', icon: MagnifyingGlassCircleIcon },
+      { name: 'Performance Audits', href: '/strategic-planning/performance-audits', icon: MagnifyingGlassCircleIcon },
       { name: 'Competitor Analysis', href: '/strategic-planning/competitor-analysis', icon: EyeIcon },
       { name: 'Analytics Reports', href: '/strategic-planning/analytics', icon: ChartBarIcon },
       { name: 'KPI Tracking', href: '/strategic-planning/kpis', icon: TagIcon },

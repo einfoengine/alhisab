@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  MagnifyingGlassCircleIcon,
   ChartBarIcon,
   DocumentTextIcon,
   EyeIcon,
@@ -17,10 +16,74 @@ import {
   CalendarIcon,
   UserGroupIcon,
   GlobeAltIcon,
-  DevicePhoneMobileIcon,
   ComputerDesktopIcon,
   FunnelIcon,
 } from "@heroicons/react/24/outline";
+import clientsData from "@/data/clients.json";
+import projectsData from "@/data/projects.json";
+
+// Add types for Client and Project
+interface Client {
+  id: string;
+  client_name: string;
+  company_names: string[];
+  status: string;
+  email: string;
+  address?: string;
+  phone: {
+    country_code: string;
+    number: string;
+    whatsapp: boolean;
+  };
+  preferred_contact_method: string;
+  alternate_contacts: Array<{
+    name: string;
+    relation: string;
+    email: string;
+    phone: {
+      country_code: string;
+      number: string;
+      whatsapp: boolean;
+    };
+  }>;
+  social_media: Record<string, string | null>;
+  country: {
+    name: string;
+    iso_code: string;
+    currency: string;
+    timezone: string;
+    language: string;
+    continent: string;
+    phone_code: string;
+    flag: string;
+  };
+  projects: Array<{ id: string; name: string }>;
+  notes?: string;
+  last_payment?: string | null;
+  dues?: number | null;
+  created?: string;
+  avatar?: string;
+}
+
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  client_id: string;
+  project_master: string;
+  project_type: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  key_deliverables: string[];
+  services: Array<{ id: string; discount: number }>;
+  packages: Array<{ id: string; discount: number }>;
+  payment_methods: string[];
+  payment_security: string;
+  agreement_number: string;
+  project_value: number;
+  milestones: Array<{ name: string; release_amount: number }>;
+}
 
 // Mock audit data
 const auditReports = [
@@ -181,8 +244,60 @@ const getChangeIcon = (change: number) => {
 };
 
 export default function PerformanceAuditsPage() {
-  const [selectedAudit, setSelectedAudit] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const [selectedClientId, setSelectedClientId] = useState<string>("");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+
+  const clients: Client[] = clientsData;
+  const allProjects: Project[] = projectsData.projects;
+  const selectedClient = clients.find((c) => c.id === selectedClientId);
+  const clientProjects = selectedClient ? allProjects.filter((p) => p.client_id === selectedClient.id) : allProjects;
+
+  // Modern filter UI in header
+  const renderHeaderWithFilters = () => (
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Performance Audits</h1>
+        <p className="text-gray-600 mt-1">Comprehensive analysis of your marketing performance and competitive landscape</p>
+      </div>
+      <div className="flex gap-2 items-center bg-white rounded-lg shadow-sm px-4 py-2 border border-gray-200">
+        <FunnelIcon className="h-4 w-4 text-gray-400" />
+        <select
+          className="block w-44 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 transition"
+          value={selectedClientId}
+          onChange={e => {
+            setSelectedClientId(e.target.value);
+            setSelectedProjectId("");
+          }}
+        >
+          <option value="">All Clients</option>
+          {clients.map((client) => (
+            <option key={client.id} value={client.id}>{client.client_name}</option>
+          ))}
+        </select>
+        <select
+          className="block w-44 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-700 bg-gray-50 hover:bg-gray-100 transition"
+          value={selectedProjectId}
+          onChange={e => setSelectedProjectId(e.target.value)}
+          disabled={clientProjects.length === 0}
+        >
+          <option value="">All Projects</option>
+          {clientProjects.map((project) => (
+            <option key={project.id} value={project.id}>{project.name}</option>
+          ))}
+        </select>
+        {(selectedClientId || selectedProjectId) && (
+          <button
+            className="ml-2 px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-200 transition"
+            onClick={() => { setSelectedClientId(""); setSelectedProjectId(""); }}
+            title="Clear filters"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+    </div>
+  );
 
   const tabs = [
     { id: "overview", name: "Overview", icon: ChartBarIcon },
@@ -624,12 +739,8 @@ export default function PerformanceAuditsPage() {
 
   return (
     <div className="p-4 md:p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Performance Audits</h1>
-        <p className="text-gray-600 mt-1">Comprehensive analysis of your marketing performance and competitive landscape</p>
-      </div>
-
+      {renderHeaderWithFilters()}
+      
       {/* Tab Navigation */}
       <div className="mb-8">
         <div className="flex flex-wrap gap-2">
