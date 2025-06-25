@@ -10,13 +10,13 @@ import {
   EnvelopeIcon,
   TagIcon,
   VideoCameraIcon,
-  DocumentTextIcon,
   BuildingStorefrontIcon,
   DevicePhoneMobileIcon,
   ComputerDesktopIcon,
   CheckCircleIcon,
   ClockIcon,
-  ExclamationTriangleIcon,
+  DocumentTextIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
@@ -77,6 +77,22 @@ const auditTypes = [
     duration: "1-2 hours",
     color: "pink"
   },
+  {
+    id: "content",
+    name: "Content Audit",
+    description: "Content quality, relevance, and performance analysis",
+    icon: DocumentTextIcon,
+    duration: "1-2 hours",
+    color: "teal"
+  },
+  {
+    id: "internal",
+    name: "Internal Audit",
+    description: "Internal processes, compliance, and operational analysis",
+    icon: UserGroupIcon,
+    duration: "2-3 hours",
+    color: "amber"
+  },
 ];
 
 const platformOptions = {
@@ -116,34 +132,37 @@ const platformOptions = {
     { id: "app_store", name: "App Store Connect", icon: DevicePhoneMobileIcon },
     { id: "firebase", name: "Firebase Analytics", icon: DevicePhoneMobileIcon },
   ],
+  content: [
+    { id: "content_calendar", name: "Content Calendar", icon: DocumentTextIcon },
+    { id: "cms", name: "CMS Analytics", icon: DocumentTextIcon },
+    { id: "social_content", name: "Social Content", icon: ChatBubbleLeftRightIcon },
+    { id: "blog_analytics", name: "Blog Analytics", icon: DocumentTextIcon },
+    { id: "video_analytics", name: "Video Analytics", icon: VideoCameraIcon },
+  ],
+  internal: [
+    { id: "process_docs", name: "Process Documentation", icon: DocumentTextIcon },
+    { id: "compliance_tools", name: "Compliance Tools", icon: UserGroupIcon },
+    { id: "team_performance", name: "Team Performance", icon: UserGroupIcon },
+    { id: "project_management", name: "Project Management", icon: UserGroupIcon },
+    { id: "quality_assurance", name: "Quality Assurance", icon: CheckCircleIcon },
+  ],
 };
 
 export default function NewAuditPage() {
-  const [selectedAuditType, setSelectedAuditType] = useState<string>("");
+  const [selectedAuditTypes, setSelectedAuditTypes] = useState<string[]>([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [auditName, setAuditName] = useState("");
   const [step, setStep] = useState(1);
+  const [activeTab, setActiveTab] = useState<string>("");
 
-  const selectedAudit = auditTypes.find(type => type.id === selectedAuditType);
+  const selectedAudits = auditTypes.filter(type => selectedAuditTypes.includes(type.id));
 
-  const handleAuditTypeSelect = (auditTypeId: string) => {
-    setSelectedAuditType(auditTypeId);
-    // Auto-select platforms based on audit type
-    if (auditTypeId === "comprehensive") {
-      setSelectedPlatforms(["google", "facebook", "mailchimp", "google_ads", "google_analytics"]);
-    } else if (auditTypeId === "seo") {
-      setSelectedPlatforms(["google", "bing", "semrush"]);
-    } else if (auditTypeId === "social") {
-      setSelectedPlatforms(["facebook", "instagram", "linkedin", "twitter"]);
-    } else if (auditTypeId === "email") {
-      setSelectedPlatforms(["mailchimp", "constant_contact"]);
-    } else if (auditTypeId === "ppc") {
-      setSelectedPlatforms(["google_ads", "facebook_ads"]);
-    } else if (auditTypeId === "website") {
-      setSelectedPlatforms(["google_analytics", "hotjar"]);
-    } else if (auditTypeId === "mobile") {
-      setSelectedPlatforms(["google_play", "app_store"]);
-    }
+  const handleAuditTypeToggle = (auditTypeId: string) => {
+    setSelectedAuditTypes(prev => 
+      prev.includes(auditTypeId) 
+        ? prev.filter(id => id !== auditTypeId)
+        : [...prev, auditTypeId]
+    );
   };
 
   const handlePlatformToggle = (platformId: string) => {
@@ -163,19 +182,27 @@ export default function NewAuditPage() {
       red: "bg-red-100 text-red-700 border-red-200",
       indigo: "bg-indigo-100 text-indigo-700 border-indigo-200",
       pink: "bg-pink-100 text-pink-700 border-pink-200",
+      teal: "bg-teal-100 text-teal-700 border-teal-200",
+      amber: "bg-amber-100 text-amber-700 border-amber-200",
     };
     return colorMap[color] || "bg-gray-100 text-gray-700 border-gray-200";
   };
 
   const canProceed = () => {
-    if (step === 1) return selectedAuditType !== "";
+    if (step === 1) return selectedAuditTypes.length > 0;
     if (step === 2) return selectedPlatforms.length > 0;
     if (step === 3) return auditName.trim() !== "";
     return false;
   };
 
   const handleNext = () => {
-    if (canProceed()) setStep(step + 1);
+    if (canProceed()) {
+      setStep(step + 1);
+      // Set the first selected audit type as the active tab
+      if (step === 1 && selectedAuditTypes.length > 0) {
+        setActiveTab(selectedAuditTypes[0]);
+      }
+    }
   };
 
   const handleBack = () => setStep(step - 1);
@@ -185,10 +212,17 @@ export default function NewAuditPage() {
     window.location.href = "/strategic-planning/performance-audits";
   };
 
+  const getTotalDuration = () => {
+    return selectedAudits.reduce((total, audit) => {
+      const duration = audit.duration.split('-')[1]?.split(' ')[0] || '2';
+      return total + parseInt(duration);
+    }, 0);
+  };
+
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto">
+    <div className="p-3 md:p-4 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-4">
         <Link
           href="/strategic-planning/performance-audits"
           className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
@@ -197,17 +231,17 @@ export default function NewAuditPage() {
           Back to Audits
         </Link>
         <div className="text-right">
-          <h1 className="text-2xl font-bold text-gray-900">Create New Audit</h1>
-          <p className="text-gray-600">Step {step} of 3</p>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Create New Audit</h1>
+          <p className="text-gray-600 text-sm">Step {step} of 3</p>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-8">
+      <div className="mb-4">
         <div className="flex items-center space-x-2">
           {[1, 2, 3].map((stepNumber) => (
             <div key={stepNumber} className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+              <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm font-medium ${
                 stepNumber <= step 
                   ? 'bg-blue-600 text-white' 
                   : 'bg-gray-200 text-gray-600'
@@ -215,7 +249,7 @@ export default function NewAuditPage() {
                 {stepNumber}
               </div>
               {stepNumber < 3 && (
-                <div className={`w-16 h-1 mx-2 ${
+                <div className={`w-8 md:w-16 h-1 mx-1 md:mx-2 ${
                   stepNumber < step ? 'bg-blue-600' : 'bg-gray-200'
                 }`} />
               )}
@@ -225,93 +259,156 @@ export default function NewAuditPage() {
       </div>
 
       {/* Content */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+      <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6 shadow-sm">
         {step === 1 && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Choose Audit Type</h2>
-              <p className="text-gray-600">Select the type of audit you want to perform</p>
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-1">Choose Audit Types</h2>
+              <p className="text-gray-600 text-sm">Select one or more audit types to perform</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
               {auditTypes.map((auditType) => {
                 const Icon = auditType.icon;
-                const isSelected = selectedAuditType === auditType.id;
+                const isSelected = selectedAuditTypes.includes(auditType.id);
                 
                 return (
                   <button
                     key={auditType.id}
-                    onClick={() => handleAuditTypeSelect(auditType.id)}
-                    className={`p-6 rounded-xl border-2 transition-all duration-200 text-left ${
+                    onClick={() => handleAuditTypeToggle(auditType.id)}
+                    className={`p-3 md:p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                       isSelected 
                         ? `${getColorClasses(auditType.color)} border-current` 
                         : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50'
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-3">
-                      <Icon className={`h-8 w-8 ${isSelected ? 'text-current' : 'text-gray-600'}`} />
-                      {isSelected && <CheckCircleIcon className="h-6 w-6 text-current" />}
+                    <div className="flex items-center justify-between mb-2">
+                      <Icon className={`h-5 w-5 md:h-6 md:w-6 ${isSelected ? 'text-current' : 'text-gray-600'}`} />
+                      {isSelected && <CheckCircleIcon className="h-4 w-4 md:h-5 md:w-5 text-current" />}
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-2">{auditType.name}</h3>
-                    <p className="text-sm text-gray-600 mb-3">{auditType.description}</p>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <ClockIcon className="h-4 w-4 mr-1" />
+                    <h3 className="font-semibold text-gray-900 mb-1 text-xs md:text-sm">{auditType.name}</h3>
+                    <p className="text-xs text-gray-600 mb-2">{auditType.description}</p>
+                    <div className="flex items-center text-xs text-gray-500">
+                      <ClockIcon className="h-3 w-3 mr-1" />
                       {auditType.duration}
                     </div>
                   </button>
                 );
               })}
             </div>
+
+            {selectedAuditTypes.length > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4">
+                <h3 className="font-medium text-blue-900 mb-2 text-sm">Selected Audits ({selectedAuditTypes.length})</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedAudits.map((audit) => (
+                    <span key={audit.id} className={`px-2 py-1 rounded-full text-xs font-medium ${getColorClasses(audit.color)}`}>
+                      {audit.name}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-xs md:text-sm text-blue-700 mt-2">
+                  Estimated total duration: {getTotalDuration()} hours
+                </p>
+              </div>
+            )}
           </div>
         )}
 
         {step === 2 && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Select Platforms</h2>
-              <p className="text-gray-600">Choose which platforms to include in your audit</p>
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-1">Select Platforms</h2>
+              <p className="text-gray-600 text-sm">Choose platforms for each audit type</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(platformOptions).map(([category, platforms]) => (
-                <div key={category} className="space-y-3">
-                  <h3 className="text-lg font-medium text-gray-900 capitalize">
-                    {category === "seo" ? "SEO Platforms" :
-                     category === "social" ? "Social Media" :
-                     category === "email" ? "Email Marketing" :
-                     category === "ppc" ? "PPC Platforms" :
-                     category === "website" ? "Website Analytics" :
-                     category === "mobile" ? "Mobile Apps" : category}
-                  </h3>
-                  <div className="space-y-2">
-                    {platforms.map((platform) => {
-                      const Icon = platform.icon;
-                      const isSelected = selectedPlatforms.includes(platform.id);
-                      
-                      return (
-                        <button
-                          key={platform.id}
-                          onClick={() => handlePlatformToggle(platform.id)}
-                          className={`w-full p-3 rounded-lg border-2 transition-all duration-200 text-left ${
-                            isSelected 
-                              ? 'border-blue-500 bg-blue-50' 
-                              : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                              <Icon className="h-5 w-5 text-gray-600 mr-2" />
-                              <span className="font-medium text-gray-900">{platform.name}</span>
-                            </div>
-                            {isSelected && <CheckCircleIcon className="h-5 w-5 text-blue-600" />}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
+            {/* Tabs for selected audit types */}
+            {selectedAuditTypes.length > 1 && (
+              <div className="border-b border-gray-200">
+                <div className="flex space-x-1 overflow-x-auto pb-1">
+                  {selectedAuditTypes.map((auditTypeId) => {
+                    const audit = auditTypes.find(type => type.id === auditTypeId);
+                    const isActive = activeTab === auditTypeId;
+                    
+                    return (
+                      <button
+                        key={auditTypeId}
+                        onClick={() => setActiveTab(auditTypeId)}
+                        className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                          isActive 
+                            ? 'bg-white border border-gray-200 border-b-0 text-gray-900' 
+                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        {audit?.name}
+                      </button>
+                    );
+                  })}
                 </div>
-              ))}
+              </div>
+            )}
+
+            {/* Platform selection for active tab */}
+            <div className="space-y-4">
+              {(() => {
+                const currentAuditType = activeTab || selectedAuditTypes[0];
+                const platforms = platformOptions[currentAuditType as keyof typeof platformOptions] || [];
+                
+                return (
+                  <div>
+                    <h3 className="text-base md:text-lg font-medium text-gray-900 mb-3">
+                      {auditTypes.find(type => type.id === currentAuditType)?.name} Platforms
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                      {platforms.map((platform) => {
+                        const Icon = platform.icon;
+                        const isSelected = selectedPlatforms.includes(platform.id);
+                        
+                        return (
+                          <button
+                            key={platform.id}
+                            onClick={() => handlePlatformToggle(platform.id)}
+                            className={`w-full p-3 rounded-lg border-2 transition-all duration-200 text-left ${
+                              isSelected 
+                                ? 'border-blue-500 bg-blue-50' 
+                                : 'border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <Icon className="h-4 w-4 md:h-5 md:w-5 text-gray-600 mr-2" />
+                                <span className="font-medium text-gray-900 text-sm">{platform.name}</span>
+                              </div>
+                              {isSelected && <CheckCircleIcon className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
+
+            {selectedPlatforms.length > 0 && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 md:p-4">
+                <h3 className="font-medium text-green-900 mb-2 text-sm">Selected Platforms ({selectedPlatforms.length})</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedPlatforms.map((platformId) => {
+                    // Find platform name from all platform options
+                    const platformName = Object.values(platformOptions)
+                      .flat()
+                      .find(platform => platform.id === platformId)?.name;
+                    
+                    return (
+                      <span key={platformId} className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        {platformName}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -341,8 +438,8 @@ export default function NewAuditPage() {
                 <h3 className="font-medium text-gray-900 mb-3">Audit Summary</h3>
                 <div className="space-y-2 text-sm text-gray-600">
                   <div className="flex justify-between">
-                    <span>Audit Type:</span>
-                    <span className="font-medium">{selectedAudit?.name}</span>
+                    <span>Audit Types:</span>
+                    <span className="font-medium">{selectedAuditTypes.length} selected</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Platforms:</span>
@@ -350,7 +447,7 @@ export default function NewAuditPage() {
                   </div>
                   <div className="flex justify-between">
                     <span>Estimated Duration:</span>
-                    <span className="font-medium">{selectedAudit?.duration}</span>
+                    <span className="font-medium">{getTotalDuration()} hours</span>
                   </div>
                 </div>
               </div>
@@ -404,4 +501,4 @@ export default function NewAuditPage() {
       </div>
     </div>
   );
-} 
+}

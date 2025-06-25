@@ -41,10 +41,10 @@ const menuGroups = [
     icon: MagnifyingGlassCircleIcon,
     items: [
       { name: 'Performance Audits', href: '/strategic-planning/performance-audits', icon: MagnifyingGlassCircleIcon },
-      { name: 'New Audit', href: '/strategic-planning/performance-audits/new', icon: PlusIcon, isAction: true },
       { name: 'Competitor Analysis', href: '/strategic-planning/competitor-analysis', icon: EyeIcon },
       { name: 'Analytics Reports', href: '/strategic-planning/analytics', icon: ChartBarIcon },
       { name: 'KPI Tracking', href: '/strategic-planning/kpis', icon: TagIcon },
+      { name: 'New Audit', href: '/strategic-planning/performance-audits/new', icon: PlusIcon, isAction: true },
     ]
   },
   {
@@ -228,7 +228,11 @@ export default function StrategicPlanningSidebar({ collapsed, setCollapsed }: St
                         ${item.isAction ? 'text-green-600 hover:text-green-700' : ''}
                       `}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full mr-3 ${pathname.startsWith(item.href) ? 'bg-purple-500' : item.isAction ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                      {item.isAction ? (
+                        <PlusIcon className="h-3 w-3 mr-3 text-green-500" />
+                      ) : (
+                        <span className={`w-1.5 h-1.5 rounded-full mr-3 ${pathname.startsWith(item.href) ? 'bg-purple-500' : 'bg-gray-300'}`}></span>
+                      )}
                       {item.name}
                     </Link>
                   ))}
