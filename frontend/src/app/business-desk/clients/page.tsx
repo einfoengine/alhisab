@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import clientsData from '@/data/clients.json';
 import PageHeader from '@/components/elements/PageHeader';
 import { PlusIcon } from '@heroicons/react/24/outline';
@@ -53,7 +54,13 @@ export default function ClientsPage() {
       render: (_: unknown, client: Client) => (
         <div className="flex items-center gap-3">
           {client.avatar ? (
-            <img src={client.avatar} alt={client.client_name} className="h-8 w-8 rounded-full object-cover border-2 border-blue-400 shadow" />
+            <Image 
+              src={client.avatar} 
+              alt={client.client_name} 
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-full object-cover border-2 border-blue-400 shadow" 
+            />
           ) : (
             <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-300 flex items-center justify-center text-white font-bold text-base shadow">
               {client.client_name ? client.client_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0,2) : '?'}
@@ -86,7 +93,13 @@ export default function ClientsPage() {
       onClick={() => router.push(`/business-desk/clients/${client.id}`)}
     >
       {client.avatar ? (
-        <img src={client.avatar} alt={client.client_name} className="h-16 w-16 rounded-full object-cover border-2 border-blue-400 shadow mb-2" />
+        <Image 
+          src={client.avatar} 
+          alt={client.client_name} 
+          width={64}
+          height={64}
+          className="h-16 w-16 rounded-full object-cover border-2 border-blue-400 shadow mb-2" 
+        />
       ) : (
         <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-300 flex items-center justify-center text-white font-bold text-xl shadow mb-2">
           {client.client_name ? client.client_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0,2) : '?'}

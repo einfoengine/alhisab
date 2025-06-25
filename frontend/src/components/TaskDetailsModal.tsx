@@ -12,22 +12,25 @@ type Task = {
   status: 'planning' | 'doing' | 'qc' | 'redo' | 'done' | 'delivered' | 'archived';
   assigned_to: string[];
   priority: 'low' | 'medium' | 'high';
-  order: number;
+  order?: number;
   start_date: string;
   end_date: string;
-  project_name: string;
-  service_name: string;
+  project_name?: string;
+  service_name?: string;
   subtask_count?: number;
 };
 
 type ColumnConfig = Record<Task['status'], { name: string, color: string }>;
 
 interface TaskDetailsModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   task: Task | null;
-  columnConfig: ColumnConfig;
+  project?: { id: string; name: string } | null;
+  motherTask?: { id: string; title: string } | null;
+  assignees?: { id: string; name: string }[];
+  columnConfig?: ColumnConfig;
   onClose: () => void;
-  onSave: (taskId: string, updates: Partial<Task>) => void;
+  onSave?: (taskId: string, updates: Partial<Task>) => void;
 }
 
 const statusOptions = [
@@ -60,7 +63,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, task, colum
   if (!isOpen || !task || !editedTask) return null;
 
   const handleSave = () => {
-    if (editedTask) {
+    if (editedTask && onSave) {
       onSave(editedTask.id, editedTask);
       setIsEditing(false);
     }
@@ -148,7 +151,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, task, colum
                         ))}
                       </select>
                     ) : (
-                      <p className="text-sm text-gray-500">{columnConfig[task.status].name}</p>
+                      <p className="text-sm text-gray-500">{columnConfig ? columnConfig[task.status].name : task.status}</p>
                     )}
                   </div>
                 </div>

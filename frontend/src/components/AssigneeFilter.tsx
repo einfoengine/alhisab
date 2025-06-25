@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { UserCircleIcon, CheckIcon } from '@heroicons/react/24/outline';
 import usersData from '@/data/users.json';
 
@@ -53,7 +54,13 @@ const AssigneeFilter: React.FC<AssigneeFilterProps> = ({ selectedAssignees, onCh
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
-                    <img src={user.avatar} alt={user.name} className="w-6 h-6 rounded-full" />
+                    <Image 
+                      src={user.avatar} 
+                      alt={user.name} 
+                      width={24}
+                      height={24}
+                      className="w-6 h-6 rounded-full object-cover" 
+                    />
                     <span>{user.name}</span>
                 </div>
                 {selectedAssignees.includes(user.id) && (

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import {
   UserIcon,
   PlusIcon,
@@ -401,11 +402,14 @@ export default function ClientProfilesPage() {
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
-                <img 
-                  src={client.avatar} 
-                  alt={client.name}
-                  className="w-12 h-12 rounded-lg object-cover"
-                />
+                <div className="relative w-12 h-12">
+                  <Image 
+                    src={client.avatar} 
+                    alt={client.name}
+                    fill
+                    className="rounded-lg object-cover"
+                  />
+                </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">{client.name}</h3>
                   <p className="text-sm text-gray-500">{client.company}</p>
@@ -567,11 +571,14 @@ export default function ClientProfilesPage() {
               <div className="space-y-6">
                 {/* Basic Info */}
                 <div className="flex items-center gap-4">
-                  <img 
-                    src={selectedClient.avatar} 
-                    alt={selectedClient.name}
-                    className="w-16 h-16 rounded-xl object-cover"
-                  />
+                  <div className="relative w-16 h-16">
+                    <Image 
+                      src={selectedClient.avatar} 
+                      alt={selectedClient.name}
+                      fill
+                      className="rounded-xl object-cover"
+                    />
+                  </div>
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900">{selectedClient.name}</h3>
                     <p className="text-gray-500">{selectedClient.company}</p>

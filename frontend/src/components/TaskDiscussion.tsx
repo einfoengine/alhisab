@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { 
   ChatBubbleLeftRightIcon, 
   ClockIcon, 
@@ -199,10 +200,12 @@ const TaskDiscussion: React.FC<TaskDiscussionProps> = ({ taskId, comments, onAdd
                   comments.map((comment) => (
                     <div key={comment.id} className="flex space-x-3">
                       <div className="flex-shrink-0">
-                        <img
-                          className="h-8 w-8 rounded-full"
+                        <Image
+                          className="h-8 w-8 rounded-full object-cover"
                           src={getUserAvatar(comment.user)}
                           alt={getUserName(comment.user)}
+                          width={32}
+                          height={32}
                         />
                       </div>
                       <div className="flex-1">

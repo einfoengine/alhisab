@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Service {
   id: string;
@@ -36,9 +37,11 @@ export default function ProductsList({ services, onProductClick }: ProductsListP
           >
             {service.image && (
               <div className="relative">
-              <img
+              <Image
                 src={service.image}
                 alt={service.name}
+                width={400}
+                height={192}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
               />
                 <div className="absolute top-2 right-2">

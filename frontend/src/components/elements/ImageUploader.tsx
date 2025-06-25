@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 
 interface ImageUploaderProps {
@@ -97,9 +98,11 @@ export default function ImageUploader({
       >
         {preview ? (
           <div className="relative w-full h-full flex items-center justify-center">
-            <img
+            <Image
               src={preview}
               alt="Preview"
+              width={128}
+              height={128}
               className="w-full h-full object-cover rounded-full border border-gray-200"
             />
             <button

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { MagnifyingGlassIcon, ChevronDoubleLeftIcon } from '@heroicons/react/24/outline';
 
 type User = {
@@ -64,7 +65,13 @@ const TeamMemberSidebar: React.FC<TeamMemberSidebarProps> = ({ users, selectedUs
             title={user.name}
             className={`w-full text-left flex items-center gap-3 p-3 transition-all duration-200 border-r-4 ${selectedUserId === user.id ? 'bg-blue-50 border-blue-500' : 'border-transparent hover:bg-gray-100'}`}
           >
-            <img src={user.avatar} alt={user.name} className="w-9 h-9 rounded-full" />
+            <Image 
+              src={user.avatar} 
+              alt={user.name} 
+              width={36}
+              height={36}
+              className="w-9 h-9 rounded-full object-cover" 
+            />
             {!isCollapsed && (
               <div>
                 <p className={`font-semibold text-sm ${selectedUserId === user.id ? 'text-blue-700' : 'text-gray-800'}`}>{user.name}</p>

@@ -20,6 +20,7 @@ import {
   ArrowPathRoundedSquareIcon,
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import Image from 'next/image';
 
 interface Subtask {
   id: string; 
@@ -580,7 +581,14 @@ const TasksForm: React.FC<TasksFormProps> = ({ taskId }) => {
                             const user = users.users.find(u => u.id === id);
                             return user ? (
                               <div key={id} className="relative group/avatar">
-                                <img src={user.avatar} title={user.name} className="w-7 h-7 rounded-full ring-2 ring-white"/>
+                                <Image 
+                                  src={user.avatar} 
+                                  alt={user.name}
+                                  title={user.name} 
+                                  width={28}
+                                  height={28}
+                                  className="w-7 h-7 rounded-full ring-2 ring-white object-cover"
+                                />
                                 <button onClick={() => updateSubtask(subtask.id, { assignee: subtask.assignee.filter(a => a !== id) })} className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover/avatar:opacity-100"><XMarkIcon className="w-4 h-4 text-white"/></button>
                               </div>
                             ) : null;

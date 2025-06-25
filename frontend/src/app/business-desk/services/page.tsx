@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import servicesData from '@/data/services.json';
 import ProductsList from '@/components/ProductsList';
@@ -45,7 +46,13 @@ const columns: Column<Service>[] = [
     label: 'Service Name',
     render: (value, item) => (
       <div className="flex items-center space-x-3">
-        <img src={item.image} alt={item.name} className="w-10 h-10 rounded-lg object-cover" />
+        <Image 
+          src={item.image} 
+          alt={item.name} 
+          width={40}
+          height={40}
+          className="w-10 h-10 rounded-lg object-cover" 
+        />
         <div>
           <div className="font-semibold text-blue-700">{item.name}</div>
           <div className="text-xs text-gray-500">{item.serviceShortName}</div>

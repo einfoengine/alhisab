@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import leads from '@/data/leads.json';
 
 interface Lead {
@@ -16,9 +19,22 @@ interface Lead {
   tags: string[];
 }
 
-export default function LeadDetailsPage({ params }: { params: { id: string } }) {
-  const lead = (leads as Lead[]).find((l) => l.id === params.id);
-  if (!lead) return <div className="p-8">Lead not found.</div>;
+export default function LeadDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const [id, setId] = useState<string>('');
+  const [lead, setLead] = useState<Lead | undefined>(undefined);
+  
+  useEffect(() => {
+    params.then(({ id: resolvedId }) => {
+      setId(resolvedId);
+      const foundLead = (leads as Lead[]).find((l) => l.id === resolvedId);
+      setLead(foundLead);
+    });
+  }, [params]);
+
+  if (!id || !lead) {
+    return <div className="p-8">Loading...</div>;
+  }
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Lead Details</h1>

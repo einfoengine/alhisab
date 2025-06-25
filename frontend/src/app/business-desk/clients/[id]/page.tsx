@@ -1,24 +1,11 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
 import clientsData from '@/data/clients.json';
 import meetingsData from '@/data/meetings.json';
 import PageHeader from '@/components/elements/PageHeader';
 import { CalendarIcon, DocumentTextIcon, BriefcaseIcon, ArrowLeftIcon, PencilIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'next/navigation';
-
-interface Client {
-  id: string;
-  client_name: string;
-  company_names: string[];
-  status: string;
-  email: string;
-  address?: string;
-  phone: { country_code: string; number: string; whatsapp: boolean };
-  preferred_contact_method: string;
-  avatar: string;
-  notes?: string;
-}
 
 interface Meeting {
   id: string;
@@ -55,6 +42,17 @@ const formatDate = (dateString: string) => {
 export default function ClientDetailsPage() {
   const router = useRouter();
   const params = useParams();
+  
+  if (!params || !params.id) {
+    return (
+      <div className="p-8">
+        <div className="bg-white rounded-xl shadow p-6">
+          <p className="text-gray-500">Invalid client ID</p>
+        </div>
+      </div>
+    );
+  }
+  
   const clientId = params.id as string;
 
   // Find the client
@@ -110,7 +108,13 @@ export default function ClientDetailsPage() {
           <div className="bg-white rounded-xl shadow p-6">
             <div className="flex items-center gap-4 mb-6">
               {client.avatar ? (
-                <img src={client.avatar} alt={client.client_name} className="h-20 w-20 rounded-full object-cover border-2 border-blue-400 shadow" />
+                <Image 
+                  src={client.avatar} 
+                  alt={client.client_name} 
+                  width={80}
+                  height={80}
+                  className="h-20 w-20 rounded-full object-cover border-2 border-blue-400 shadow" 
+                />
               ) : (
                 <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-300 flex items-center justify-center text-white font-bold text-2xl shadow">
                   {client.client_name ? client.client_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0,2) : '?'}

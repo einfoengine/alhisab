@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
 import auditDataRaw from '../../../../data/audit.json';
 import { jsPDF } from 'jspdf';
@@ -315,8 +315,17 @@ function getPlatformMetrics(platform: Platform) {
   return { organicMetrics, paidMetrics };
 }
 
-export default async function AuditDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default function AuditDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const [id, setId] = useState<string>('');
+  
+  useEffect(() => {
+    params.then(({ id: resolvedId }) => setId(resolvedId));
+  }, [params]);
+
+  if (!id) {
+    return <div>Loading...</div>;
+  }
+
   const audits: Audit[] = auditDataRaw as Audit[];
   const audit = audits.find((a) => String(a.report_id) === id);
   if (!audit) return notFound();

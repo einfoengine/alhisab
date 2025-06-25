@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import users from '@/data/users.json';
 import { CalendarIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 
@@ -66,7 +67,15 @@ const TaskListItem = ({ task }: { task: Task }) => {
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
         <div className="flex -space-x-2 overflow-hidden">
           {assignedUsers.map(user => (
-            user && <img key={user.id} className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src={user.avatar} alt={user.name} title={user.name} />
+            user && <Image 
+              key={user.id} 
+              className="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover" 
+              src={user.avatar} 
+              alt={user.name} 
+              title={user.name}
+              width={32}
+              height={32}
+            />
           ))}
           {assignedUsers.length === 0 && <UserCircleIcon className="h-8 w-8 text-gray-300" />}
         </div>

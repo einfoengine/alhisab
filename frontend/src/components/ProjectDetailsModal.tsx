@@ -12,8 +12,8 @@ type Project = {
     start_date: string;
     end_date: string;
     status: string;
-    project_value: number;
-    key_deliverables: string[];
+    project_value?: number;
+    key_deliverables?: string[];
 };
 
 type Client = {
@@ -57,7 +57,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, clie
                 <div>
                     <h3 className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wider">Project Value</h3>
                     <p className="text-gray-800 text-lg font-medium">
-                        ${project.project_value.toLocaleString()}
+                        ${typeof project.project_value === 'number' ? project.project_value.toLocaleString() : '0'}
                     </p>
                 </div>
 
@@ -86,7 +86,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, clie
                 <div className="md:col-span-2 border-t border-gray-200 pt-6">
                     <h3 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Key Deliverables</h3>
                     <ul className="space-y-2">
-                        {project.key_deliverables.map((item, index) => (
+                        {(project.key_deliverables || []).map((item, index) => (
                         <li key={index} className="flex items-center gap-2">
                             <CheckCircleIcon className="w-5 h-5 text-green-500" />
                             <span className="text-gray-600">{item}</span>

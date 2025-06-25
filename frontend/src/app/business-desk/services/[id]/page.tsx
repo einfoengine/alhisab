@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import servicesData from '@/data/services.json';
 import PageHeader from '@/components/elements/PageHeader';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -22,10 +24,18 @@ interface Service {
   [key: string]: unknown;
 }
 
-export default function ServiceDetailsPage({ params }: { params: { id: string } }) {
+export default function ServiceDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const service = (servicesData.services as Service[]).find((s) => s.id === params.id);
-  if (!service) return <div className="p-8">Service not found.</div>;
+  const [id, setId] = useState<string>('');
+  const [service, setService] = useState<Service | undefined>(undefined);
+  useEffect(() => {
+    params.then(({ id: resolvedId }) => {
+      setId(resolvedId);
+      const foundService = (servicesData.services as Service[]).find((s) => s.id === resolvedId);
+      setService(foundService);
+    });
+  }, [params]);
+  if (!id || !service) return <div className="p-8">Loading...</div>;
   const handleDelete = () => {
     // TODO: Implement delete logic
     alert('Delete service (not implemented)');
@@ -48,7 +58,13 @@ export default function ServiceDetailsPage({ params }: { params: { id: string } 
         ]}
       />
       {service.image && (
-        <img src={service.image} alt={service.name} className="w-full h-64 object-cover rounded-lg mb-6" />
+        <Image 
+          src={service.image} 
+          alt={service.name} 
+          width={800}
+          height={256}
+          className="w-full h-64 object-cover rounded-lg mb-6" 
+        />
       )}
       {service.shortDescription && (
         <p className="text-lg text-gray-600 mb-4">{service.shortDescription}</p>

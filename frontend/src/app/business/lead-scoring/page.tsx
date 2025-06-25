@@ -7,15 +7,10 @@ import {
   EyeIcon,
   PencilIcon,
   TrashIcon,
-  ChartBarIcon,
-  UserGroupIcon,
   CurrencyDollarIcon,
   ArrowTrendingUpIcon,
   StarIcon,
   CheckCircleIcon,
-  XCircleIcon,
-  ExclamationTriangleIcon,
-  ClockIcon,
 } from "@heroicons/react/24/outline";
 
 // Mock data for lead scoring

@@ -100,19 +100,19 @@ export default function AgreementDetailsPage() {
                     let name = '', price = 0, discount = 0, discounted = 0, repeat = '-';
                     if (d.type === 'service' && 'service_id' in d) {
                       const s = services.services.find(s => s.id === d.service_id);
-                      if (s) {
+                      if (s && s.pricing) {
                         name = s.name;
                         price = s.pricing.unit_price;
-                        discount = s.pricing.max_discount;
+                        discount = s.pricing.max_discount || 0;
                         discounted = price - (price * (discount / 100));
                         repeat = s.minimum_time_required ? `${s.minimum_time_required} days` : '-';
                       }
                     } else if (d.type === 'package' && 'package_id' in d) {
                       const p = packages.packages.find(p => p.id === d.package_id);
-                      if (p) {
+                      if (p && p.pricing) {
                         name = p.name;
                         price = p.pricing.unit_price;
-                        discount = p.pricing.max_discount;
+                        discount = p.pricing.max_discount || 0;
                         discounted = price - (price * (discount / 100));
                         repeat = p.billing_cycle || '-';
                       }

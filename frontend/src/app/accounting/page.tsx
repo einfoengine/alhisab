@@ -1,97 +1,6 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
-
-// Type definitions for chart data
-interface ChartDataPoint {
-  month: string;
-  revenue: number;
-  expenses: number;
-  profit: number;
-}
-
-interface PieDataPoint {
-  category?: string;
-  source?: string;
-  amount: number;
-}
-
-interface BarDataPoint {
-  month: string;
-  inflow: number;
-  outflow: number;
-  net: number;
-}
-
-interface Transaction {
-  id: number;
-  date: string;
-  description: string;
-  amount: number;
-  type: string;
-  status: string;
-  category: string;
-}
-
-interface Alert {
-  title: string;
-  description: string;
-}
-
-interface QuickAction {
-  title: string;
-  icon: React.ReactNode;
-}
-
-// Chart stubs (replace with real chart libs or keep as SVG for now)
-const MiniBar = ({ value, max, color }: { value: number; max: number; color: string }) => (
-  <div className="w-8 h-12 flex items-end">
-    <div style={{ height: `${(value / max) * 100}%`, background: color }} className="w-full rounded-t-md transition-all"></div>
-  </div>
-);
-
-const ModernLineChart = ({ data, color, height = 80 }: { data: number[]; color: string; height?: number }) => {
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min || 1;
-  const width = 180;
-  const points = data.map((v, i) => `${(i / (data.length - 1)) * width},${height - ((v - min) / range) * height}`).join(" ");
-  const area = `0,${height} ${points} ${width},${height}`;
-  return (
-    <svg width={width} height={height} className="block">
-      <defs>
-        <linearGradient id="modernArea" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.18" />
-          <stop offset="100%" stopColor={color} stopOpacity="0.01" />
-        </linearGradient>
-      </defs>
-      <polygon fill="url(#modernArea)" points={area} />
-      <polyline fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" points={points} />
-    </svg>
-  );
-};
-
-const ModernBarChart = ({ data, color, height = 80 }: { data: number[]; color: string; height?: number }) => {
-  const max = Math.max(...data);
-  const width = data.length * 12;
-  return (
-    <svg width={width} height={height} className="block">
-      {data.map((v, i) => (
-        <rect
-          key={i}
-          x={i * 12}
-          y={height - (v / max) * height}
-          width={8}
-          height={(v / max) * height}
-          rx={3}
-          fill={color}
-          opacity={0.7}
-        />
-      ))}
-    </svg>
-  );
-};
 
 // --- Mock Data ---
 const salesOverview = {
@@ -143,7 +52,7 @@ const MultiLineSalesGraph = ({ data }: { data: typeof salesOverview }) => {
           <line key={i} x1={pad} x2={width - pad} y1={pad + p * (height - 2 * pad)} y2={pad + p * (height - 2 * pad)} stroke="#e5e7eb" strokeWidth={1} />
         ))}
         {/* Lines */}
-        {series.map((s, idx) => (
+        {series.map((s) => (
           <polyline
             key={s.key}
             points={getPoints(data[s.key as keyof typeof data] as number[])}
@@ -182,37 +91,6 @@ const MultiLineSalesGraph = ({ data }: { data: typeof salesOverview }) => {
   );
 };
 
-const DonutChart = ({ data, total }: { data: { value: number; color: string }[]; total: number }) => {
-  const radius = 54, stroke = 18, C = 2 * Math.PI * radius;
-  let offset = 0;
-  return (
-    <svg width={140} height={140} className="block mx-auto">
-      {data.map((d, i) => {
-        const val = d.value / total;
-        const dash = val * C;
-        const el = (
-          <circle
-            key={i}
-            cx={70}
-            cy={70}
-            r={radius}
-            fill="none"
-            stroke={d.color}
-            strokeWidth={stroke}
-            strokeDasharray={`${dash} ${C - dash}`}
-            strokeDashoffset={-offset}
-            strokeLinecap="round"
-          />
-        );
-        offset += dash;
-        return el;
-      })}
-      <circle cx={70} cy={70} r={radius - stroke / 2} fill="#fff" />
-      <text x={70} y={76} textAnchor="middle" fontSize={22} fontWeight={700} fill="#334155">${total.toLocaleString()}</text>
-    </svg>
-  );
-};
-
 // --- Main Page ---
 export default function AccountingPage() {
   return (
@@ -226,7 +104,7 @@ export default function AccountingPage() {
             <span className="text-xs text-green-500">+2.30 (1.3%)</span>
           </div>
           <div>
-            <div className="text-lg font-semibold text-blue-900 mb-1">Now your account isn't just for saving</div>
+            <div className="text-lg font-semibold text-blue-900 mb-1">Now your account isn&apos;t just for saving</div>
             <div className="text-gray-500 text-sm">Start growing your wealth by investing directly from your balance. <a href="#" className="text-blue-600 font-medium hover:underline">Start Investing →</a></div>
           </div>
         </div>

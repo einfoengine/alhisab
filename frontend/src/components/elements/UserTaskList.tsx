@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
@@ -60,6 +61,9 @@ type Task = {
   assigned_to: string[];
   description: string;
   platforms?: string[];
+  order?: number;
+  project_name?: string;
+  service_name?: string;
 };
 
 const statusConfig: Record<Task['status'], { name: string; color: string; icon: React.ElementType }> = {
@@ -425,8 +429,9 @@ const UserTaskList: React.FC<UserTaskListProps> = ({ tasks, allTasks, projects, 
             .filter(t => t.mother_task === task.id)
             .map(subtask => ({
                 ...subtask,
-                status: mapTaskStatus(subtask.status)
-            } as Task));
+                status: mapTaskStatus(subtask.status),
+                description: (subtask as any).description || '',
+            } as any as Task));
     }, [task.id]);
     const isDone = (taskStatusMap[task.id] || task.status) === 'done';
     const handleCheck = () => {

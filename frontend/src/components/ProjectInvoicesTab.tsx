@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useState } from 'react';
@@ -27,8 +28,14 @@ interface Invoice {
   };
 }
 
+interface Project {
+  id: string;
+  name: string;
+  status: string;
+}
+
 interface ProjectInvoicesTabProps {
-  project: any;
+  project: Project;
 }
 
 const ProjectInvoicesTab: React.FC<ProjectInvoicesTabProps> = ({ project }) => {

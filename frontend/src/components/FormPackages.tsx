@@ -4,12 +4,6 @@ import { useState } from 'react';
 import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import servicesData from '@/data/services.json';
 
-interface Service {
-  id: string;
-  name: string;
-  unit_price: number;
-}
-
 interface PackageService {
   service_id: string;
   name: string;
@@ -59,10 +53,10 @@ export default function FormPackages({ initialValues, onSubmit, submitLabel = 'S
           {
             service_id: service.id,
             name: service.name,
-            price: service.unit_price || 0,
+            price: service.pricing?.unit_price || 0,
           },
         ],
-        total_price: prev.total_price + (service.unit_price || 0),
+        total_price: prev.total_price + (service.pricing?.unit_price || 0),
       }));
     }
   };
@@ -149,7 +143,7 @@ export default function FormPackages({ initialValues, onSubmit, submitLabel = 'S
               <option value="">Select a service</option>
               {servicesData.services.map((service) => (
                 <option key={service.id} value={service.id}>
-                  {service.name} - ${service.unit_price}
+                  {service.name} - ${service.pricing?.unit_price || 0}
                 </option>
               ))}
             </select>

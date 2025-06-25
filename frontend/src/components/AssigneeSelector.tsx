@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import users from '@/data/users.json';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
@@ -73,7 +74,13 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
         <div onClick={() => setInternalIsOpen(true)} className="min-h-[40px] p-2 border border-gray-300 rounded-md bg-white flex flex-wrap gap-2 items-center cursor-pointer">
           {getSelectedUsers().map(user => (
             <div key={user.id} className="flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-sm">
-              <img src={user.avatar || ''} alt={user.name} className="w-5 h-5 rounded-full" />
+              <Image 
+                src={user.avatar || ''} 
+                alt={user.name} 
+                width={20}
+                height={20}
+                className="w-5 h-5 rounded-full object-cover" 
+              />
               <span>{user.name}</span>
               <button type="button" onClick={(e) => removeAssignee(e, user.id)} className="text-gray-500 hover:text-red-600">
                 <XMarkIcon className="w-3 h-3" />
@@ -102,7 +109,13 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
                   className={`flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-md cursor-pointer ${selectedAssignees.includes(user.id) ? 'bg-blue-50' : ''}`} 
                   onClick={() => handleAssigneeToggle(user.id)}
                 >
-                  <img src={user.avatar || ''} alt={user.name} className="w-8 h-8 rounded-full"/>
+                  <Image 
+                    src={user.avatar || ''} 
+                    alt={user.name} 
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
                   <span className="text-sm font-medium flex-1">{user.name}</span>
                   {selectedAssignees.includes(user.id) && <CheckCircleIcon className="w-5 h-5 text-blue-600" />}
                 </div>
@@ -126,7 +139,13 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
           <div className="p-1 max-h-60 overflow-y-auto">
             {filteredUsers.map((user) => (
                 <div key={user.id} className={`flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-md cursor-pointer ${selectedAssignees.includes(user.id) ? 'bg-blue-50' : ''}`} onClick={() => handleAssigneeToggle(user.id)}>
-                  <img src={user.avatar || ''} alt={user.name} className="w-8 h-8 rounded-full"/>
+                  <Image 
+                    src={user.avatar || ''} 
+                    alt={user.name} 
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
                   <span className="text-sm font-medium flex-1">{user.name}</span>
                   {selectedAssignees.includes(user.id) && <CheckCircleIcon className="w-5 h-5 text-blue-600" />}
                 </div>

@@ -6,22 +6,6 @@ import packagesData from '@/data/packages.json';
 import PageHeader from '@/components/elements/PageHeader';
 import { PlusIcon, Squares2X2Icon, ListBulletIcon } from '@heroicons/react/24/outline';
 
-interface PackageService {
-  service_id: string;
-  name: string;
-  price: number;
-}
-
-interface Package {
-  id: string;
-  name: string;
-  description: string;
-  services: PackageService[];
-  features: string[];
-  total_price: number;
-  created_at: string;
-}
-
 export default function PackagesPage() {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -65,7 +49,7 @@ export default function PackagesPage() {
 
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {packagesData.packages.map((pkg: Package) => (
+          {packagesData.packages.map((pkg) => (
             <div
               key={pkg.id}
               onClick={() => handlePackageClick(pkg.id)}
@@ -80,7 +64,7 @@ export default function PackagesPage() {
                     <ul className="space-y-1">
                       {pkg.services.map((service, index) => (
                         <li key={index} className="text-sm text-gray-600">
-                          • {service.name} - ${service.price}
+                          • {typeof service === 'object' && service !== null && 'name' in service ? `${service.name} - $${service.price}` : String(service)}
                         </li>
                       ))}
                     </ul>
@@ -129,7 +113,7 @@ export default function PackagesPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {packagesData.packages.map((pkg: Package) => (
+              {packagesData.packages.map((pkg) => (
                 <tr
                   key={pkg.id}
                   onClick={() => handlePackageClick(pkg.id)}
@@ -141,7 +125,9 @@ export default function PackagesPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-900">
-                      {pkg.services.map((service) => service.name).join(', ')}
+                      {pkg.services.map((service) =>
+                        typeof service === 'object' && service !== null && 'name' in service ? service.name : String(service)
+                      ).join(', ')}
                     </div>
                   </td>
                   <td className="px-6 py-4">

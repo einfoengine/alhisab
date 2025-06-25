@@ -5,12 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   UserIcon,
   BuildingOfficeIcon,
-  EnvelopeIcon,
-  PhoneIcon,
-  GlobeAltIcon,
-  MapPinIcon,
-  CurrencyDollarIcon,
-  CalendarIcon,
   DocumentTextIcon,
   UserGroupIcon,
   ArrowLeftIcon,
