@@ -27,6 +27,7 @@ import InstagramAuditForm from '../InstagramAuditForm';
 import LinkedInAuditForm from '../LinkedInAuditForm';
 import TwitterAuditForm from '../TwitterAuditForm';
 import TikTokAuditForm from '../TikTokAuditForm';
+import EmailAuditForm from '../EmailAuditForm';
 
 const auditTypes = [
   {
@@ -1386,6 +1387,17 @@ export default function NewAuditPage() {
                   })}
               </div>
             )}
+            {(() => {
+              const currentAuditType = activeTab || selectedAuditTypes[0];
+              // Show branding form for comprehensive audit
+              if (currentAuditType === "comprehensive") {
+                // ... existing code ...
+              }
+              if (currentAuditType === "email") {
+                return <EmailAuditForm />;
+              }
+              // ... existing code ...
+            })()}
           </div>
         )}
 
