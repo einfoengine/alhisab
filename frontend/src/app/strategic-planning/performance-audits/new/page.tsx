@@ -27,7 +27,6 @@ import InstagramAuditForm from '../InstagramAuditForm';
 import LinkedInAuditForm from '../LinkedInAuditForm';
 import TwitterAuditForm from '../TwitterAuditForm';
 import TikTokAuditForm from '../TikTokAuditForm';
-import { BaseSocialAuditForm } from '../SocialAuditForm';
 
 const auditTypes = [
   {

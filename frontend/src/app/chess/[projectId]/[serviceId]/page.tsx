@@ -30,6 +30,8 @@ type Task = {
   mother_task?: string | null;
   project_id: string;
   platforms: string[];
+  project_name: string;
+  service_name: string;
   [key: string]: string | string[] | number | boolean | null | undefined;
 };
 
@@ -97,6 +99,8 @@ const ServiceTasksPage = () => {
           content_type: foundService.id,
           project_id: foundProject.id,
           platforms: [],
+          project_name: foundProject.name,
+          service_name: foundService.name,
         }));
         setTasks(serviceTasks);
       }

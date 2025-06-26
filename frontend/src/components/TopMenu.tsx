@@ -16,9 +16,6 @@ import {
   Squares2X2Icon,
   HomeIcon,
   UserGroupIcon,
-  FolderIcon,
-  BanknotesIcon,
-  WrenchScrewdriverIcon,
   ChevronDownIcon,
   UserIcon,
   CircleStackIcon,
@@ -26,6 +23,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import OffCanvasMenu from './OffCanvasMenu';
+import { ElementType } from 'react';
 
 const tools = [
   { name: 'Accounting', href: '/accounting', icon: CalculatorIcon },
@@ -85,6 +83,8 @@ const subNavigation = {
     ],
   };
 
+type SubNavItem = { name: string; href: string; icon: ElementType };
+
 export default function TopMenu() {
   const pathname = usePathname() || '';
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -131,7 +131,7 @@ export default function TopMenu() {
                           <span>{group.name}</span>
                         </div>
                         <div className="space-y-1">
-                          {subNavigation['Business Desk'].map((item) => {
+                          {subNavigation.others.map((item: SubNavItem) => {
                             const ItemIcon = item.icon;
                             const isActive = pathname.startsWith(item.href);
                             return (
