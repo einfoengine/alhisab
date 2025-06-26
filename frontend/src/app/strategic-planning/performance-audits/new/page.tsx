@@ -21,6 +21,7 @@ import {
   MegaphoneIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import AuditResultSummary from '../AuditResultSummary';
 
 const auditTypes = [
   {
@@ -1341,6 +1342,12 @@ export default function NewAuditPage() {
                     );
                   })}
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'seo' && selectedPlatforms.length > 0 && (
+              <div className="mt-8">
+                <AuditResultSummary />
               </div>
             )}
           </div>
