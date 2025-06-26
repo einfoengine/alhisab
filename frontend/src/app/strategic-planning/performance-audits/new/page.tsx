@@ -107,7 +107,7 @@ const auditTypes = [
   },
 ];
 
-const platformOptions = {
+const platformOptions: Record<string, {id: string; name: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>>}[]> = {
   seo: [
     { id: "google", name: "Google Search Console", icon: GlobeAltIcon },
     { id: "bing", name: "Bing Webmaster Tools", icon: GlobeAltIcon },
@@ -1326,25 +1326,35 @@ export default function NewAuditPage() {
               })()}
             </div>
 
-            {selectedPlatforms.length > 0 && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3 md:p-4">
-                <h3 className="font-medium text-green-900 mb-2 text-sm">Selected Platforms ({selectedPlatforms.length})</h3>
-                <div className="flex flex-wrap gap-2">
-                  {selectedPlatforms.map((platformId) => {
-                    // Find platform name from all platform options
-                    const platformName = Object.values(platformOptions)
-                      .flat()
-                      .find(platform => platform.id === platformId)?.name;
-                    
-                    return (
-                      <span key={platformId} className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        {platformName}
-                      </span>
-                    );
-                  })}
+            {/* Only show selected platforms for the current tab (audit type) */}
+            {(function() {
+              const currentAuditType = activeTab || selectedAuditTypes[0];
+              let platformsForTab: string[] = [];
+              if (currentAuditType === 'social') {
+                const socialPlatformIds = platformOptions.social.map(p => p.id);
+                platformsForTab = selectedPlatforms.filter(pid => socialPlatformIds.includes(pid));
+              } else if (Object.prototype.hasOwnProperty.call(platformOptions, currentAuditType)) {
+                platformsForTab = selectedPlatforms.filter(pid => (platformOptions[currentAuditType] as {id: string; name: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>>}[]).some((p) => p.id === pid));
+              }
+              return platformsForTab.length > 0 ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 md:p-4">
+                  <h3 className="font-medium text-green-900 mb-2 text-sm">Selected Platforms ({platformsForTab.length})</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {platformsForTab.map((platformId) => {
+                      // Find platform name from all platform options
+                      const platformName = Object.values(platformOptions)
+                        .flat()
+                        .find(platform => platform.id === platformId)?.name || platformId;
+                      return (
+                        <span key={platformId} className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          {platformName}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              ) : null;
+            })()}
 
             {activeTab === 'seo' && selectedPlatforms.length > 0 && (
               <div className="mt-8">
@@ -1353,12 +1363,14 @@ export default function NewAuditPage() {
             )}
             {activeTab === 'social' && selectedPlatforms.length > 0 && (
               <div className="mt-8 space-y-8">
-                {selectedPlatforms.map((platformId) => (
-                  <div key={platformId} className="mb-8">
-                    <h4 className="text-lg font-semibold mb-2 capitalize">{platformId.replace(/_/g, ' ')}</h4>
-                    <SocialAuditForm platform={platformId} />
-                  </div>
-                ))}
+                {selectedPlatforms
+                  .filter(pid => platformOptions.social.map(p => p.id).includes(pid))
+                  .map((platformId) => (
+                    <div key={platformId} className="mb-8">
+                      <h4 className="text-lg font-semibold mb-2 capitalize">{platformId.replace(/_/g, ' ')}</h4>
+                      <SocialAuditForm platform={platformId} />
+                    </div>
+                  ))}
               </div>
             )}
           </div>
