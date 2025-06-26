@@ -1352,8 +1352,13 @@ export default function NewAuditPage() {
               </div>
             )}
             {activeTab === 'social' && selectedPlatforms.length > 0 && (
-              <div className="mt-8">
-                <SocialAuditForm />
+              <div className="mt-8 space-y-8">
+                {selectedPlatforms.map((platformId) => (
+                  <div key={platformId} className="mb-8">
+                    <h4 className="text-lg font-semibold mb-2 capitalize">{platformId.replace(/_/g, ' ')}</h4>
+                    <SocialAuditForm platform={platformId} />
+                  </div>
+                ))}
               </div>
             )}
           </div>
