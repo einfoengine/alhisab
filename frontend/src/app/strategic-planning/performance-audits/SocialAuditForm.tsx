@@ -7,6 +7,11 @@ const initialState = {
   pageUrl: '',
   pageCategory: '',
   verificationStatus: '',
+  // Profile Info Comments
+  profilePictureComment: '',
+  coverPhotoComment: '',
+  descriptionComment: '',
+  otherProfileInfo: '',
   // Audience
   followers: '',
   audienceDemographics: '',
@@ -53,6 +58,9 @@ export const BaseSocialAuditForm: React.FC<BaseSocialAuditFormProps> = ({ platfo
   const [contentTypesUsed, setContentTypesUsed] = useState<string[]>([]);
   const [engagementActions, setEngagementActions] = useState<string[]>([]);
   const [negativeFeedback, setNegativeFeedback] = useState<string[]>([]);
+  const [profilePicture, setProfilePicture] = useState('');
+  const [coverPhoto, setCoverPhoto] = useState('');
+  const [description, setDescription] = useState('');
 
   const handleChange = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -69,32 +77,59 @@ export const BaseSocialAuditForm: React.FC<BaseSocialAuditFormProps> = ({ platfo
 
   return (
     <form className="space-y-8">
-      {/* Page/Profile Info */}
-      <section className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-        <h4 className="font-semibold text-green-800 mb-4 text-lg">Page/Profile Information</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Page/Profile Information section for all platforms */}
+      <section className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+        <h4 className="font-semibold text-gray-800 mb-4 text-lg">Page/Profile Information</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Page/Profile Name</label>
-            <input type="text" value={form.pageName} onChange={e => handleChange('pageName', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" />
+            <input type="text" value={form.pageName} onChange={e => handleChange('pageName', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 text-sm" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Page/Profile URL</label>
-            <input type="text" value={form.pageUrl} onChange={e => handleChange('pageUrl', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" />
+            <input type="text" value={form.pageUrl} onChange={e => handleChange('pageUrl', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 text-sm" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <select value={form.pageCategory} onChange={e => handleChange('pageCategory', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm">
+            <select value={form.pageCategory} onChange={e => handleChange('pageCategory', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 text-sm">
               <option value="">Select</option>
               {CATEGORY_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Verification Status</label>
-            <select value={form.verificationStatus} onChange={e => handleChange('verificationStatus', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm">
+            <select value={form.verificationStatus} onChange={e => handleChange('verificationStatus', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 text-sm">
               <option value="">Select</option>
               <option value="verified">Verified</option>
               <option value="not_verified">Not Verified</option>
+              <option value="pending">Pending</option>
             </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
+            <select value={profilePicture} onChange={e => setProfilePicture(e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 text-sm">
+              <option value="">Select</option>
+              <option value="present">Present</option>
+              <option value="missing">Missing</option>
+            </select>
+            <textarea value={form.profilePictureComment || ''} onChange={e => handleChange('profilePictureComment', e.target.value)} className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 text-sm" placeholder="Comments on profile picture quality, branding, etc." />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Cover Photo</label>
+            <select value={coverPhoto} onChange={e => setCoverPhoto(e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 text-sm">
+              <option value="">Select</option>
+              <option value="present">Present</option>
+              <option value="missing">Missing</option>
+            </select>
+            <textarea value={form.coverPhotoComment || ''} onChange={e => handleChange('coverPhotoComment', e.target.value)} className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 text-sm" placeholder="Comments on cover photo quality, branding, etc." />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description / Bio</label>
+            <textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 text-sm" placeholder="Enter page description or bio" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Other Important Info (optional)</label>
+            <textarea value={form.otherProfileInfo || ''} onChange={e => handleChange('otherProfileInfo', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-gray-400 focus:border-gray-400 text-sm" placeholder="Any other important profile information or comments" />
           </div>
         </div>
       </section>

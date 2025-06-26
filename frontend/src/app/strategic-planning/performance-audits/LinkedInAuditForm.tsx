@@ -33,33 +33,6 @@ const LinkedInAuditForm: React.FC = () => {
     <div>
       <BaseSocialAuditForm platform="linkedin" />
       <section className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 mt-6">
-        <h4 className="font-semibold text-blue-800 mb-4 text-lg">Page/Profile Information</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
-            <select className="w-full px-3 py-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-sm">
-              <option value="">Select</option>
-              <option value="present">Present</option>
-              <option value="missing">Missing</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Cover Photo</label>
-            <select className="w-full px-3 py-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-sm">
-              <option value="">Select</option>
-              <option value="present">Present</option>
-              <option value="missing">Missing</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description / Bio</label>
-            <textarea className="w-full px-3 py-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-sm" placeholder="Enter page description or bio" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Page URL</label>
-            <input type="text" className="w-full px-3 py-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-sm" placeholder="https://linkedin.com/company/..." />
-          </div>
-        </div>
         <h4 className="font-semibold text-blue-800 mb-4 text-lg">LinkedIn-Specific Fields</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
