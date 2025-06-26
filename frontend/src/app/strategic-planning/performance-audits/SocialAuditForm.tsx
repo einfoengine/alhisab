@@ -81,10 +81,50 @@ interface SocialAuditFormProps {
   platform: string;
 }
 
+const CATEGORY_OPTIONS = [
+  'Brand', 'Personal', 'News', 'Entertainment', 'Nonprofit', 'Other'
+];
+const AUDIENCE_GROWTH_OPTIONS = [
+  'Declining', 'Stable', 'Growing', 'Rapidly Growing'
+];
+const CONTENT_TYPE_OPTIONS = [
+  'Video', 'Image', 'Link', 'Story', 'Reel', 'Text', 'Live', 'Poll', 'Other'
+];
+const ENGAGEMENT_ACTIONS_OPTIONS = [
+  'Likes', 'Comments', 'Shares', 'Saves', 'Clicks', 'Other'
+];
+const NEGATIVE_FEEDBACK_OPTIONS = [
+  'Hides', 'Unlikes', 'Reports', 'Spam', 'Other'
+];
+const POLICY_VIOLATION_OPTIONS = [
+  'None', 'Minor', 'Major', 'Account at Risk'
+];
+const RESPONSE_RATE_OPTIONS = [
+  '<1hr', '1-4hr', '4-24hr', '>24hr', 'Not Monitored'
+];
+const MESSENGER_SETUP_OPTIONS = [
+  'None', 'Auto-replies', 'Bots', 'Both'
+];
+const REVIEWS_RATINGS_OPTIONS = [
+  '1 star', '2 stars', '3 stars', '4 stars', '5 stars'
+];
+
 const SocialAuditForm: React.FC<SocialAuditFormProps> = ({ platform }) => {
   const [form, setForm] = useState({ ...initialState, platform });
+  // For multi-checkboxes
+  const [contentTypesUsed, setContentTypesUsed] = useState<string[]>([]);
+  const [engagementActions, setEngagementActions] = useState<string[]>([]);
+  const [negativeFeedback, setNegativeFeedback] = useState<string[]>([]);
+
   const handleChange = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
+  const handleMultiCheckbox = (state: string[], setState: (v: string[]) => void, value: string) => {
+    if (state.includes(value)) {
+      setState(state.filter((v) => v !== value));
+    } else {
+      setState([...state, value]);
+    }
   };
 
   // Helper to show fields for the selected platform
@@ -109,7 +149,10 @@ const SocialAuditForm: React.FC<SocialAuditFormProps> = ({ platform }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <input type="text" value={form.pageCategory} onChange={e => handleChange('pageCategory', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" />
+            <select value={form.pageCategory} onChange={e => handleChange('pageCategory', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm">
+              <option value="">Select</option>
+              {CATEGORY_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Verification Status</label>
@@ -142,7 +185,10 @@ const SocialAuditForm: React.FC<SocialAuditFormProps> = ({ platform }) => {
           </div>
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Audience Growth Rate</label>
-            <input type="text" value={form.audienceGrowth} onChange={e => handleChange('audienceGrowth', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" placeholder="e.g. +5% last 30 days" />
+            <select value={form.audienceGrowth} onChange={e => handleChange('audienceGrowth', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm">
+              <option value="">Select</option>
+              {AUDIENCE_GROWTH_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
           </div>
         </div>
       </section>
@@ -157,7 +203,18 @@ const SocialAuditForm: React.FC<SocialAuditFormProps> = ({ platform }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Content Types Used</label>
-            <input type="text" value={form.contentTypes} onChange={e => handleChange('contentTypes', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" placeholder="e.g. Video, Image, Link, Story, Reel" />
+            <div className="flex flex-wrap gap-2">
+              {CONTENT_TYPE_OPTIONS.map(opt => (
+                <label key={opt} className="flex items-center gap-1 text-xs bg-green-100 px-2 py-1 rounded cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={contentTypesUsed.includes(opt)}
+                    onChange={() => handleMultiCheckbox(contentTypesUsed, setContentTypesUsed, opt)}
+                  />
+                  {opt}
+                </label>
+              ))}
+            </div>
           </div>
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Best Performing Content</label>
@@ -214,11 +271,33 @@ const SocialAuditForm: React.FC<SocialAuditFormProps> = ({ platform }) => {
           </div>
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Top Engagement Actions</label>
-            <input type="text" value={form.engagementActions} onChange={e => handleChange('engagementActions', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" placeholder="e.g. Likes, Comments, Shares, Saves" />
+            <div className="flex flex-wrap gap-2">
+              {ENGAGEMENT_ACTIONS_OPTIONS.map(opt => (
+                <label key={opt} className="flex items-center gap-1 text-xs bg-green-100 px-2 py-1 rounded cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={engagementActions.includes(opt)}
+                    onChange={() => handleMultiCheckbox(engagementActions, setEngagementActions, opt)}
+                  />
+                  {opt}
+                </label>
+              ))}
+            </div>
           </div>
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Negative Feedback</label>
-            <input type="text" value={form.negativeFeedback} onChange={e => handleChange('negativeFeedback', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" placeholder="e.g. Hides, Unlikes, Reports" />
+            <div className="flex flex-wrap gap-2">
+              {NEGATIVE_FEEDBACK_OPTIONS.map(opt => (
+                <label key={opt} className="flex items-center gap-1 text-xs bg-green-100 px-2 py-1 rounded cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={negativeFeedback.includes(opt)}
+                    onChange={() => handleMultiCheckbox(negativeFeedback, setNegativeFeedback, opt)}
+                  />
+                  {opt}
+                </label>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -274,21 +353,33 @@ const SocialAuditForm: React.FC<SocialAuditFormProps> = ({ platform }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Policy Violations/Restrictions</label>
-            <textarea rows={2} value={form.policyViolations} onChange={e => handleChange('policyViolations', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" placeholder="Any violations, restrictions, or warnings?" />
+            <select value={form.policyViolations} onChange={e => handleChange('policyViolations', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm">
+              <option value="">Select</option>
+              {POLICY_VIOLATION_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Response Rate to Messages</label>
-            <input type="text" value={form.responseRate} onChange={e => handleChange('responseRate', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" placeholder="e.g. 90% within 1 hour" />
+            <select value={form.responseRate} onChange={e => handleChange('responseRate', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm">
+              <option value="">Select</option>
+              {RESPONSE_RATE_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
           </div>
           {show(['facebook']) && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Messenger Setup</label>
-              <input type="text" value={form.messengerSetup} onChange={e => handleChange('messengerSetup', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" placeholder="Auto-replies, bots, etc." />
+              <select value={form.messengerSetup} onChange={e => handleChange('messengerSetup', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm">
+                <option value="">Select</option>
+                {MESSENGER_SETUP_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+              </select>
             </div>
           )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Reviews & Ratings</label>
-            <input type="text" value={form.reviewsRatings} onChange={e => handleChange('reviewsRatings', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm" placeholder="e.g. 4.5/5 from 200 reviews" />
+            <select value={form.reviewsRatings} onChange={e => handleChange('reviewsRatings', e.target.value)} className="w-full px-3 py-2 border border-green-200 rounded-md focus:ring-2 focus:ring-green-400 focus:border-green-400 text-sm">
+              <option value="">Select</option>
+              {REVIEWS_RATINGS_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
           </div>
         </div>
       </section>
