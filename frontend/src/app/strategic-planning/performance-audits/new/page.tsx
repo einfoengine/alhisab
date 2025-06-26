@@ -22,6 +22,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import AuditResultSummary from '../AuditResultSummary';
+import SocialAuditForm from '../SocialAuditForm';
 
 const auditTypes = [
   {
@@ -1348,6 +1349,11 @@ export default function NewAuditPage() {
             {activeTab === 'seo' && selectedPlatforms.length > 0 && (
               <div className="mt-8">
                 <AuditResultSummary />
+              </div>
+            )}
+            {activeTab === 'social' && selectedPlatforms.length > 0 && (
+              <div className="mt-8">
+                <SocialAuditForm />
               </div>
             )}
           </div>
