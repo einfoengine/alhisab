@@ -22,7 +22,12 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import AuditResultSummary from '../AuditResultSummary';
-import SocialAuditForm from '../SocialAuditForm';
+import FacebookAuditForm from '../FacebookAuditForm';
+import InstagramAuditForm from '../InstagramAuditForm';
+import LinkedInAuditForm from '../LinkedInAuditForm';
+import TwitterAuditForm from '../TwitterAuditForm';
+import TikTokAuditForm from '../TikTokAuditForm';
+import { BaseSocialAuditForm } from '../SocialAuditForm';
 
 const auditTypes = [
   {
@@ -1365,12 +1370,21 @@ export default function NewAuditPage() {
               <div className="mt-8 space-y-8">
                 {selectedPlatforms
                   .filter(pid => platformOptions.social.map(p => p.id).includes(pid))
-                  .map((platformId) => (
-                    <div key={platformId} className="mb-8">
-                      <h4 className="text-lg font-semibold mb-2 capitalize">{platformId.replace(/_/g, ' ')}</h4>
-                      <SocialAuditForm platform={platformId} />
-                    </div>
-                  ))}
+                  .map((platformId) => {
+                    let FormComponent = null;
+                    if (platformId === 'facebook') FormComponent = FacebookAuditForm;
+                    else if (platformId === 'instagram') FormComponent = InstagramAuditForm;
+                    else if (platformId === 'linkedin') FormComponent = LinkedInAuditForm;
+                    else if (platformId === 'twitter') FormComponent = TwitterAuditForm;
+                    else if (platformId === 'tiktok') FormComponent = TikTokAuditForm;
+                    else FormComponent = null;
+                    return (
+                      <div key={platformId} className="mb-8">
+                        <h4 className="text-lg font-semibold mb-2 capitalize">{platformId.replace(/_/g, ' ')}</h4>
+                        {FormComponent ? <FormComponent /> : null}
+                      </div>
+                    );
+                  })}
               </div>
             )}
           </div>
