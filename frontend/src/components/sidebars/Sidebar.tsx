@@ -4,103 +4,41 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import {
-  HomeIcon,
-  BriefcaseIcon,
-  DocumentTextIcon,
-  Cog6ToothIcon,
-  CurrencyDollarIcon,
-  UserIcon,
-  UserGroupIcon,
-  CubeIcon,
-  CheckBadgeIcon,
-  ClipboardDocumentIcon,
-  CalendarDaysIcon,
-  PlusIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  UsersIcon,
-  FolderIcon,
-  BanknotesIcon,
-  WrenchScrewdriverIcon,
   ArrowLeftOnRectangleIcon,
-  ArrowRightOnRectangleIcon,
-  MagnifyingGlassIcon,
-  LightBulbIcon,
-  ChatBubbleLeftRightIcon,
-  ReceiptRefundIcon
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
-const menuGroups = [
-  {
-    name: 'Main',
-    icon: HomeIcon,
-    items: [
-      { name: 'Dashboard', href: '/business-desk', icon: HomeIcon },
-    ]
-  },
-  {
-    name: 'Services & Packages',
-    icon: BriefcaseIcon,
-    items: [
-      { name: 'Services', href: '/business-desk/services', icon: BriefcaseIcon },
-      { name: 'Packages', href: '/business-desk/packages', icon: CubeIcon },
-      { name: 'Add New Service', href: '/business-desk/services/new', icon: PlusIcon, isAction: true },
-    ]
-  },
-  {
-    name: 'Business Desk',
-    icon: UsersIcon,
-    items: [
-      { name: 'Clients', href: '/business-desk/clients', icon: UserIcon },
-      { name: 'Leads', href: '/business-desk/leads', icon: UserGroupIcon },
-      { name: 'Agreements', href: '/business-desk/agreements', icon: ClipboardDocumentIcon },
-    ]
-  },
-  {
-    name: 'Project Management',
-    icon: FolderIcon,
-    items: [
-      { name: 'Projects', href: '/business-desk/projects', icon: DocumentTextIcon },
-      { name: 'Tasks', href: '/business-desk/tasks', icon: CheckBadgeIcon },
-      { name: 'Planning', href: '/business-desk/planning', icon: CheckBadgeIcon },
-    ]
-  },
-  {
-    name: 'Finance & Meetings',
-    icon: BanknotesIcon,
-    items: [
-      { name: 'Invoices', href: '/business-desk/invoices', icon: CurrencyDollarIcon },
-      { name: 'Receipts', href: '/business-desk/receipts', icon: ReceiptRefundIcon },
-      { name: 'Meetings', href: '/business-desk/meetings', icon: CalendarDaysIcon },
-    ]
-  },
-  {
-    name: 'System',
-    icon: WrenchScrewdriverIcon,
-    items: [
-      { name: 'Audit', href: '/business-desk/audit', icon: MagnifyingGlassIcon },
-      { name: 'Strategy', href: '/business-desk/strategy', icon: LightBulbIcon },
-      { name: 'Users', href: '/business-desk/users', icon: UserIcon },
-      { name: 'Messages', href: '/business-desk/messages', icon: ChatBubbleLeftRightIcon },
-      { name: 'Settings', href: '/business-desk/settings', icon: Cog6ToothIcon },
-    ]
-  }
-];
+export interface SidebarMenuItem {
+  name: string;
+  href: string;
+  icon: React.ElementType;
+  isAction?: boolean;
+}
+
+export interface SidebarMenuGroup {
+  name: string;
+  icon: React.ElementType;
+  items: SidebarMenuItem[];
+}
 
 interface SidebarProps {
   collapsed: boolean;
   setCollapsed: (collapsed: boolean | ((prev: boolean) => boolean)) => void;
+  menuGroups: SidebarMenuGroup[];
+  title?: string;
+  version?: string;
 }
 
-export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
+export default function Sidebar({ collapsed, setCollapsed, menuGroups, title = 'Sidebar', version }: SidebarProps) {
   const rawPathname = usePathname();
   const pathname = rawPathname || '';
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [openSlidingMenu, setOpenSlidingMenu] = useState<string | null>(null);
 
-  // Find the group with the longest matching child href
   function getActiveGroup(pathname: string) {
-    let bestGroup: typeof menuGroups[0] | undefined = undefined;
+    let bestGroup: SidebarMenuGroup | undefined = undefined;
     let bestLength = -1;
     for (const group of menuGroups) {
       for (const item of group.items) {
@@ -115,7 +53,6 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
 
   const groupWithActive = getActiveGroup(pathname);
 
-  // When the active group changes, expand it in the non-collapsed view
   useEffect(() => {
     if (groupWithActive && !collapsed) {
       setExpandedGroups([groupWithActive.name]);
@@ -153,7 +90,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-sm">A</span>
                 </div>
-                <h1 className="text-xl font-bold text-gray-800">Alhisab</h1>
+                <h1 className="text-xl font-bold text-gray-800">{title}</h1>
             </div>
         )}
         <button onClick={handleCollapse} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
@@ -238,7 +175,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
           <div className="flex items-center justify-between">
               {!collapsed && (
                   <div className="text-xs text-gray-500">
-                      v2.1.0
+                      {version}
                   </div>
               )}
               <button
