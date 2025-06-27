@@ -1297,9 +1297,11 @@ export default function NewAuditPage() {
                 
                 return (
                   <div>
-                    <h3 className="text-base md:text-lg font-medium text-gray-900 mb-3">
-                      {auditTypes.find(type => type.id === currentAuditType)?.name} Platforms
-                    </h3>
+                    {currentAuditType !== 'email' && (
+                      <h3 className="text-base md:text-lg font-medium text-gray-900 mb-3">
+                        {auditTypes.find(type => type.id === currentAuditType)?.name} Platforms
+                      </h3>
+                    )}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                       {platforms.map((platform) => {
                         const Icon = platform.icon;
