@@ -1,55 +1,111 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { EnvelopeIcon } from '@heroicons/react/24/outline';
 
 export default function EmailTab() {
+  const [emailData, setEmailData] = useState({
+    emailProvider: '',
+    subscriberCount: '',
+    openRate: '',
+    clickRate: '',
+    bounceRate: '',
+    unsubscribeRate: '',
+    spamComplaints: '',
+    deliverabilityScore: '',
+    subjectLinePerformance: '',
+    sendTimeOptimization: '',
+    segmentationStrategy: '',
+    automationWorkflows: '',
+    aBTestingResults: '',
+    mobileOptimization: '',
+    templateDesign: '',
+    callToActionEffectiveness: '',
+    listQuality: '',
+    complianceStatus: '',
+    recommendations: ''
+  });
+
+  const handleInputChange = (field: string, value: string) => {
+    setEmailData(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
     <div className="space-y-6">
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="text-lg font-medium text-blue-900 mb-2">Email Marketing Audit</h3>
-        <p className="text-blue-700 text-sm">
-          Email marketing audit form will be implemented here. This will include analysis of email campaigns, 
-          deliverability, open rates, click-through rates, and overall email marketing performance.
-        </p>
-      </div>
-      
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email Platform
-          </label>
-          <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            <option value="">Select email platform</option>
-            <option value="mailchimp">Mailchimp</option>
-            <option value="constant_contact">Constant Contact</option>
-            <option value="sendgrid">SendGrid</option>
-            <option value="klaviyo">Klaviyo</option>
-          </select>
-        </div>
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <EnvelopeIcon className="w-5 h-5 mr-2 text-orange-600" />
+          Email Marketing Audit
+        </h3>
         
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Audit Focus Areas
-          </label>
-          <div className="space-y-2">
-            <label className="flex items-center">
-              <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <span className="ml-2 text-sm text-gray-700">Campaign Performance</span>
-            </label>
-            <label className="flex items-center">
-              <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <span className="ml-2 text-sm text-gray-700">Deliverability</span>
-            </label>
-            <label className="flex items-center">
-              <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <span className="ml-2 text-sm text-gray-700">List Quality</span>
-            </label>
-            <label className="flex items-center">
-              <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <span className="ml-2 text-sm text-gray-700">Subject Line Analysis</span>
-            </label>
-            <label className="flex items-center">
-              <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <span className="ml-2 text-sm text-gray-700">Content Performance</span>
-            </label>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email Service Provider</label>
+            <input
+              type="text"
+              value={emailData.emailProvider}
+              onChange={(e) => handleInputChange('emailProvider', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="e.g., Mailchimp, Constant Contact, SendGrid"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Subscriber Count</label>
+              <input
+                type="number"
+                value={emailData.subscriberCount}
+                onChange={(e) => handleInputChange('subscriberCount', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                placeholder="0"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Open Rate (%)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={emailData.openRate}
+                onChange={(e) => handleInputChange('openRate', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Click Rate (%)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={emailData.clickRate}
+                onChange={(e) => handleInputChange('clickRate', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                placeholder="0.00"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Bounce Rate (%)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={emailData.bounceRate}
+                onChange={(e) => handleInputChange('bounceRate', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email Marketing Recommendations</label>
+            <textarea
+              rows={4}
+              value={emailData.recommendations}
+              onChange={(e) => handleInputChange('recommendations', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="Recommendations for improving email marketing performance..."
+            />
           </div>
         </div>
       </div>
