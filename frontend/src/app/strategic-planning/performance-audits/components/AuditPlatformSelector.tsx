@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface Platform {
   id: string;
@@ -6,14 +6,25 @@ interface Platform {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
-interface AuditPlatformSelectionProps {
+interface AuditPlatformSelectorProps {
   platforms: Platform[];
-  selectedPlatforms: string[];
-  onSelect: (platformId: string) => void;
-  children: (selected: string[]) => React.ReactNode;
+  onChange: (selected: string[]) => void;
+  children?: (selected: string[]) => React.ReactNode;
 }
 
-const AuditPlatformSelection: React.FC<AuditPlatformSelectionProps> = ({ platforms, selectedPlatforms, onSelect, children }) => {
+const AuditPlatformSelector: React.FC<AuditPlatformSelectorProps> = ({ platforms, onChange, children }) => {
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+
+  const handleToggle = (platformId: string) => {
+    setSelectedPlatforms(prev => {
+      const next = prev.includes(platformId)
+        ? prev.filter(id => id !== platformId)
+        : [...prev, platformId];
+      onChange(next);
+      return next;
+    });
+  };
+
   return (
     <div>
       <div className="mb-4">
@@ -25,7 +36,7 @@ const AuditPlatformSelection: React.FC<AuditPlatformSelectionProps> = ({ platfor
               <button
                 key={platform.id}
                 type="button"
-                onClick={() => onSelect(platform.id)}
+                onClick={() => handleToggle(platform.id)}
                 className={`w-full p-3 rounded-lg border-2 transition-all duration-200 text-left flex items-center gap-2 font-medium text-base shadow-sm focus:outline-none
                   ${isSelected ? 'border-green-500 bg-green-50 text-green-900' : 'border-gray-200 text-gray-800 hover:border-green-300 bg-white'}`}
               >
@@ -53,9 +64,9 @@ const AuditPlatformSelection: React.FC<AuditPlatformSelectionProps> = ({ platfor
         </div>
       )}
       {/* Render forms or children below */}
-      {children(selectedPlatforms)}
+      {children ? children(selectedPlatforms) : null}
     </div>
   );
 };
 
-export default AuditPlatformSelection; 
+export default AuditPlatformSelector; 
