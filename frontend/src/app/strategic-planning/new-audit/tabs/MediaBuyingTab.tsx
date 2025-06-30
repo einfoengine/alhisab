@@ -1,14 +1,13 @@
 import React from 'react';
 import { TagIcon } from '@heroicons/react/24/outline';
+import { useAuditData } from '../AuditDataContext';
 
-interface MediaBuyingTabProps {
-  data: Record<string, string>;
-  onDataUpdate: (data: Record<string, string>) => void;
-}
+export default function MediaBuyingTab() {
+  const { auditData, setAuditData } = useAuditData();
+  const data = (auditData['media_buying'] as Record<string, string>) || {};
 
-export default function MediaBuyingTab({ data, onDataUpdate }: MediaBuyingTabProps) {
   const handleInputChange = (field: string, value: string) => {
-    onDataUpdate({
+    setAuditData('media_buying', {
       ...data,
       [field]: value
     });

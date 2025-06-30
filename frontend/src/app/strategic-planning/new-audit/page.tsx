@@ -7,6 +7,7 @@ import StepProgressBar from '../../../components/StepProgressBar';
 import Step1AuditTypes from './components/Step1AuditTypes';
 import Step2AuditForms from './components/Step2AuditForms';
 import Step3AuditDetails from './components/Step3AuditDetails';
+import { AuditDataProvider } from './AuditDataContext';
 
 export default function NewAuditPage() {
   const [selectedAuditTypes, setSelectedAuditTypes] = useState<string[]>([]);
@@ -14,7 +15,6 @@ export default function NewAuditPage() {
   const [clientName, setClientName] = useState("");
   const [projectName, setProjectName] = useState("");
   const [step, setStep] = useState(1);
-  const [auditData, setAuditData] = useState<{ [key: string]: Record<string, string> }>({});
   const [auditNumber, setAuditNumber] = useState(
     `AUD-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`
   );
@@ -26,13 +26,6 @@ export default function NewAuditPage() {
         ? prev.filter(id => id !== auditTypeId)
         : [...prev, auditTypeId]
     );
-  };
-
-  const handleAuditDataUpdate = (auditTypeId: string, data: Record<string, string>) => {
-    setAuditData(prev => ({
-      ...prev,
-      [auditTypeId]: data
-    }));
   };
 
   const canProceed = () => {
@@ -89,8 +82,6 @@ export default function NewAuditPage() {
         return (
           <Step2AuditForms
             selectedAuditTypes={selectedAuditTypes}
-            onAuditDataUpdate={handleAuditDataUpdate}
-            auditData={auditData}
           />
         );
       case 3:
@@ -108,7 +99,6 @@ export default function NewAuditPage() {
             onAuditDateChange={setAuditDate}
             selectedAuditTypes={selectedAuditTypes}
             totalDuration={getTotalDuration()}
-            auditData={auditData}
             onBack={handleBack}
             onFinish={handleCreateAudit}
           />
@@ -119,56 +109,58 @@ export default function NewAuditPage() {
   };
 
   return (
-    <div className="p-3 md:p-4 max-w-7xl mx-auto">
-      <PageHeader 
-        title="Create New Audit" 
-        actions={[
-          {
-            name: "Back to Strategic Planning",
-            icon: ArrowLeftIcon,
-            onClick: () => window.location.href = "/strategic-planning"
-          }
-        ]}
-      />
+    <AuditDataProvider>
+      <div className="p-3 md:p-4 max-w-7xl mx-auto">
+        <PageHeader 
+          title="Create New Audit" 
+          actions={[
+            {
+              name: "Back to Strategic Planning",
+              icon: ArrowLeftIcon,
+              onClick: () => window.location.href = "/strategic-planning"
+            }
+          ]}
+        />
 
-      {/* Progress Bar */}
-      <StepProgressBar currentStep={step} />
+        {/* Progress Bar */}
+        <StepProgressBar currentStep={step} />
 
-      {/* Content */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6 shadow-sm">
-        {renderStepContent()}
+        {/* Content */}
+        <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6 shadow-sm">
+          {renderStepContent()}
 
-        {/* Navigation */}
-        {step < 3 && (
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
-            <button
-              onClick={handleBack}
-              disabled={step === 1}
-              className={`px-6 py-2 rounded-lg border transition-colors ${
-                step === 1
-                  ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              Back
-            </button>
-
-            <div className="flex space-x-3">
+          {/* Navigation */}
+          {step < 3 && (
+            <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
               <button
-                onClick={handleNext}
-                disabled={!canProceed()}
-                className={`px-6 py-2 rounded-lg transition-colors ${
-                  canProceed()
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                onClick={handleBack}
+                disabled={step === 1}
+                className={`px-6 py-2 rounded-lg border transition-colors ${
+                  step === 1
+                    ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                 }`}
               >
-                Next
+                Back
               </button>
+
+              <div className="flex space-x-3">
+                <button
+                  onClick={handleNext}
+                  disabled={!canProceed()}
+                  className={`px-6 py-2 rounded-lg transition-colors ${
+                    canProceed()
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </AuditDataProvider>
   );
 } 

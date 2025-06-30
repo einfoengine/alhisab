@@ -9,19 +9,17 @@ import MobileTab from '../tabs/MobileTab';
 import ContentTab from '../tabs/ContentTab';
 import CampaignsTab from '../tabs/CampaignsTab';
 import InternalTab from '../tabs/InternalTab';
+import { useAuditData } from '../AuditDataContext';
 
 interface Step2AuditFormsProps {
   selectedAuditTypes: string[];
-  onAuditDataUpdate: (auditTypeId: string, data: Record<string, string>) => void;
-  auditData: { [key: string]: Record<string, string> };
 }
 
 export default function Step2AuditForms({ 
-  selectedAuditTypes, 
-  onAuditDataUpdate, 
-  auditData 
+  selectedAuditTypes
 }: Step2AuditFormsProps) {
   const [activeTab, setActiveTab] = useState<string>(selectedAuditTypes[0] || '');
+  const { auditData, setAuditData } = useAuditData();
 
   const auditTypes = [
     { id: "comprehensive", name: "Comprehensive Audit" },
@@ -37,29 +35,29 @@ export default function Step2AuditForms({
   ];
 
   const renderAuditForm = (auditTypeId: string) => {
-    const currentData = auditData[auditTypeId] || {};
-    
+    const currentData = (auditData[auditTypeId] as Record<string, string>) || {};
+    const handleDataUpdate = (data: Record<string, string>) => setAuditData(auditTypeId, data);
     switch (auditTypeId) {
       case 'comprehensive':
-        return <ComprehensiveTab data={currentData} onDataUpdate={(data) => onAuditDataUpdate(auditTypeId, data)} />;
+        return <ComprehensiveTab data={currentData} onDataUpdate={handleDataUpdate} />;
       case 'seo':
-        return <SEOTab data={currentData} onDataUpdate={(data) => onAuditDataUpdate(auditTypeId, data)} />;
+        return <SEOTab data={currentData} onDataUpdate={handleDataUpdate} />;
       case 'social':
-        return <SocialTab data={currentData} onDataUpdate={(data) => onAuditDataUpdate(auditTypeId, data)} />;
+        return <SocialTab data={currentData} onDataUpdate={handleDataUpdate} />;
       case 'email':
-        return <EmailTab data={currentData} onDataUpdate={(data) => onAuditDataUpdate(auditTypeId, data)} />;
+        return <EmailTab data={currentData} onDataUpdate={handleDataUpdate} />;
       case 'media_buying':
-        return <MediaBuyingTab data={currentData} onDataUpdate={(data) => onAuditDataUpdate(auditTypeId, data)} />;
+        return <MediaBuyingTab />;
       case 'website':
-        return <WebsiteTab data={currentData} onDataUpdate={(data) => onAuditDataUpdate(auditTypeId, data)} />;
+        return <WebsiteTab data={currentData} onDataUpdate={handleDataUpdate} />;
       case 'mobile':
-        return <MobileTab data={currentData} onDataUpdate={(data) => onAuditDataUpdate(auditTypeId, data)} />;
+        return <MobileTab data={currentData} onDataUpdate={handleDataUpdate} />;
       case 'content':
-        return <ContentTab data={currentData} onDataUpdate={(data) => onAuditDataUpdate(auditTypeId, data)} />;
+        return <ContentTab data={currentData} onDataUpdate={handleDataUpdate} />;
       case 'campaigns':
-        return <CampaignsTab data={currentData} onDataUpdate={(data) => onAuditDataUpdate(auditTypeId, data)} />;
+        return <CampaignsTab data={currentData} onDataUpdate={handleDataUpdate} />;
       case 'internal':
-        return <InternalTab data={currentData} onDataUpdate={(data) => onAuditDataUpdate(auditTypeId, data)} />;
+        return <InternalTab data={currentData} onDataUpdate={handleDataUpdate} />;
       default:
         return <div>Select an audit type to get started.</div>;
     }

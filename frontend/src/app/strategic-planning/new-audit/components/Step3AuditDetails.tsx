@@ -3,10 +3,7 @@
 import React, { useState } from 'react';
 import { DocumentTextIcon, ChartBarIcon, MegaphoneIcon, EyeIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import jsPDF from 'jspdf';
-
-interface AuditData {
-  [key: string]: Record<string, unknown>;
-}
+import { useAuditData } from '../AuditDataContext';
 
 interface Step3AuditDetailsProps {
   auditName: string;
@@ -21,12 +18,11 @@ interface Step3AuditDetailsProps {
   onAuditDateChange: (date: string) => void;
   selectedAuditTypes: string[];
   totalDuration: number;
-  auditData?: AuditData;
   onBack: () => void;
   onFinish: () => void;
 }
 
-const Step3AuditDetails: React.FC<Step3AuditDetailsProps> = ({ 
+const Step3AuditDetails: React.FC<Omit<Step3AuditDetailsProps, 'auditData'>> = ({ 
   auditName, 
   onAuditNameChange, 
   clientName,
@@ -39,10 +35,10 @@ const Step3AuditDetails: React.FC<Step3AuditDetailsProps> = ({
   onAuditDateChange,
   selectedAuditTypes, 
   totalDuration,
-  auditData = {},
   onBack,
   onFinish
 }: Step3AuditDetailsProps) => {
+  const { auditData } = useAuditData();
   const [resultType, setResultType] = useState<'detailed' | 'summary'>('detailed');
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   // Track issues: { [auditType]: { [fieldKey]: boolean } }
@@ -277,27 +273,82 @@ const Step3AuditDetails: React.FC<Step3AuditDetailsProps> = ({
       },
       
       media_buying: {
-        // Media Buying Performance
-        totalBudget: "Total Media Buying Budget",
+        // Platform Overview
+        primaryPlatform: "Primary Platform",
+        secondaryPlatforms: "Secondary Platforms",
+        totalCampaigns: "Total Campaigns",
+        activeCampaigns: "Active Campaigns",
+        pausedCampaigns: "Paused Campaigns",
+        accountAge: "Account Age (months)",
+        accountStructure: "Account Structure",
+        // Campaign Performance
+        totalSpend: "Total Spend ($)",
         totalImpressions: "Total Impressions",
-        totalReach: "Total Reach",
         totalClicks: "Total Clicks",
         totalConversions: "Total Conversions",
-        
-        // Platform Performance
-        googleAdsPerformance: "Google Ads Performance",
-        facebookAdsPerformance: "Facebook Ads Performance",
-        displayAdsPerformance: "Display Ads Performance",
-        videoAdsPerformance: "Video Ads Performance",
-        
-        // Campaign Strategy
-        targetingStrategy: "Targeting Strategy",
-        creativeStrategy: "Creative Strategy",
-        biddingStrategy: "Bidding Strategy",
-        
+        totalRevenue: "Total Revenue ($)",
+        roas: "ROAS",
+        avgCTR: "Avg. CTR (%)",
+        avgCPC: "Avg. CPC ($)",
+        avgCPM: "Avg. CPM ($)",
+        avgConversionRate: "Avg. Conversion Rate (%)",
+        avgCostPerConversion: "Avg. Cost Per Conversion ($)",
+        profitMargin: "Profit Margin (%)",
+        // Budget & ROI
+        monthlyBudget: "Monthly Budget ($)",
+        budgetUtilization: "Budget Utilization (%)",
+        costPerLead: "Cost Per Lead ($)",
+        costPerAcquisition: "Cost Per Acquisition ($)",
+        lifetimeValue: "Customer Lifetime Value ($)",
+        budgetAllocation: "Budget Allocation Strategy",
+        // Audience Targeting
+        targetingTypes: "Targeting Types Used",
+        audienceSegments: "Audience Segments",
+        geographicTargeting: "Geographic Targeting",
+        demographicTargeting: "Demographic Targeting",
+        interestTargeting: "Interest Targeting",
+        customAudiences: "Custom Audiences",
+        lookalikeAudiences: "Lookalike Audiences",
+        remarketingLists: "Remarketing Lists",
+        // Ad Creative
+        adFormatsUsed: "Ad Formats Used",
+        creativeAssets: "Creative Assets",
+        adCopyPerformance: "Ad Copy Performance",
+        imagePerformance: "Image Performance",
+        videoPerformance: "Video Performance",
+        creativeTesting: "Creative Testing",
+        // Bidding & Optimization
+        biddingStrategies: "Bidding Strategies",
+        automatedBidding: "Automated Bidding",
+        bidAdjustments: "Bid Adjustments",
+        bidOptimization: "Bid Optimization",
+        qualityScore: "Quality Score (Avg)",
+        adRank: "Ad Rank (Avg)",
+        // Landing Pages
+        landingPagePerformance: "Landing Page Performance",
+        pageLoadSpeed: "Page Load Speed",
+        mobileOptimization: "Mobile Optimization",
+        abTesting: "A/B Testing",
+        conversionFunnelAnalysis: "Conversion Funnel Analysis",
+        // Conversion Tracking
+        trackingSetup: "Tracking Setup",
+        conversionActions: "Conversion Actions",
+        attributionModel: "Attribution Model",
+        crossDeviceTracking: "Cross Device Tracking",
+        offlineConversions: "Offline Conversions",
+        // Competitive Analysis
+        competitorAnalysis: "Competitor Analysis",
+        marketShare: "Market Share (%)",
+        competitivePositioning: "Competitive Positioning",
+        keywordGaps: "Keyword Gaps",
+        adCopyAnalysis: "Ad Copy Analysis",
         // Recommendations
-        mediaBuyingOptimization: "Media Buying Optimization",
-        budgetAllocation: "Budget Allocation Strategy"
+        priorityActions: "Priority Actions",
+        optimizationStrategy: "Optimization Strategy",
+        budgetRecommendations: "Budget Recommendations",
+        creativeRecommendations: "Creative Recommendations",
+        targetingRecommendations: "Targeting Recommendations",
+        additionalNotes: "Additional Notes"
       },
       
       website: {
