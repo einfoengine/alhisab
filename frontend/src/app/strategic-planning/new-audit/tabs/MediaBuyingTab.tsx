@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { useAuditData } from '../AuditDataContext';
-import Select from 'react-select';
 
 function TagInput({
   value,
@@ -161,18 +160,35 @@ export default function MediaBuyingTab() {
               </div>
               <div>
                 <label className="block font-medium mb-1">Marketing Goals Supported</label>
-                <Select
-                  isMulti
-                  options={marketingGoals.map(goal => ({ value: goal, label: goal }))}
-                  value={(campaign.marketingGoalsSupported || []).map((goal: string) => ({ value: goal, label: goal }))}
-                  onChange={(selected) => handleCampaignChange(
-                    idx,
-                    'marketingGoalsSupported',
-                    (selected as { value: string; label: string }[]).map(opt => opt.value)
-                  )}
-                  placeholder="Select marketing goals..."
-                  classNamePrefix="react-select"
-                />
+                <div>
+                  <div className="flex flex-wrap items-center border rounded-lg px-2 py-1 min-h-[42px] bg-white focus-within:ring-2 focus-within:ring-blue-500 mb-2">
+                    {(campaign.marketingGoalsSupported || []).map((tag: string, idx: number) => (
+                      <span key={idx} className="bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-xs font-medium mr-2 mb-1 flex items-center">
+                        {tag}
+                        <button type="button" className="ml-1 text-blue-500 hover:text-blue-700" onClick={() => {
+                          const updated = (campaign.marketingGoalsSupported || []).filter((_: string, i: number) => i !== idx);
+                          handleCampaignChange(idx, 'marketingGoalsSupported', updated);
+                        }}>&times;</button>
+                      </span>
+                    ))}
+                  </div>
+                  <select
+                    className="w-full border rounded-lg px-3 py-2"
+                    value=""
+                    onChange={e => {
+                      if (e.target.value) {
+                        const updated = [...(campaign.marketingGoalsSupported || []), e.target.value];
+                        handleCampaignChange(idx, 'marketingGoalsSupported', updated);
+                      }
+                    }}
+                    disabled={marketingGoals.filter(goal => !(campaign.marketingGoalsSupported || []).includes(goal)).length === 0}
+                  >
+                    <option value="" disabled>Select marketing goals...</option>
+                    {marketingGoals.filter(goal => !(campaign.marketingGoalsSupported || []).includes(goal)).map(goal => (
+                      <option key={goal} value={goal}>{goal}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <div>
                 <label className="block font-medium mb-1">Objective Set Correctly?</label>
