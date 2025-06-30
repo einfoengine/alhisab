@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useAuditData } from '../AuditDataContext';
+import Select from 'react-select';
 
 function TagInput({
   value,
@@ -160,16 +161,18 @@ export default function MediaBuyingTab() {
               </div>
               <div>
                 <label className="block font-medium mb-1">Marketing Goals Supported</label>
-                <select
-                  className="w-full border rounded-lg px-3 py-2"
-                  value={campaign.marketingGoalsSupported || ''}
-                  onChange={e => handleCampaignChange(idx, 'marketingGoalsSupported', e.target.value)}
-                >
-                  <option value="">Select a goal...</option>
-                  {marketingGoals.map(goal => (
-                    <option key={goal} value={goal}>{goal}</option>
-                  ))}
-                </select>
+                <Select
+                  isMulti
+                  options={marketingGoals.map(goal => ({ value: goal, label: goal }))}
+                  value={(campaign.marketingGoalsSupported || []).map((goal: string) => ({ value: goal, label: goal }))}
+                  onChange={(selected) => handleCampaignChange(
+                    idx,
+                    'marketingGoalsSupported',
+                    (selected as { value: string; label: string }[]).map(opt => opt.value)
+                  )}
+                  placeholder="Select marketing goals..."
+                  classNamePrefix="react-select"
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1">Objective Set Correctly?</label>
