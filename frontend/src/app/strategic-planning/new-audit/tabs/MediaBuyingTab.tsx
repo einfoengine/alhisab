@@ -1,65 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { useAuditData } from '../AuditDataContext';
-
-function TagInput({
-  value,
-  onChange,
-  placeholder
-}: {
-  value: string[];
-  onChange: (tags: string[]) => void;
-  placeholder?: string;
-}) {
-  const [input, setInput] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const addTag = (tag: string) => {
-    const trimmed = tag.trim();
-    if (trimmed && !value.includes(trimmed)) {
-      onChange([...value, trimmed]);
-    }
-  };
-
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      if (input.trim()) {
-        addTag(input);
-        setInput('');
-      }
-    } else if (e.key === 'Backspace' && !input && value.length > 0) {
-      onChange(value.slice(0, -1));
-    }
-  };
-
-  const removeTag = (idx: number) => {
-    onChange(value.filter((_, i) => i !== idx));
-    inputRef.current?.focus();
-  };
-
-  return (
-    <div className="flex flex-wrap items-center border rounded-lg px-2 py-1 min-h-[42px] bg-white focus-within:ring-2 focus-within:ring-blue-500">
-      {value.map((tag, idx) => (
-        <span key={idx} className="bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-xs font-medium mr-2 mb-1 flex items-center">
-          {tag}
-          <button type="button" className="ml-1 text-blue-500 hover:text-blue-700" onClick={() => removeTag(idx)}>&times;</button>
-        </span>
-      ))}
-      <input
-        ref={inputRef}
-        className="flex-1 min-w-[120px] border-none outline-none py-1 px-2 text-sm bg-transparent"
-        value={input}
-        onChange={handleInput}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-      />
-    </div>
-  );
-}
+import TagInput from '../components/TagInput';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 
 export default function MediaBuyingTab() {
   const { auditData, setAuditData } = useAuditData();
@@ -89,6 +31,42 @@ export default function MediaBuyingTab() {
     ? (data.campaignAudits as CampaignAudit[])
     : [{}];
 
+  // Ad Set Audit type and adSetAudits state
+  type AdSetAudit = {
+    adSetName?: string;
+    demographics?: string;
+    interests?: string[];
+    behaviors?: string[];
+    lookalikes?: string;
+    audienceOverlap?: string;
+    placements?: string;
+    budgetType?: string;
+    budgetAmount?: string;
+    pacingStrategy?: string;
+    frequency?: string;
+    performanceKPIs?: string;
+    notesRecommendations?: string;
+  };
+  const adSetAudits: AdSetAudit[] = Array.isArray(data.adSetAudits)
+    ? (data.adSetAudits as AdSetAudit[])
+    : [{}];
+
+  // Ad Level Audit type and adLevelAudits state
+  type AdLevelAudit = {
+    adNameId?: string;
+    creativeFormat?: string;
+    creativeRelevance?: string;
+    ctaEffectiveness?: string;
+    adCopyCompliance?: string;
+    destinationUrl?: string;
+    performanceKPIsAd?: string;
+    abTesting?: string;
+    notesRecommendationsAd?: string;
+  };
+  const adLevelAudits: AdLevelAudit[] = Array.isArray(data.adLevelAudits)
+    ? (data.adLevelAudits as AdLevelAudit[])
+    : [{}];
+
   const handleInputChange = (field: string, value: unknown) => {
     setAuditData('media_buying', {
       ...data,
@@ -114,6 +92,40 @@ export default function MediaBuyingTab() {
     if (campaignAudits.length > 1) {
       const updated = campaignAudits.filter((_, i) => i !== idx);
       handleInputChange('campaignAudits', updated);
+    }
+  };
+
+  const handleAdSetChange = (idx: number, field: keyof AdSetAudit, value: string | string[]) => {
+    const updated = [...adSetAudits];
+    updated[idx] = { ...updated[idx], [field]: value };
+    handleInputChange('adSetAudits', updated);
+  };
+
+  const addAdSet = () => {
+    handleInputChange('adSetAudits', [...adSetAudits, {}]);
+  };
+
+  const removeAdSet = (idx: number) => {
+    if (adSetAudits.length > 1) {
+      const updated = adSetAudits.filter((_, i) => i !== idx);
+      handleInputChange('adSetAudits', updated);
+    }
+  };
+
+  const handleAdLevelChange = (idx: number, field: keyof AdLevelAudit, value: string) => {
+    const updated = [...adLevelAudits];
+    updated[idx] = { ...updated[idx], [field]: value };
+    handleInputChange('adLevelAudits', updated);
+  };
+
+  const addAdLevel = () => {
+    handleInputChange('adLevelAudits', [...adLevelAudits, {}]);
+  };
+
+  const removeAdLevel = (idx: number) => {
+    if (adLevelAudits.length > 1) {
+      const updated = adLevelAudits.filter((_, i) => i !== idx);
+      handleInputChange('adLevelAudits', updated);
     }
   };
 
@@ -160,33 +172,12 @@ export default function MediaBuyingTab() {
               </div>
               <div>
                 <label className="block font-medium mb-1">Marketing Goals Supported</label>
-                <div className="flex flex-wrap items-center border rounded-lg px-2 py-1 min-h-[42px] bg-white focus-within:ring-2 focus-within:ring-blue-500">
-                  {(campaign.marketingGoalsSupported || []).map((tag: string, idx: number) => (
-                    <span key={idx} className="bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-xs font-medium mr-2 mb-1 flex items-center">
-                      {tag}
-                      <button type="button" className="ml-1 text-blue-500 hover:text-blue-700" onClick={() => {
-                        const updated = (campaign.marketingGoalsSupported || []).filter((_: string, i: number) => i !== idx);
-                        handleCampaignChange(idx, 'marketingGoalsSupported', updated);
-                      }}>&times;</button>
-                    </span>
-                  ))}
-                  <select
-                    className="flex-1 min-w-[180px] border-none outline-none py-1 px-2 text-sm bg-transparent"
-                    value=""
-                    onChange={e => {
-                      if (e.target.value) {
-                        const updated = [...(campaign.marketingGoalsSupported || []), e.target.value];
-                        handleCampaignChange(idx, 'marketingGoalsSupported', updated);
-                      }
-                    }}
-                    disabled={marketingGoals.filter(goal => !(campaign.marketingGoalsSupported || []).includes(goal)).length === 0}
-                  >
-                    <option value="" disabled>Select marketing goals...</option>
-                    {marketingGoals.filter(goal => !(campaign.marketingGoalsSupported || []).includes(goal)).map(goal => (
-                      <option key={goal} value={goal}>{goal}</option>
-                    ))}
-                  </select>
-                </div>
+                <MultiSelectDropdown
+                  value={campaign.marketingGoalsSupported || []}
+                  onChange={tags => handleCampaignChange(idx, 'marketingGoalsSupported', tags)}
+                  options={marketingGoals}
+                  placeholder="Select marketing goals..."
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1">Objective Set Correctly?</label>
@@ -254,83 +245,180 @@ export default function MediaBuyingTab() {
       {/* SECTION 3: AD SET LEVEL AUDIT */}
       <section>
         <h3 className="text-lg font-semibold mb-2">📁 SECTION 3: AD SET LEVEL AUDIT</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block font-medium mb-1">Ad Set Name</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.adSetName as string) || ''} onChange={e => handleInputChange('adSetName', e.target.value)} />
+        {adSetAudits.map((adSet, idx) => (
+          <div key={idx} className="border border-gray-200 rounded-lg p-4 mb-6 relative">
+            {adSetAudits.length > 1 && (
+              <button
+                type="button"
+                className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xs"
+                onClick={() => removeAdSet(idx)}
+                title="Remove this ad set"
+              >
+                Remove
+              </button>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-medium mb-1">Ad Set Name</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={adSet.adSetName || ''} onChange={e => handleAdSetChange(idx, 'adSetName', e.target.value)} />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Demographics</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={adSet.demographics || ''} onChange={e => handleAdSetChange(idx, 'demographics', e.target.value)} placeholder="Age, gender, location, etc." />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Interests</label>
+                <TagInput value={adSet.interests || []} onChange={tags => handleAdSetChange(idx, 'interests', tags)} placeholder="Type and press comma or Enter" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Behaviors</label>
+                <TagInput value={adSet.behaviors || []} onChange={tags => handleAdSetChange(idx, 'behaviors', tags)} placeholder="Type and press comma or Enter" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Lookalikes</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={adSet.lookalikes || ''} onChange={e => handleAdSetChange(idx, 'lookalikes', e.target.value)} placeholder="Describe lookalike audiences" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Audience Overlap?</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={adSet.audienceOverlap || ''} onChange={e => handleAdSetChange(idx, 'audienceOverlap', e.target.value)} placeholder="Any cannibalization or excessive overlap?" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Placements</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={adSet.placements || ''} onChange={e => handleAdSetChange(idx, 'placements', e.target.value)} placeholder="Automatic vs. Manual; where ads are shown" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Budget Type</label>
+                <select className="w-full border rounded-lg px-3 py-2" value={adSet.budgetType || ''} onChange={e => handleAdSetChange(idx, 'budgetType', e.target.value)}>
+                  <option value="">Select</option>
+                  <option value="Daily">Daily</option>
+                  <option value="Lifetime">Lifetime</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Budget Amount</label>
+                <input type="number" className="w-full border rounded-lg px-3 py-2" value={adSet.budgetAmount || ''} onChange={e => handleAdSetChange(idx, 'budgetAmount', e.target.value)} placeholder="Enter amount" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Pacing Strategy</label>
+                <select className="w-full border rounded-lg px-3 py-2" value={adSet.pacingStrategy || ''} onChange={e => handleAdSetChange(idx, 'pacingStrategy', e.target.value)}>
+                  <option value="">Select</option>
+                  <option value="Standard">Standard</option>
+                  <option value="Accelerated">Accelerated</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Frequency</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={adSet.frequency || ''} onChange={e => handleAdSetChange(idx, 'frequency', e.target.value)} placeholder="Is ad fatigue occurring?" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Performance KPIs</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={adSet.performanceKPIs || ''} onChange={e => handleAdSetChange(idx, 'performanceKPIs', e.target.value)} placeholder="CPC, CTR, Conversion Rate" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block font-medium mb-1">Notes & Recommendations</label>
+                <textarea className="w-full border rounded-lg px-3 py-2" value={adSet.notesRecommendations || ''} onChange={e => handleAdSetChange(idx, 'notesRecommendations', e.target.value)} />
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block font-medium mb-1">Target Audience</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.targetAudience as string) || ''} onChange={e => handleInputChange('targetAudience', e.target.value)} placeholder="Demographics, interests, behaviors, lookalikes" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Audience Overlap?</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.audienceOverlap as string) || ''} onChange={e => handleInputChange('audienceOverlap', e.target.value)} placeholder="Any cannibalization or excessive overlap?" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Placements</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.placements as string) || ''} onChange={e => handleInputChange('placements', e.target.value)} placeholder="Automatic vs. Manual; where ads are shown" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Budget & Schedule</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.budgetSchedule as string) || ''} onChange={e => handleInputChange('budgetSchedule', e.target.value)} placeholder="Daily/Lifetime; pacing strategy" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Frequency</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.frequency as string) || ''} onChange={e => handleInputChange('frequency', e.target.value)} placeholder="Is ad fatigue occurring?" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Performance KPIs</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.performanceKPIsAdSet as string) || ''} onChange={e => handleInputChange('performanceKPIsAdSet', e.target.value)} placeholder="CPC, CTR, Conversion Rate" />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block font-medium mb-1">Notes & Recommendations</label>
-            <textarea className="w-full border rounded-lg px-3 py-2" value={(data.notesRecommendationsAdSet as string) || ''} onChange={e => handleInputChange('notesRecommendationsAdSet', e.target.value)} />
-          </div>
-        </div>
+        ))}
+        <button
+          type="button"
+          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={addAdSet}
+        >
+          + Add Ad Set
+        </button>
       </section>
 
       {/* SECTION 4: AD LEVEL AUDIT */}
       <section>
         <h3 className="text-lg font-semibold mb-2">🎨 SECTION 4: AD LEVEL AUDIT</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block font-medium mb-1">Ad Name / ID</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.adNameId as string) || ''} onChange={e => handleInputChange('adNameId', e.target.value)} />
+        {adLevelAudits.map((ad, idx) => (
+          <div key={idx} className="border border-gray-200 rounded-lg p-4 mb-6 relative">
+            {adLevelAudits.length > 1 && (
+              <button
+                type="button"
+                className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xs"
+                onClick={() => removeAdLevel(idx)}
+                title="Remove this ad audit"
+              >
+                Remove
+              </button>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-medium mb-1">Ad Name / ID</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={ad.adNameId || ''} onChange={e => handleAdLevelChange(idx, 'adNameId', e.target.value)} />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Creative Format</label>
+                <select className="w-full border rounded-lg px-3 py-2" value={ad.creativeFormat || ''} onChange={e => handleAdLevelChange(idx, 'creativeFormat', e.target.value)}>
+                  <option value="">Select</option>
+                  <option value="Image">Image</option>
+                  <option value="Video">Video</option>
+                  <option value="Carousel">Carousel</option>
+                  <option value="Collection">Collection</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Creative Relevance</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={ad.creativeRelevance || ''} onChange={e => handleAdLevelChange(idx, 'creativeRelevance', e.target.value)} placeholder="Aligned with message & audience?" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">CTA Effectiveness</label>
+                <select className="w-full border rounded-lg px-3 py-2" value={ad.ctaEffectiveness || ''} onChange={e => handleAdLevelChange(idx, 'ctaEffectiveness', e.target.value)}>
+                  <option value="">Select</option>
+                  <option value="Excellent">Excellent</option>
+                  <option value="Good">Good</option>
+                  <option value="Average">Average</option>
+                  <option value="Poor">Poor</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Ad Copy Compliance</label>
+                <select className="w-full border rounded-lg px-3 py-2" value={ad.adCopyCompliance || ''} onChange={e => handleAdLevelChange(idx, 'adCopyCompliance', e.target.value)}>
+                  <option value="">Select</option>
+                  <option value="Compliant">Compliant</option>
+                  <option value="Minor Issues">Minor Issues</option>
+                  <option value="Major Issues">Major Issues</option>
+                  <option value="Not Checked">Not Checked</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Destination URL</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={ad.destinationUrl || ''} onChange={e => handleAdLevelChange(idx, 'destinationUrl', e.target.value)} placeholder="UTM tags added? Relevant landing page?" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Performance KPIs</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={ad.performanceKPIsAd || ''} onChange={e => handleAdLevelChange(idx, 'performanceKPIsAd', e.target.value)} placeholder="Engagement Rate, CTR, ROAS" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">A/B Testing?</label>
+                <select className="w-full border rounded-lg px-3 py-2" value={ad.abTesting || ''} onChange={e => handleAdLevelChange(idx, 'abTesting', e.target.value)}>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                  <option value="Planned">Planned</option>
+                  <option value="Not Applicable">Not Applicable</option>
+                </select>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block font-medium mb-1">Notes & Recommendations</label>
+                <textarea className="w-full border rounded-lg px-3 py-2" value={ad.notesRecommendationsAd || ''} onChange={e => handleAdLevelChange(idx, 'notesRecommendationsAd', e.target.value)} />
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block font-medium mb-1">Creative Format</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.creativeFormat as string) || ''} onChange={e => handleInputChange('creativeFormat', e.target.value)} placeholder="Image / Video / Carousel / Collection" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Creative Relevance</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.creativeRelevance as string) || ''} onChange={e => handleInputChange('creativeRelevance', e.target.value)} placeholder="Aligned with message & audience?" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">CTA Effectiveness</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.ctaEffectiveness as string) || ''} onChange={e => handleInputChange('ctaEffectiveness', e.target.value)} placeholder="Clear, compelling, action-oriented?" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Ad Copy Compliance</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.adCopyCompliance as string) || ''} onChange={e => handleInputChange('adCopyCompliance', e.target.value)} placeholder="Brand tone, spelling, legal claims" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Destination URL</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.destinationUrl as string) || ''} onChange={e => handleInputChange('destinationUrl', e.target.value)} placeholder="UTM tags added? Relevant landing page?" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Performance KPIs</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.performanceKPIsAd as string) || ''} onChange={e => handleInputChange('performanceKPIsAd', e.target.value)} placeholder="Engagement Rate, CTR, ROAS" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">A/B Testing?</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.abTesting as string) || ''} onChange={e => handleInputChange('abTesting', e.target.value)} placeholder="Are creative variations tested?" />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block font-medium mb-1">Notes & Recommendations</label>
-            <textarea className="w-full border rounded-lg px-3 py-2" value={(data.notesRecommendationsAd as string) || ''} onChange={e => handleInputChange('notesRecommendationsAd', e.target.value)} />
-          </div>
-        </div>
+        ))}
+        <button
+          type="button"
+          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={addAdLevel}
+        >
+          + Add Ad
+        </button>
       </section>
 
       {/* SECTION 5: TRACKING, ATTRIBUTION & COMPLIANCE */}
