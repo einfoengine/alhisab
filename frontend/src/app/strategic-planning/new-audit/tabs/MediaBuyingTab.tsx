@@ -61,6 +61,92 @@ function TagInput({
   );
 }
 
+function TagSelect({
+  value,
+  onChange,
+  options,
+  placeholder
+}: {
+  value: string[];
+  onChange: (tags: string[]) => void;
+  options: string[];
+  placeholder?: string;
+}) {
+  const [input, setInput] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const addTag = (tag: string) => {
+    const trimmed = tag.trim();
+    if (trimmed && !value.includes(trimmed) && options.includes(trimmed)) {
+      onChange([...value, trimmed]);
+    }
+  };
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      if (input.trim() && options.includes(input.trim())) {
+        addTag(input);
+        setInput('');
+      }
+    } else if (e.key === 'Backspace' && !input && value.length > 0) {
+      onChange(value.slice(0, -1));
+    }
+  };
+
+  const removeTag = (idx: number) => {
+    onChange(value.filter((_, i) => i !== idx));
+    inputRef.current?.focus();
+  };
+
+  // Filter options to only those not already selected and matching input
+  const filteredOptions = options.filter(opt => !value.includes(opt) && (!input || opt.toLowerCase().includes(input.toLowerCase())));
+
+  return (
+    <div className="flex flex-wrap items-center border rounded-lg px-2 py-1 min-h-[42px] bg-white focus-within:ring-2 focus-within:ring-blue-500">
+      {value.map((tag, idx) => (
+        <span key={idx} className="bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-xs font-medium mr-2 mb-1 flex items-center">
+          {tag}
+          <button type="button" className="ml-1 text-blue-500 hover:text-blue-700" onClick={() => removeTag(idx)}>&times;</button>
+        </span>
+      ))}
+      <input
+        ref={inputRef}
+        className="flex-1 min-w-[120px] border-none outline-none py-1 px-2 text-sm bg-transparent"
+        value={input}
+        onChange={handleInput}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        list={`marketing-goal-options`}
+      />
+      {/* Show dropdown of filtered options */}
+      {input && filteredOptions.length > 0 && (
+        <div className="absolute bg-white border rounded shadow z-10 mt-10">
+          {filteredOptions.map(opt => (
+            <div
+              key={opt}
+              className="px-3 py-1 cursor-pointer hover:bg-blue-100 text-sm"
+              onMouseDown={() => {
+                addTag(opt);
+                setInput('');
+              }}
+            >
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
+      <datalist id="marketing-goal-options">
+        {options.map(opt => <option key={opt} value={opt} />)}
+      </datalist>
+    </div>
+  );
+}
+
 export default function MediaBuyingTab() {
   const { auditData, setAuditData } = useAuditData();
   const data = (auditData['media_buying'] as Record<string, unknown>) || {};
@@ -83,6 +169,7 @@ export default function MediaBuyingTab() {
     dateRange?: string;
     complianceCheck?: string;
     notesRecommendationsCampaign?: string;
+    marketingGoalsSupported?: string[];
   };
   const campaignAudits: CampaignAudit[] = Array.isArray(data.campaignAudits)
     ? (data.campaignAudits as CampaignAudit[])
@@ -95,9 +182,13 @@ export default function MediaBuyingTab() {
     });
   };
 
-  const handleCampaignChange = (idx: number, field: keyof CampaignAudit, value: string) => {
+  const handleCampaignChange = (idx: number, field: keyof CampaignAudit, value: string | string[]) => {
     const updated = [...campaignAudits];
-    updated[idx] = { ...updated[idx], [field]: value };
+    if (field === 'marketingGoalsSupported') {
+      updated[idx] = { ...updated[idx], [field]: value as string[] };
+    } else {
+      updated[idx] = { ...updated[idx], [field]: value as string };
+    }
     handleInputChange('campaignAudits', updated);
   };
 
@@ -152,6 +243,15 @@ export default function MediaBuyingTab() {
               <div>
                 <label className="block font-medium mb-1">Campaign Name</label>
                 <input type="text" className="w-full border rounded-lg px-3 py-2" value={campaign.campaignName || ''} onChange={e => handleCampaignChange(idx, 'campaignName', e.target.value)} />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Marketing Goals Supported</label>
+                <TagSelect
+                  value={campaign.marketingGoalsSupported || []}
+                  onChange={tags => handleCampaignChange(idx, 'marketingGoalsSupported', tags)}
+                  options={marketingGoals}
+                  placeholder="Select or type to filter goals"
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1">Objective Set Correctly?</label>
