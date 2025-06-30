@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 interface SEOTabProps {
   data: Record<string, string>;
@@ -6,23 +6,11 @@ interface SEOTabProps {
 }
 
 export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
-  const [formData, setFormData] = useState<Record<string, string>>(data);
-
-  // Update parent when form data changes
-  useEffect(() => {
-    onDataUpdate(formData);
-  }, [formData, onDataUpdate]);
-
-  // Initialize form data from props
-  useEffect(() => {
-    setFormData(data);
-  }, [data]);
-
   const handleInputChange = (fieldName: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
+    onDataUpdate({
+      ...data,
       [fieldName]: value
-    }));
+    });
   };
 
   return (
@@ -37,7 +25,7 @@ export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
               type="text" 
               className="w-full border rounded p-2" 
               placeholder="e.g., 2.5 seconds"
-              value={formData.websiteSpeed || ''}
+              value={data.websiteSpeed || ''}
               onChange={(e) => handleInputChange('websiteSpeed', e.target.value)}
             />
           </div>
@@ -45,7 +33,7 @@ export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
             <label className="block text-sm font-medium text-gray-700 mb-2">Mobile Responsiveness</label>
             <select 
               className="w-full border rounded p-2"
-              value={formData.mobileResponsiveness || ''}
+              value={data.mobileResponsiveness || ''}
               onChange={(e) => handleInputChange('mobileResponsiveness', e.target.value)}
             >
               <option value="">Select status</option>
@@ -59,7 +47,7 @@ export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
             <label className="block text-sm font-medium text-gray-700 mb-2">SSL Certificate</label>
             <select 
               className="w-full border rounded p-2"
-              value={formData.sslCertificate || ''}
+              value={data.sslCertificate || ''}
               onChange={(e) => handleInputChange('sslCertificate', e.target.value)}
             >
               <option value="">Select status</option>
@@ -81,7 +69,7 @@ export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
               className="w-full border rounded p-2" 
               rows={2} 
               placeholder="Assessment of title tag optimization"
-              value={formData.titleTagsOptimization || ''}
+              value={data.titleTagsOptimization || ''}
               onChange={(e) => handleInputChange('titleTagsOptimization', e.target.value)}
             />
           </div>
@@ -91,7 +79,7 @@ export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
               className="w-full border rounded p-2" 
               rows={2} 
               placeholder="Assessment of meta descriptions"
-              value={formData.metaDescriptions || ''}
+              value={data.metaDescriptions || ''}
               onChange={(e) => handleInputChange('metaDescriptions', e.target.value)}
             />
           </div>
@@ -101,7 +89,7 @@ export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
               className="w-full border rounded p-2" 
               rows={2} 
               placeholder="Assessment of header tag usage"
-              value={formData.headerTags || ''}
+              value={data.headerTags || ''}
               onChange={(e) => handleInputChange('headerTags', e.target.value)}
             />
           </div>
@@ -118,7 +106,7 @@ export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
               className="w-full border rounded p-2" 
               rows={3} 
               placeholder="Current keyword strategy and opportunities"
-              value={formData.keywordResearch || ''}
+              value={data.keywordResearch || ''}
               onChange={(e) => handleInputChange('keywordResearch', e.target.value)}
             />
           </div>
@@ -128,7 +116,7 @@ export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
               className="w-full border rounded p-2" 
               rows={3} 
               placeholder="How well is content optimized for target keywords?"
-              value={formData.contentOptimization || ''}
+              value={data.contentOptimization || ''}
               onChange={(e) => handleInputChange('contentOptimization', e.target.value)}
             />
           </div>
@@ -145,7 +133,7 @@ export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
               className="w-full border rounded p-2" 
               rows={3} 
               placeholder="Technical SEO improvements needed"
-              value={formData.technicalImprovements || ''}
+              value={data.technicalImprovements || ''}
               onChange={(e) => handleInputChange('technicalImprovements', e.target.value)}
             />
           </div>
@@ -155,7 +143,7 @@ export default function SEOTab({ data, onDataUpdate }: SEOTabProps) {
               className="w-full border rounded p-2" 
               rows={3} 
               placeholder="Content strategy recommendations for SEO"
-              value={formData.contentStrategy || ''}
+              value={data.contentStrategy || ''}
               onChange={(e) => handleInputChange('contentStrategy', e.target.value)}
             />
           </div>

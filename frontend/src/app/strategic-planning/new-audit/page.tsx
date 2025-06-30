@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import PageHeader from '../../../../components/elements/PageHeader';
-import StepProgressBar from '../../../../components/StepProgressBar';
+import PageHeader from '../../../components/elements/PageHeader';
+import StepProgressBar from '../../../components/StepProgressBar';
 import Step1AuditTypes from './components/Step1AuditTypes';
 import Step2AuditForms from './components/Step2AuditForms';
 import Step3AuditDetails from './components/Step3AuditDetails';
@@ -51,8 +51,8 @@ export default function NewAuditPage() {
   const handleBack = () => setStep(step - 1);
 
   const handleCreateAudit = () => {
-    // Redirect to audits page
-    window.location.href = "/strategic-planning/performance-audits";
+    // Redirect to strategic planning dashboard
+    window.location.href = "/strategic-planning";
   };
 
   const getTotalDuration = () => {
@@ -124,9 +124,9 @@ export default function NewAuditPage() {
         title="Create New Audit" 
         actions={[
           {
-            name: "Back to Audits",
+            name: "Back to Strategic Planning",
             icon: ArrowLeftIcon,
-            onClick: () => window.location.href = "/strategic-planning/performance-audits"
+            onClick: () => window.location.href = "/strategic-planning"
           }
         ]}
       />
@@ -171,4 +171,4 @@ export default function NewAuditPage() {
       </div>
     </div>
   );
-}
+} 
