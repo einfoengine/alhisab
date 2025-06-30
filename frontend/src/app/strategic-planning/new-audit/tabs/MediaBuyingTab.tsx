@@ -1,12 +1,78 @@
-import React from 'react';
-import { TagIcon } from '@heroicons/react/24/outline';
+import React, { useRef, useState } from 'react';
 import { useAuditData } from '../AuditDataContext';
+
+function TagInput({
+  value,
+  onChange,
+  placeholder
+}: {
+  value: string[];
+  onChange: (tags: string[]) => void;
+  placeholder?: string;
+}) {
+  const [input, setInput] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const addTag = (tag: string) => {
+    const trimmed = tag.trim();
+    if (trimmed && !value.includes(trimmed)) {
+      onChange([...value, trimmed]);
+    }
+  };
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      if (input.trim()) {
+        addTag(input);
+        setInput('');
+      }
+    } else if (e.key === 'Backspace' && !input && value.length > 0) {
+      onChange(value.slice(0, -1));
+    }
+  };
+
+  const removeTag = (idx: number) => {
+    onChange(value.filter((_, i) => i !== idx));
+    inputRef.current?.focus();
+  };
+
+  return (
+    <div className="flex flex-wrap items-center border rounded-lg px-2 py-1 min-h-[42px] bg-white focus-within:ring-2 focus-within:ring-blue-500">
+      {value.map((tag, idx) => (
+        <span key={idx} className="bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-xs font-medium mr-2 mb-1 flex items-center">
+          {tag}
+          <button type="button" className="ml-1 text-blue-500 hover:text-blue-700" onClick={() => removeTag(idx)}>&times;</button>
+        </span>
+      ))}
+      <input
+        ref={inputRef}
+        className="flex-1 min-w-[120px] border-none outline-none py-1 px-2 text-sm bg-transparent"
+        value={input}
+        onChange={handleInput}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+      />
+    </div>
+  );
+}
 
 export default function MediaBuyingTab() {
   const { auditData, setAuditData } = useAuditData();
-  const data = (auditData['media_buying'] as Record<string, string>) || {};
+  const data = (auditData['media_buying'] as Record<string, unknown>) || {};
 
-  const handleInputChange = (field: string, value: string) => {
+  // Marketing Goals as an array
+  const marketingGoals: string[] = Array.isArray(data.marketingGoals)
+    ? (data.marketingGoals as string[])
+    : data.marketingGoals
+    ? [data.marketingGoals as string]
+    : [];
+
+  const handleInputChange = (field: string, value: unknown) => {
     setAuditData('media_buying', {
       ...data,
       [field]: value
@@ -14,421 +80,280 @@ export default function MediaBuyingTab() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <TagIcon className="w-5 h-5 mr-2 text-red-600" />
-          PPC & Media Buying Audit
-        </h3>
-        
-        {/* Platform Overview */}
-        <div className="mb-8">
-          <h5 className="text-md font-semibold text-gray-800 mb-4 border-b pb-2">Platform Overview</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Primary Platform</label>
-              <select value={data.primaryPlatform || ''} onChange={e => handleInputChange('primaryPlatform', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                <option value="">Select platform</option>
-                <option value="google-ads">Google Ads</option>
-                <option value="facebook-ads">Facebook Ads</option>
-                <option value="linkedin-ads">LinkedIn Ads</option>
-                <option value="tiktok-ads">TikTok Ads</option>
-                <option value="twitter-ads">Twitter Ads</option>
-                <option value="instagram-ads">Instagram Ads</option>
-                <option value="bing-ads">Bing Ads</option>
-                <option value="amazon-ads">Amazon Ads</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Secondary Platforms</label>
-              <input type="text" value={data.secondaryPlatforms || ''} onChange={e => handleInputChange('secondaryPlatforms', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Facebook, LinkedIn, etc." />
-            </div>
+    <div className="space-y-10">
+      {/* SECTION 1: OVERALL MARKETING GOALS */}
+      <section>
+        <h3 className="text-lg font-semibold mb-2">🏆 SECTION 1: OVERALL MARKETING GOALS</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-2 space-y-2">
+            <label className="block font-medium mb-1">Marketing Goal(s)</label>
+            <TagInput
+              value={marketingGoals}
+              onChange={tags => handleInputChange('marketingGoals', tags)}
+              placeholder="Type a goal and press comma or Enter"
+            />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Total Campaigns</label>
-              <input type="number" value={data.totalCampaigns || ''} onChange={e => handleInputChange('totalCampaigns', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Active Campaigns</label>
-              <input type="number" value={data.activeCampaigns || ''} onChange={e => handleInputChange('activeCampaigns', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Paused Campaigns</label>
-              <input type="number" value={data.pausedCampaigns || ''} onChange={e => handleInputChange('pausedCampaigns', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Account Age (months)</label>
-              <input type="number" value={data.accountAge || ''} onChange={e => handleInputChange('accountAge', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Account Structure</label>
-              <input type="text" value={data.accountStructure || ''} onChange={e => handleInputChange('accountStructure', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Single account, MCC, etc." />
-            </div>
+          <div className="md:col-span-2">
+            <label className="block font-medium mb-1">Notes & Gaps</label>
+            <textarea className="w-full border rounded-lg px-3 py-2" value={(data.notesGaps as string) || ''} onChange={e => handleInputChange('notesGaps', e.target.value)} placeholder="Any observations, misalignment, or missing elements" />
           </div>
         </div>
+      </section>
 
-        {/* Campaign Performance */}
-        <div className="mb-8">
-          <h5 className="text-md font-semibold text-gray-800 mb-4 border-b pb-2">Campaign Performance (Last 30 Days)</h5>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Total Spend ($)</label>
-              <input type="number" step="0.01" value={data.totalSpend || ''} onChange={e => handleInputChange('totalSpend', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Total Impressions</label>
-              <input type="number" value={data.totalImpressions || ''} onChange={e => handleInputChange('totalImpressions', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Total Clicks</label>
-              <input type="number" value={data.totalClicks || ''} onChange={e => handleInputChange('totalClicks', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0" />
-            </div>
+      {/* SECTION 2: CAMPAIGN LEVEL AUDIT */}
+      <section>
+        <h3 className="text-lg font-semibold mb-2">📂 SECTION 2: CAMPAIGN LEVEL AUDIT</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1">Campaign Name</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.campaignName as string) || ''} onChange={e => handleInputChange('campaignName', e.target.value)} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Total Conversions</label>
-              <input type="number" value={data.totalConversions || ''} onChange={e => handleInputChange('totalConversions', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Total Revenue ($)</label>
-              <input type="number" step="0.01" value={data.totalRevenue || ''} onChange={e => handleInputChange('totalRevenue', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">ROAS</label>
-              <input type="number" step="0.01" value={data.roas || ''} onChange={e => handleInputChange('roas', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Objective Set Correctly?</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.objectiveSetCorrectly as string) || ''} onChange={e => handleInputChange('objectiveSetCorrectly', e.target.value)} placeholder="e.g., Awareness, Traffic, Conversions (Yes/No)" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Avg. CTR (%)</label>
-              <input type="number" step="0.01" value={data.avgCTR || ''} onChange={e => handleInputChange('avgCTR', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Avg. CPC ($)</label>
-              <input type="number" step="0.01" value={data.avgCPC || ''} onChange={e => handleInputChange('avgCPC', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Avg. CPM ($)</label>
-              <input type="number" step="0.01" value={data.avgCPM || ''} onChange={e => handleInputChange('avgCPM', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Buying Type</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.buyingType as string) || ''} onChange={e => handleInputChange('buyingType', e.target.value)} placeholder="Auction / Reach & Frequency" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Avg. Conversion Rate (%)</label>
-              <input type="number" step="0.01" value={data.avgConversionRate || ''} onChange={e => handleInputChange('avgConversionRate', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Avg. Cost Per Conversion ($)</label>
-              <input type="number" step="0.01" value={data.avgCostPerConversion || ''} onChange={e => handleInputChange('avgCostPerConversion', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Profit Margin (%)</label>
-              <input type="number" step="0.01" value={data.profitMargin || ''} onChange={e => handleInputChange('profitMargin', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Budget Allocation</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.budgetAllocationCampaign as string) || ''} onChange={e => handleInputChange('budgetAllocationCampaign', e.target.value)} placeholder="Planned vs. Actual; justification of spend" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Optimization Strategy</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.optimizationStrategy as string) || ''} onChange={e => handleInputChange('optimizationStrategy', e.target.value)} placeholder="CBO / Manual" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Performance KPIs</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.performanceKPIs as string) || ''} onChange={e => handleInputChange('performanceKPIs', e.target.value)} placeholder="CPM, CTR, CPA, ROAS" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Date Range</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.dateRange as string) || ''} onChange={e => handleInputChange('dateRange', e.target.value)} />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Compliance Check</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.complianceCheck as string) || ''} onChange={e => handleInputChange('complianceCheck', e.target.value)} placeholder="Any policy violations or rejected ads" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block font-medium mb-1">Notes & Recommendations</label>
+            <textarea className="w-full border rounded-lg px-3 py-2" value={(data.notesRecommendationsCampaign as string) || ''} onChange={e => handleInputChange('notesRecommendationsCampaign', e.target.value)} />
           </div>
         </div>
+      </section>
 
-        {/* Budget & ROI */}
-        <div className="mb-8">
-          <h5 className="text-md font-semibold text-gray-800 mb-4 border-b pb-2">Budget & ROI Analysis</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Monthly Budget ($)</label>
-              <input type="number" step="0.01" value={data.monthlyBudget || ''} onChange={e => handleInputChange('monthlyBudget', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Budget Utilization (%)</label>
-              <input type="number" step="0.01" value={data.budgetUtilization || ''} onChange={e => handleInputChange('budgetUtilization', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
+      {/* SECTION 3: AD SET LEVEL AUDIT */}
+      <section>
+        <h3 className="text-lg font-semibold mb-2">📁 SECTION 3: AD SET LEVEL AUDIT</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1">Ad Set Name</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.adSetName as string) || ''} onChange={e => handleInputChange('adSetName', e.target.value)} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cost Per Lead ($)</label>
-              <input type="number" step="0.01" value={data.costPerLead || ''} onChange={e => handleInputChange('costPerLead', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cost Per Acquisition ($)</label>
-              <input type="number" step="0.01" value={data.costPerAcquisition || ''} onChange={e => handleInputChange('costPerAcquisition', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Customer Lifetime Value ($)</label>
-              <input type="number" step="0.01" value={data.lifetimeValue || ''} onChange={e => handleInputChange('lifetimeValue', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Target Audience</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.targetAudience as string) || ''} onChange={e => handleInputChange('targetAudience', e.target.value)} placeholder="Demographics, interests, behaviors, lookalikes" />
           </div>
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Budget Allocation Strategy</label>
-            <textarea rows={2} value={data.budgetAllocation || ''} onChange={e => handleInputChange('budgetAllocation', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="How budget is allocated across campaigns, platforms, etc." />
+          <div>
+            <label className="block font-medium mb-1">Audience Overlap?</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.audienceOverlap as string) || ''} onChange={e => handleInputChange('audienceOverlap', e.target.value)} placeholder="Any cannibalization or excessive overlap?" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Placements</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.placements as string) || ''} onChange={e => handleInputChange('placements', e.target.value)} placeholder="Automatic vs. Manual; where ads are shown" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Budget & Schedule</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.budgetSchedule as string) || ''} onChange={e => handleInputChange('budgetSchedule', e.target.value)} placeholder="Daily/Lifetime; pacing strategy" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Frequency</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.frequency as string) || ''} onChange={e => handleInputChange('frequency', e.target.value)} placeholder="Is ad fatigue occurring?" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Performance KPIs</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.performanceKPIsAdSet as string) || ''} onChange={e => handleInputChange('performanceKPIsAdSet', e.target.value)} placeholder="CPC, CTR, Conversion Rate" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block font-medium mb-1">Notes & Recommendations</label>
+            <textarea className="w-full border rounded-lg px-3 py-2" value={(data.notesRecommendationsAdSet as string) || ''} onChange={e => handleInputChange('notesRecommendationsAdSet', e.target.value)} />
           </div>
         </div>
+      </section>
 
-        {/* Audience Targeting */}
-        <div className="mb-8">
-          <h5 className="text-md font-semibold text-gray-800 mb-4 border-b pb-2">Audience Targeting</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Targeting Types Used</label>
-              <input type="text" value={data.targetingTypes || ''} onChange={e => handleInputChange('targetingTypes', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Demographic, interest, behavioral, etc." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Audience Segments</label>
-              <input type="text" value={data.audienceSegments || ''} onChange={e => handleInputChange('audienceSegments', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="High-value, mid-funnel, etc." />
-            </div>
+      {/* SECTION 4: AD LEVEL AUDIT */}
+      <section>
+        <h3 className="text-lg font-semibold mb-2">🎨 SECTION 4: AD LEVEL AUDIT</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1">Ad Name / ID</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.adNameId as string) || ''} onChange={e => handleInputChange('adNameId', e.target.value)} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Geographic Targeting</label>
-              <input type="text" value={data.geographicTargeting || ''} onChange={e => handleInputChange('geographicTargeting', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Countries, cities, radius targeting..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Demographic Targeting</label>
-              <input type="text" value={data.demographicTargeting || ''} onChange={e => handleInputChange('demographicTargeting', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Age, gender, income, education..." />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Creative Format</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.creativeFormat as string) || ''} onChange={e => handleInputChange('creativeFormat', e.target.value)} placeholder="Image / Video / Carousel / Collection" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Interest Targeting</label>
-              <input type="text" value={data.interestTargeting || ''} onChange={e => handleInputChange('interestTargeting', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Interests, hobbies, activities..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Custom Audiences</label>
-              <input type="text" value={data.customAudiences || ''} onChange={e => handleInputChange('customAudiences', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Email lists, website visitors, etc." />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Creative Relevance</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.creativeRelevance as string) || ''} onChange={e => handleInputChange('creativeRelevance', e.target.value)} placeholder="Aligned with message & audience?" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Lookalike Audiences</label>
-              <input type="text" value={data.lookalikeAudiences || ''} onChange={e => handleInputChange('lookalikeAudiences', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="1%, 5%, 10% lookalikes..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Remarketing Lists</label>
-              <input type="text" value={data.remarketingLists || ''} onChange={e => handleInputChange('remarketingLists', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Cart abandoners, page visitors, etc." />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">CTA Effectiveness</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.ctaEffectiveness as string) || ''} onChange={e => handleInputChange('ctaEffectiveness', e.target.value)} placeholder="Clear, compelling, action-oriented?" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Ad Copy Compliance</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.adCopyCompliance as string) || ''} onChange={e => handleInputChange('adCopyCompliance', e.target.value)} placeholder="Brand tone, spelling, legal claims" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Destination URL</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.destinationUrl as string) || ''} onChange={e => handleInputChange('destinationUrl', e.target.value)} placeholder="UTM tags added? Relevant landing page?" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Performance KPIs</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.performanceKPIsAd as string) || ''} onChange={e => handleInputChange('performanceKPIsAd', e.target.value)} placeholder="Engagement Rate, CTR, ROAS" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">A/B Testing?</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.abTesting as string) || ''} onChange={e => handleInputChange('abTesting', e.target.value)} placeholder="Are creative variations tested?" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block font-medium mb-1">Notes & Recommendations</label>
+            <textarea className="w-full border rounded-lg px-3 py-2" value={(data.notesRecommendationsAd as string) || ''} onChange={e => handleInputChange('notesRecommendationsAd', e.target.value)} />
           </div>
         </div>
+      </section>
 
-        {/* Ad Creative */}
-        <div className="mb-8">
-          <h5 className="text-md font-semibold text-gray-800 mb-4 border-b pb-2">Ad Creative Performance</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ad Formats Used</label>
-              <input type="text" value={data.adFormats || ''} onChange={e => handleInputChange('adFormats', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Text, image, video, carousel, etc." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Creative Assets</label>
-              <input type="text" value={data.creativeAssets || ''} onChange={e => handleInputChange('creativeAssets', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Number and types of assets" />
-            </div>
+      {/* SECTION 5: TRACKING, ATTRIBUTION & COMPLIANCE */}
+      <section>
+        <h3 className="text-lg font-semibold mb-2">⚖️ SECTION 5: TRACKING, ATTRIBUTION & COMPLIANCE</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1">Pixel/SDK Setup</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.pixelSdkSetup as string) || ''} onChange={e => handleInputChange('pixelSdkSetup', e.target.value)} placeholder="Pixel/Conversions API installed and firing correctly?" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ad Copy Performance</label>
-              <textarea rows={2} value={data.adCopyPerformance || ''} onChange={e => handleInputChange('adCopyPerformance', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Best/worst performing ad copy, messaging..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Image Performance</label>
-              <textarea rows={2} value={data.imagePerformance || ''} onChange={e => handleInputChange('imagePerformance', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Best/worst performing images, styles..." />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Event Tracking</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.eventTracking as string) || ''} onChange={e => handleInputChange('eventTracking', e.target.value)} placeholder="ViewContent, AddToCart, Purchase, etc." />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Video Performance</label>
-              <textarea rows={2} value={data.videoPerformance || ''} onChange={e => handleInputChange('videoPerformance', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Video completion rates, engagement..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Creative Testing</label>
-              <textarea rows={2} value={data.creativeTesting || ''} onChange={e => handleInputChange('creativeTesting', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="A/B tests, multivariate tests..." />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">UTM Tracking</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.utmTracking as string) || ''} onChange={e => handleInputChange('utmTracking', e.target.value)} placeholder="Consistently applied across campaigns?" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Attribution Model</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.attributionModel as string) || ''} onChange={e => handleInputChange('attributionModel', e.target.value)} placeholder="Last Click / Data-Driven / Multi-Touch" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Ad Disapprovals</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.adDisapprovals as string) || ''} onChange={e => handleInputChange('adDisapprovals', e.target.value)} placeholder="Any issues? Were they resolved?" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Policy Violations</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.policyViolations as string) || ''} onChange={e => handleInputChange('policyViolations', e.target.value)} placeholder="Account restrictions, rejected content" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block font-medium mb-1">Notes & Recommendations</label>
+            <textarea className="w-full border rounded-lg px-3 py-2" value={(data.notesRecommendationsTracking as string) || ''} onChange={e => handleInputChange('notesRecommendationsTracking', e.target.value)} />
           </div>
         </div>
+      </section>
 
-        {/* Bidding & Optimization */}
-        <div className="mb-8">
-          <h5 className="text-md font-semibold text-gray-800 mb-4 border-b pb-2">Bidding & Optimization</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Bidding Strategies</label>
-              <input type="text" value={data.biddingStrategies || ''} onChange={e => handleInputChange('biddingStrategies', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Manual, automated, target CPA, etc." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Automated Bidding</label>
-              <select value={data.automatedBidding || ''} onChange={e => handleInputChange('automatedBidding', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                <option value="">Select</option>
-                <option value="target-cpa">Target CPA</option>
-                <option value="target-roas">Target ROAS</option>
-                <option value="maximize-clicks">Maximize Clicks</option>
-                <option value="maximize-conversions">Maximize Conversions</option>
-                <option value="enhanced-cpc">Enhanced CPC</option>
-                <option value="none">None (Manual)</option>
-              </select>
-            </div>
+      {/* SECTION 6: MEDIA MIX & CHANNEL ANALYSIS */}
+      <section>
+        <h3 className="text-lg font-semibold mb-2">🔄 SECTION 6: MEDIA MIX & CHANNEL ANALYSIS</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1">Channel Breakdown</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.channelBreakdown as string) || ''} onChange={e => handleInputChange('channelBreakdown', e.target.value)} placeholder="% Spend on FB, IG, YouTube, Search, Display, etc." />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Bid Adjustments</label>
-              <input type="text" value={data.bidAdjustments || ''} onChange={e => handleInputChange('bidAdjustments', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Device, location, time, audience..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Bid Optimization</label>
-              <textarea rows={2} value={data.bidOptimization || ''} onChange={e => handleInputChange('bidOptimization', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Bid optimization strategies, performance..." />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Budget Distribution</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.budgetDistribution as string) || ''} onChange={e => handleInputChange('budgetDistribution', e.target.value)} placeholder="Does distribution align with performance and goal?" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Quality Score (Avg)</label>
-              <input type="number" min="1" max="10" value={data.qualityScore || ''} onChange={e => handleInputChange('qualityScore', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="1-10" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ad Rank (Avg)</label>
-              <input type="number" step="0.1" value={data.adRank || ''} onChange={e => handleInputChange('adRank', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.0" />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Performance by Channel</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.performanceByChannel as string) || ''} onChange={e => handleInputChange('performanceByChannel', e.target.value)} placeholder="Which platforms are driving best ROI?" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Opportunities to Reallocate</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.opportunitiesToReallocate as string) || ''} onChange={e => handleInputChange('opportunitiesToReallocate', e.target.value)} />
           </div>
         </div>
+      </section>
 
-        {/* Landing Pages */}
-        <div className="mb-8">
-          <h5 className="text-md font-semibold text-gray-800 mb-4 border-b pb-2">Landing Pages</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Landing Page Performance</label>
-              <textarea rows={2} value={data.landingPagePerformance || ''} onChange={e => handleInputChange('landingPagePerformance', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Conversion rates, bounce rates, best/worst pages..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Page Load Speed</label>
-              <input type="text" value={data.pageLoadSpeed || ''} onChange={e => handleInputChange('pageLoadSpeed', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Fast, moderate, slow, or specific times" />
-            </div>
+      {/* SECTION 7: WASTE & EFFICIENCY */}
+      <section>
+        <h3 className="text-lg font-semibold mb-2">⚠️ SECTION 7: WASTE & EFFICIENCY</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1">Low Performing Segments</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.lowPerformingSegments as string) || ''} onChange={e => handleInputChange('lowPerformingSegments', e.target.value)} placeholder="Ad sets or audiences with poor ROAS" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Mobile Optimization</label>
-              <select value={data.mobileOptimization || ''} onChange={e => handleInputChange('mobileOptimization', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                <option value="">Select</option>
-                <option value="fully-optimized">Fully Optimized</option>
-                <option value="partially-optimized">Partially Optimized</option>
-                <option value="not-optimized">Not Optimized</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">A/B Testing</label>
-              <input type="text" value={data.aBTesting || ''} onChange={e => handleInputChange('aBTesting', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Landing page tests, results..." />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">High Frequency Issues</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.highFrequencyIssues as string) || ''} onChange={e => handleInputChange('highFrequencyIssues', e.target.value)} placeholder="Ad fatigue or oversaturation" />
           </div>
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Conversion Funnel Analysis</label>
-            <textarea rows={2} value={data.conversionFunnel || ''} onChange={e => handleInputChange('conversionFunnel', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Funnel drop-offs, optimization opportunities..." />
+          <div>
+            <label className="block font-medium mb-1">Underperforming Creatives</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.underperformingCreatives as string) || ''} onChange={e => handleInputChange('underperformingCreatives', e.target.value)} placeholder="Ads with low relevance or engagement" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block font-medium mb-1">Notes & Action Points</label>
+            <textarea className="w-full border rounded-lg px-3 py-2" value={(data.notesActionPoints as string) || ''} onChange={e => handleInputChange('notesActionPoints', e.target.value)} />
           </div>
         </div>
+      </section>
 
-        {/* Conversion Tracking */}
-        <div className="mb-8">
-          <h5 className="text-md font-semibold text-gray-800 mb-4 border-b pb-2">Conversion Tracking</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tracking Setup</label>
-              <select value={data.trackingSetup || ''} onChange={e => handleInputChange('trackingSetup', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                <option value="">Select</option>
-                <option value="fully-implemented">Fully Implemented</option>
-                <option value="partially-implemented">Partially Implemented</option>
-                <option value="not-implemented">Not Implemented</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Conversion Actions</label>
-              <input type="text" value={data.conversionActions || ''} onChange={e => handleInputChange('conversionActions', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Purchase, lead, signup, etc." />
-            </div>
+      {/* SECTION 8: SUMMARY & ACTION PLAN */}
+      <section>
+        <h3 className="text-lg font-semibold mb-2">📊 SECTION 8: SUMMARY & ACTION PLAN</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1">Key Strengths</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.keyStrengths as string) || ''} onChange={e => handleInputChange('keyStrengths', e.target.value)} placeholder="What's working well" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Attribution Model</label>
-              <select value={data.attributionModel || ''} onChange={e => handleInputChange('attributionModel', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                <option value="">Select</option>
-                <option value="last-click">Last Click</option>
-                <option value="first-click">First Click</option>
-                <option value="linear">Linear</option>
-                <option value="time-decay">Time Decay</option>
-                <option value="position-based">Position Based</option>
-                <option value="data-driven">Data Driven</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cross Device Tracking</label>
-              <select value={data.crossDeviceTracking || ''} onChange={e => handleInputChange('crossDeviceTracking', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                <option value="">Select</option>
-                <option value="enabled">Enabled</option>
-                <option value="partial">Partially Enabled</option>
-                <option value="disabled">Disabled</option>
-              </select>
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Key Weaknesses</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.keyWeaknesses as string) || ''} onChange={e => handleInputChange('keyWeaknesses', e.target.value)} placeholder="Major gaps or risks" />
           </div>
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Offline Conversions</label>
-            <input type="text" value={data.offlineConversions || ''} onChange={e => handleInputChange('offlineConversions', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Phone calls, store visits, etc." />
+          <div>
+            <label className="block font-medium mb-1">Top Priority Fixes</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.topPriorityFixes as string) || ''} onChange={e => handleInputChange('topPriorityFixes', e.target.value)} placeholder="High impact issues to resolve ASAP" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Quick Wins</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.quickWins as string) || ''} onChange={e => handleInputChange('quickWins', e.target.value)} placeholder="Easy improvements to implement" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Long-Term Opportunities</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.longTermOpportunities as string) || ''} onChange={e => handleInputChange('longTermOpportunities', e.target.value)} placeholder="Strategic insights for future campaigns" />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Owner & Deadline</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.ownerDeadline as string) || ''} onChange={e => handleInputChange('ownerDeadline', e.target.value)} placeholder="Who is responsible? By when?" />
           </div>
         </div>
+      </section>
 
-        {/* Competitive Analysis */}
-        <div className="mb-8">
-          <h5 className="text-md font-semibold text-gray-800 mb-4 border-b pb-2">Competitive Analysis</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Competitor Analysis</label>
-              <textarea rows={2} value={data.competitorAnalysis || ''} onChange={e => handleInputChange('competitorAnalysis', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Main competitors, their strategies, strengths/weaknesses..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Market Share (%)</label>
-              <input type="number" step="0.01" value={data.marketShare || ''} onChange={e => handleInputChange('marketShare', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="0.00" />
-            </div>
+      {/* Audit Conducted By, Date, Signature */}
+      <section>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <div>
+            <label className="block font-medium mb-1">Audit Conducted By</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.auditConductedBy as string) || ''} onChange={e => handleInputChange('auditConductedBy', e.target.value)} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Competitive Positioning</label>
-              <textarea rows={2} value={data.competitivePositioning || ''} onChange={e => handleInputChange('competitivePositioning', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Position in market, unique selling points..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Keyword Gaps</label>
-              <textarea rows={2} value={data.keywordGaps || ''} onChange={e => handleInputChange('keywordGaps', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Keywords competitors are targeting that we're not..." />
-            </div>
+          <div>
+            <label className="block font-medium mb-1">Date of Audit</label>
+            <input type="date" className="w-full border rounded-lg px-3 py-2" value={(data.dateOfAudit as string) || ''} onChange={e => handleInputChange('dateOfAudit', e.target.value)} />
           </div>
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Ad Copy Analysis</label>
-            <textarea rows={2} value={data.adCopyAnalysis || ''} onChange={e => handleInputChange('adCopyAnalysis', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Competitor ad copy, messaging strategies..." />
+          <div>
+            <label className="block font-medium mb-1">Signature / Reviewer</label>
+            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.signatureReviewer as string) || ''} onChange={e => handleInputChange('signatureReviewer', e.target.value)} />
           </div>
         </div>
-
-        {/* Recommendations */}
-        <div>
-          <h5 className="text-md font-semibold text-gray-800 mb-4">Recommendations & Notes</h5>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Priority Actions</label>
-              <textarea rows={3} value={data.priorityActions || ''} onChange={e => handleInputChange('priorityActions', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="High-priority fixes, quick wins, immediate actions..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Optimization Strategy</label>
-              <textarea rows={3} value={data.optimizationStrategy || ''} onChange={e => handleInputChange('optimizationStrategy', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Long-term optimization strategy, testing roadmap..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Budget Recommendations</label>
-              <textarea rows={2} value={data.budgetRecommendations || ''} onChange={e => handleInputChange('budgetRecommendations', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Budget reallocation, scaling opportunities..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Creative Recommendations</label>
-              <textarea rows={2} value={data.creativeRecommendations || ''} onChange={e => handleInputChange('creativeRecommendations', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Creative improvements, testing suggestions..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Targeting Recommendations</label>
-              <textarea rows={2} value={data.targetingRecommendations || ''} onChange={e => handleInputChange('targetingRecommendations', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Audience expansion, new targeting opportunities..." />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Additional Notes</label>
-              <textarea rows={2} value={data.notes || ''} onChange={e => handleInputChange('notes', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Other observations, context, special considerations..." />
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 } 
