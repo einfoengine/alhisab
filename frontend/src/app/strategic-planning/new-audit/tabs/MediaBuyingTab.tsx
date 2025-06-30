@@ -72,11 +72,44 @@ export default function MediaBuyingTab() {
     ? [data.marketingGoals as string]
     : [];
 
+  // Campaign Level Audit as an array
+  type CampaignAudit = {
+    campaignName?: string;
+    objectiveSetCorrectly?: string;
+    buyingType?: string;
+    budgetAllocationCampaign?: string;
+    optimizationStrategy?: string;
+    performanceKPIs?: string;
+    dateRange?: string;
+    complianceCheck?: string;
+    notesRecommendationsCampaign?: string;
+  };
+  const campaignAudits: CampaignAudit[] = Array.isArray(data.campaignAudits)
+    ? (data.campaignAudits as CampaignAudit[])
+    : [{}];
+
   const handleInputChange = (field: string, value: unknown) => {
     setAuditData('media_buying', {
       ...data,
       [field]: value
     });
+  };
+
+  const handleCampaignChange = (idx: number, field: keyof CampaignAudit, value: string) => {
+    const updated = [...campaignAudits];
+    updated[idx] = { ...updated[idx], [field]: value };
+    handleInputChange('campaignAudits', updated);
+  };
+
+  const addCampaign = () => {
+    handleInputChange('campaignAudits', [...campaignAudits, {}]);
+  };
+
+  const removeCampaign = (idx: number) => {
+    if (campaignAudits.length > 1) {
+      const updated = campaignAudits.filter((_, i) => i !== idx);
+      handleInputChange('campaignAudits', updated);
+    }
   };
 
   return (
@@ -100,47 +133,87 @@ export default function MediaBuyingTab() {
         </div>
       </section>
 
-      {/* SECTION 2: CAMPAIGN LEVEL AUDIT */}
+      {/* SECTION 2: CAMPAIGN LEVEL AUDIT (Multiple) */}
       <section>
-        <h3 className="text-lg font-semibold mb-2">📂 SECTION 2: CAMPAIGN LEVEL AUDIT</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block font-medium mb-1">Campaign Name</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.campaignName as string) || ''} onChange={e => handleInputChange('campaignName', e.target.value)} />
+        <h3 className="text-lg font-semibold mb-2 flex items-center">📂 SECTION 2: CAMPAIGN LEVEL AUDIT</h3>
+        {campaignAudits.map((campaign, idx) => (
+          <div key={idx} className="border border-gray-200 rounded-lg p-4 mb-6 relative">
+            {campaignAudits.length > 1 && (
+              <button
+                type="button"
+                className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xs"
+                onClick={() => removeCampaign(idx)}
+                title="Remove this campaign"
+              >
+                Remove
+              </button>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-medium mb-1">Campaign Name</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={campaign.campaignName || ''} onChange={e => handleCampaignChange(idx, 'campaignName', e.target.value)} />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Objective Set Correctly?</label>
+                <select className="w-full border rounded-lg px-3 py-2" value={campaign.objectiveSetCorrectly || ''} onChange={e => handleCampaignChange(idx, 'objectiveSetCorrectly', e.target.value)}>
+                  <option value="">Select</option>
+                  <option value="Awareness">Awareness</option>
+                  <option value="Traffic">Traffic</option>
+                  <option value="Conversions">Conversions</option>
+                  <option value="Engagement">Engagement</option>
+                  <option value="Video Views">Video Views</option>
+                  <option value="Lead Generation">Lead Generation</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Buying Type</label>
+                <select className="w-full border rounded-lg px-3 py-2" value={campaign.buyingType || ''} onChange={e => handleCampaignChange(idx, 'buyingType', e.target.value)}>
+                  <option value="">Select</option>
+                  <option value="Auction">Auction</option>
+                  <option value="Reach & Frequency">Reach & Frequency</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Budget Allocation</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={campaign.budgetAllocationCampaign || ''} onChange={e => handleCampaignChange(idx, 'budgetAllocationCampaign', e.target.value)} placeholder="Planned vs. Actual; justification of spend" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Optimization Strategy</label>
+                <select className="w-full border rounded-lg px-3 py-2" value={campaign.optimizationStrategy || ''} onChange={e => handleCampaignChange(idx, 'optimizationStrategy', e.target.value)}>
+                  <option value="">Select</option>
+                  <option value="CBO">CBO (Campaign Budget Optimization)</option>
+                  <option value="Manual">Manual</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Performance KPIs</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={campaign.performanceKPIs || ''} onChange={e => handleCampaignChange(idx, 'performanceKPIs', e.target.value)} placeholder="CPM, CTR, CPA, ROAS" />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Date Range</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={campaign.dateRange || ''} onChange={e => handleCampaignChange(idx, 'dateRange', e.target.value)} />
+              </div>
+              <div>
+                <label className="block font-medium mb-1">Compliance Check</label>
+                <input type="text" className="w-full border rounded-lg px-3 py-2" value={campaign.complianceCheck || ''} onChange={e => handleCampaignChange(idx, 'complianceCheck', e.target.value)} placeholder="Any policy violations or rejected ads" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block font-medium mb-1">Notes & Recommendations</label>
+                <textarea className="w-full border rounded-lg px-3 py-2" value={campaign.notesRecommendationsCampaign || ''} onChange={e => handleCampaignChange(idx, 'notesRecommendationsCampaign', e.target.value)} />
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block font-medium mb-1">Objective Set Correctly?</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.objectiveSetCorrectly as string) || ''} onChange={e => handleInputChange('objectiveSetCorrectly', e.target.value)} placeholder="e.g., Awareness, Traffic, Conversions (Yes/No)" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Buying Type</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.buyingType as string) || ''} onChange={e => handleInputChange('buyingType', e.target.value)} placeholder="Auction / Reach & Frequency" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Budget Allocation</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.budgetAllocationCampaign as string) || ''} onChange={e => handleInputChange('budgetAllocationCampaign', e.target.value)} placeholder="Planned vs. Actual; justification of spend" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Optimization Strategy</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.optimizationStrategy as string) || ''} onChange={e => handleInputChange('optimizationStrategy', e.target.value)} placeholder="CBO / Manual" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Performance KPIs</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.performanceKPIs as string) || ''} onChange={e => handleInputChange('performanceKPIs', e.target.value)} placeholder="CPM, CTR, CPA, ROAS" />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Date Range</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.dateRange as string) || ''} onChange={e => handleInputChange('dateRange', e.target.value)} />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Compliance Check</label>
-            <input type="text" className="w-full border rounded-lg px-3 py-2" value={(data.complianceCheck as string) || ''} onChange={e => handleInputChange('complianceCheck', e.target.value)} placeholder="Any policy violations or rejected ads" />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block font-medium mb-1">Notes & Recommendations</label>
-            <textarea className="w-full border rounded-lg px-3 py-2" value={(data.notesRecommendationsCampaign as string) || ''} onChange={e => handleInputChange('notesRecommendationsCampaign', e.target.value)} />
-          </div>
-        </div>
+        ))}
+        <button
+          type="button"
+          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={addCampaign}
+        >
+          + Add Campaign
+        </button>
       </section>
 
       {/* SECTION 3: AD SET LEVEL AUDIT */}
