@@ -3,12 +3,20 @@ import { CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 const auditTypes = [
   {
-    id: "media_buying",
-    name: "PPC & Media Buying Audit",
-    description: "Paid advertising, PPC campaigns, and media buying performance analysis",
+    id: "ppc",
+    name: "PPC Audit",
+    description: "Paid advertising and PPC campaign performance analysis",
     icon: "TagIcon",
     duration: "1-2 hours",
     color: "red"
+  },
+  {
+    id: "media_buying",
+    name: "Media Buying Audit",
+    description: "Media buying strategy and performance analysis",
+    icon: "TagIcon",
+    duration: "1-2 hours",
+    color: "rose"
   },
   {
     id: "comprehensive",
