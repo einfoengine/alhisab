@@ -14,6 +14,12 @@ export default function MediaBuyingTab() {
     ? [data.marketingGoals as string]
     : [];
 
+  const marketingPlatforms: string[] = Array.isArray(data.marketingPlatforms)
+    ? (data.marketingPlatforms as string[])
+    : data.marketingPlatforms
+    ? [data.marketingPlatforms as string]
+    : [];
+
   // Campaign Level Audit as an array
   type CampaignAudit = {
     campaignName?: string;
@@ -137,6 +143,14 @@ export default function MediaBuyingTab() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2 space-y-2">
             <label className="block font-medium mb-1">Marketing Goal(s)</label>
+            <TagInput
+              value={marketingGoals}
+              onChange={tags => handleInputChange('marketingGoals', tags)}
+              placeholder="Type a goal and press comma or Enter"
+            />
+          </div>
+          <div className="md:col-span-2 space-y-2">
+            <label className="block font-medium mb-1">Marketing Platforms(s)</label>
             <TagInput
               value={marketingGoals}
               onChange={tags => handleInputChange('marketingGoals', tags)}

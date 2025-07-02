@@ -19,30 +19,42 @@ export default function NewAuditPage() {
 
 function NewAuditPageContent() {
   const [selectedAuditTypes, setSelectedAuditTypes] = useState<string[]>([]);
-  const [auditName, setAuditName] = useState("");
-  const [clientName, setClientName] = useState("");
-  const [projectName, setProjectName] = useState("");
   const [step, setStep] = useState(1);
-  const [auditNumber, setAuditNumber] = useState(
-    `AUD-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`
-  );
-  const [auditDate, setAuditDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Returns an object with all fields for a given audit type, all set to null
   const getDefaultAuditData = (auditTypeId: string): Record<string, unknown> => {
     // Define all fields for each audit type (add more as needed)
     const fieldDefinitions: { [key: string]: string[] } = {
       media_buying: [
-        'primaryPlatform', 'secondaryPlatforms', 'totalCampaigns', 'activeCampaigns', 'pausedCampaigns', 'accountAge', 'accountStructure',
-        'totalSpend', 'totalImpressions', 'totalClicks', 'totalConversions', 'totalRevenue', 'roas', 'avgCTR', 'avgCPC', 'avgCPM', 'avgConversionRate', 'avgCostPerConversion', 'profitMargin',
-        'monthlyBudget', 'budgetUtilization', 'costPerLead', 'costPerAcquisition', 'lifetimeValue', 'budgetAllocation',
-        'targetingTypes', 'audienceSegments', 'geographicTargeting', 'demographicTargeting', 'interestTargeting', 'customAudiences', 'lookalikeAudiences', 'remarketingLists',
-        'adFormatsUsed', 'creativeAssets', 'adCopyPerformance', 'imagePerformance', 'videoPerformance', 'creativeTesting',
-        'biddingStrategies', 'automatedBidding', 'bidAdjustments', 'bidOptimization', 'qualityScore', 'adRank',
-        'landingPagePerformance', 'pageLoadSpeed', 'mobileOptimization', 'abTesting', 'conversionFunnelAnalysis',
-        'trackingSetup', 'conversionActions', 'attributionModel', 'crossDeviceTracking', 'offlineConversions',
-        'competitorAnalysis', 'marketShare', 'competitivePositioning', 'keywordGaps', 'adCopyAnalysis',
-        'priorityActions', 'optimizationStrategy', 'budgetRecommendations', 'creativeRecommendations',
+        'marketingGoals',
+        'notesGaps',
+        'campaignAudits',
+        'adSetAudits',
+        'adLevelAudits',
+        'pixelSdkSetup',
+        'eventTracking',
+        'utmTracking',
+        'attributionModel',
+        'adDisapprovals',
+        'policyViolations',
+        'notesRecommendationsTracking',
+        'channelBreakdown',
+        'budgetDistribution',
+        'performanceByChannel',
+        'opportunitiesToReallocate',
+        'lowPerformingSegments',
+        'highFrequencyIssues',
+        'underperformingCreatives',
+        'notesActionPoints',
+        'keyStrengths',
+        'keyWeaknesses',
+        'topPriorityFixes',
+        'quickWins',
+        'longTermOpportunities',
+        'ownerDeadline',
+        'auditConductedBy',
+        'dateOfAudit',
+        'signatureReviewer',
       ],
       ppc: [
         // Add PPC fields here as needed
@@ -72,7 +84,6 @@ function NewAuditPageContent() {
   const canProceed = () => {
     if (step === 1) return selectedAuditTypes.length > 0;
     if (step === 2) return true; // Always allow proceeding from step 2
-    if (step === 3) return auditName.trim() !== "";
     return false;
   };
 
@@ -85,29 +96,13 @@ function NewAuditPageContent() {
   const handleBack = () => setStep(step - 1);
 
   const handleCreateAudit = () => {
-    // Redirect to strategic planning dashboard
+    // Redirect to strategic planning dashboard or perform save logic
     window.location.href = "/strategic-planning";
   };
 
-  const getTotalDuration = () => {
-    const auditTypes = [
-      { id: "comprehensive", duration: "2-3 hours" },
-      { id: "seo", duration: "1-2 hours" },
-      { id: "social", duration: "1-2 hours" },
-      { id: "email", duration: "1 hour" },
-      { id: "media_buying", duration: "1-2 hours" },
-      { id: "website", duration: "1-2 hours" },
-      { id: "mobile", duration: "1-2 hours" },
-      { id: "content", duration: "1-2 hours" },
-      { id: "campaigns", duration: "1-2 hours" },
-      { id: "internal", duration: "2-3 hours" },
-    ];
-
-    return selectedAuditTypes.reduce((total, auditTypeId) => {
-      const audit = auditTypes.find(type => type.id === auditTypeId);
-      const duration = audit?.duration.split('-')[1]?.split(' ')[0] || '2';
-      return total + parseInt(duration);
-    }, 0);
+  const handleDownload = () => {
+    // Placeholder for download logic
+    alert('Download functionality coming soon!');
   };
 
   const renderStepContent = () => {
@@ -128,20 +123,7 @@ function NewAuditPageContent() {
       case 3:
         return (
           <Step3AuditDetails
-            auditName={auditName}
-            onAuditNameChange={setAuditName}
-            clientName={clientName}
-            onClientNameChange={setClientName}
-            projectName={projectName}
-            onProjectNameChange={setProjectName}
-            auditNumber={auditNumber}
-            onAuditNumberChange={setAuditNumber}
-            auditDate={auditDate}
-            onAuditDateChange={setAuditDate}
             selectedAuditTypes={selectedAuditTypes}
-            totalDuration={getTotalDuration()}
-            onBack={handleBack}
-            onFinish={handleCreateAudit}
           />
         );
       default:
@@ -195,6 +177,30 @@ function NewAuditPageContent() {
                 }`}
               >
                 Next
+              </button>
+            </div>
+          </div>
+        )}
+        {step === 3 && (
+          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+            <button
+              onClick={handleBack}
+              className="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              Back
+            </button>
+            <div className="flex space-x-3">
+              <button
+                onClick={handleDownload}
+                className="px-6 py-2 rounded-lg border border-blue-600 text-blue-600 bg-white hover:bg-blue-50"
+              >
+                Download
+              </button>
+              <button
+                onClick={handleCreateAudit}
+                className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Save
               </button>
             </div>
           </div>
