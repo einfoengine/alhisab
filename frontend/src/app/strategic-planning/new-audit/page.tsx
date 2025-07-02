@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import PageHeader from '../../../components/elements/PageHeader';
 import StepProgressBar from '../../../components/StepProgressBar';
@@ -8,6 +8,7 @@ import Step1AuditTypes from './components/Step1AuditTypes';
 import Step2AuditForms from './components/Step2AuditForms';
 import Step3AuditDetails from './components/Step3AuditDetails';
 import { AuditDataProvider, useAuditData } from './AuditDataContext';
+import AuditHeader from './components/AuditHeader';
 
 export default function NewAuditPage() {
   return (
@@ -20,6 +21,16 @@ export default function NewAuditPage() {
 function NewAuditPageContent() {
   const [selectedAuditTypes, setSelectedAuditTypes] = useState<string[]>([]);
   const [step, setStep] = useState(1);
+  const [clientId, setClientId] = useState('');
+  const [projectId, setProjectId] = useState('');
+  const [auditNumber, setAuditNumber] = useState('');
+
+  // Generate audit number on mount
+  useEffect(() => {
+    setAuditNumber(
+      `AUD-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`
+    );
+  }, []);
 
   // Returns an object with all fields for a given audit type, all set to null
   const getDefaultAuditData = (auditTypeId: string): Record<string, unknown> => {
@@ -109,10 +120,19 @@ function NewAuditPageContent() {
     switch (step) {
       case 1:
         return (
-          <Step1AuditTypes
-            selectedAuditTypes={selectedAuditTypes}
-            onAuditTypeToggle={handleAuditTypeToggle}
-          />
+          <>
+            <AuditHeader
+              clientId={clientId}
+              setClientId={setClientId}
+              projectId={projectId}
+              setProjectId={setProjectId}
+              auditNumber={auditNumber}
+            />
+            <Step1AuditTypes
+              selectedAuditTypes={selectedAuditTypes}
+              onAuditTypeToggle={handleAuditTypeToggle}
+            />
+          </>
         );
       case 2:
         return (

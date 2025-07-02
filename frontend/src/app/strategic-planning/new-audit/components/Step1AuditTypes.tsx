@@ -128,6 +128,7 @@ export default function Step1AuditTypes({ selectedAuditTypes, onAuditTypeToggle 
         <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-1">Choose Audit Types</h2>
         <p className="text-gray-600 text-sm">Select one or more audit types to perform</p>
       </div>
+      
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
         {auditTypes.map((auditType) => {
