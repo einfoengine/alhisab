@@ -24,6 +24,8 @@ function NewAuditPageContent() {
   const [clientId, setClientId] = useState('');
   const [projectId, setProjectId] = useState('');
   const [auditNumber, setAuditNumber] = useState('');
+  const [clients, setClients] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
 
   // Generate audit number on mount
   useEffect(() => {
@@ -31,6 +33,25 @@ function NewAuditPageContent() {
       `AUD-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`
     );
   }, []);
+
+  // Load clients for Step 1, and both clients/projects for Step 3
+  useEffect(() => {
+    fetch('/data/clients.json')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setClients(data);
+        else if (data && Array.isArray(data.clients)) setClients(data.clients);
+        else setClients([]);
+      });
+    if (step === 3) {
+      fetch('/data/projects.json')
+        .then(res => res.json())
+        .then(data => setProjects(data.projects));
+    }
+  }, [step]);
+
+  const selectedClient = clients.find((c) => c.id === clientId);
+  const clientProjects = selectedClient?.projects || [];
 
   // Returns an object with all fields for a given audit type, all set to null
   const getDefaultAuditData = (auditTypeId: string): Record<string, unknown> => {
@@ -127,6 +148,8 @@ function NewAuditPageContent() {
               projectId={projectId}
               setProjectId={setProjectId}
               auditNumber={auditNumber}
+              clients={clients}
+              projects={clientProjects}
             />
             <Step1AuditTypes
               selectedAuditTypes={selectedAuditTypes}
@@ -142,9 +165,19 @@ function NewAuditPageContent() {
         );
       case 3:
         return (
-          <Step3AuditDetails
-            selectedAuditTypes={selectedAuditTypes}
-          />
+          <>
+            <AuditHeader
+              clientId={clientId}
+              projectId={projectId}
+              auditNumber={auditNumber}
+              readOnly={true}
+              clients={clients}
+              projects={projects}
+            />
+            <Step3AuditDetails
+              selectedAuditTypes={selectedAuditTypes}
+            />
+          </>
         );
       default:
         return null;
